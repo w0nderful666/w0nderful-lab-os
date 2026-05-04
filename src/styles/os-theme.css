@@ -754,19 +754,19 @@ html[data-experience="performance"] .setting-panel {
   transform: translateX(0);
 }
 
-.master-detail[data-detail-mode="focus"] > .master-panel {
-  flex-basis: 15%;
-}
-
-.master-detail[data-detail-mode="focus"] > .detail-panel {
-  flex-basis: 85%;
-}
-
 .master-detail[data-detail-mode="focus"][data-layout="focused"] > .master-panel {
   flex-basis: 15%;
 }
 
 .master-detail[data-detail-mode="focus"][data-layout="focused"] > .detail-panel {
+  flex-basis: 85%;
+}
+
+.master-detail[data-detail-mode="focus"][data-layout="expanded"] > .master-panel {
+  flex-basis: 15%;
+}
+
+.master-detail[data-detail-mode="focus"][data-layout="expanded"] > .detail-panel {
   flex-basis: 85%;
 }
 
@@ -2019,18 +2019,16 @@ kbd {
   }
 
   .master-detail[data-layout="focused"] > .master-panel,
-  .master-detail[data-layout="expanded"] > .master-panel {
-    display: none;
-  }
-
-  .master-detail[data-detail-mode="focus"] > .master-panel,
-  .master-detail[data-detail-mode="focus"][data-layout="focused"] > .master-panel {
+  .master-detail[data-layout="expanded"] > .master-panel,
+  .master-detail[data-detail-mode="focus"][data-layout="focused"] > .master-panel,
+  .master-detail[data-detail-mode="focus"][data-layout="expanded"] > .master-panel {
     display: none;
   }
 
   .master-detail[data-layout="focused"] > .detail-panel,
   .master-detail[data-layout="expanded"] > .detail-panel,
-  .master-detail[data-detail-mode="focus"][data-layout="focused"] > .detail-panel {
+  .master-detail[data-detail-mode="focus"][data-layout="focused"] > .detail-panel,
+  .master-detail[data-detail-mode="focus"][data-layout="expanded"] > .detail-panel {
     display: grid;
     max-height: none;
     overflow: visible;
