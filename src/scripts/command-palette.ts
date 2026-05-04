@@ -7,12 +7,23 @@ type PaletteItem = {
   title: string;
   description: string;
   source: string;
+  group: "Pages" | "Content" | "Actions" | "Settings" | "Recent" | "History";
+  badge?: string;
   run: () => void | Promise<void>;
 };
 
 let boundGlobalEvents = false;
 let items: PaletteItem[] = [];
 let selectedIndex = 0;
+
+const groupRank: Record<PaletteItem["group"], number> = {
+  Recent: 0,
+  History: 1,
+  Pages: 2,
+  Content: 3,
+  Settings: 4,
+  Actions: 5
+};
 
 const getNodes = () => {
   const root = document.querySelector("[data-command-palette]");
@@ -32,11 +43,32 @@ const getNodes = () => {
   };
 };
 
+const commandGroup = (command: Command): PaletteItem["group"] => {
+  if (command.kind === "app" || command.action === "open-app") return "Pages";
+  if (command.kind === "settings" || command.action.startsWith("set-")) return "Settings";
+  if (command.kind === "project" || command.kind === "post" || command.kind === "timeline") return "Content";
+  return "Actions";
+};
+
+const commandBadge = (command: Command) => {
+  const state = window.labOS?.getState();
+  if (!state) return command.id === "open-terminal" ? "Recommended" : undefined;
+  if (command.action === "open-app" && command.target === state.currentApp) return "Current";
+  if (command.action === "set-theme" && command.target === state.theme) return "Current";
+  if (command.action === "set-experience" && command.target === state.experienceMode) return "Current";
+  if (command.action === "set-motion-speed" && command.target === state.motionSpeed) return "Current";
+  if (command.action === "set-language" && command.target === state.language) return "Current";
+  if (command.id === "open-terminal" || command.id === "open-settings") return "Recommended";
+  return undefined;
+};
+
 const commandToItem = (command: Command): PaletteItem => ({
   id: command.id,
   title: command.title,
   description: command.description,
   source: command.kind,
+  group: commandGroup(command),
+  badge: commandBadge(command),
   run: () => window.labOS.executeCommand(command)
 });
 
@@ -45,6 +77,8 @@ const searchToItem = (result: SearchResult): PaletteItem => ({
   title: result.title,
   description: result.description,
   source: result.source,
+  group: result.source === "Command" ? "Actions" : "Content",
+  badge: result.source === "Command" ? "Command" : result.source,
   run: () => executeSearchResult(result)
 });
 
@@ -53,6 +87,8 @@ const recentToItem = (item: RecentItem): PaletteItem => ({
   title: item.title,
   description: item.meta,
   source: `Recent ${item.type}`,
+  group: "Recent",
+  badge: item.type,
   run: () => {
     if (item.type === "project") window.labOS.openProject(item.target);
     if (item.type === "post") window.labOS.openPost(item.target);
@@ -67,6 +103,7 @@ const historyToItem = (entry: string): PaletteItem => ({
   title: entry,
   description: "Recent command",
   source: "History",
+  group: "History",
   run: () => {
     const nodes = getNodes();
     if (!nodes) return;
@@ -80,7 +117,13 @@ const buildItems = () => {
   if (!nodes) return [];
 
   const query = nodes.input.value.trim();
-  if (query) return searchLabIndex(query, 14).map(searchToItem);
+  const orderItems = (nextItems: PaletteItem[]) =>
+    nextItems
+      .map((item, index) => ({ item, index }))
+      .sort((a, b) => groupRank[a.item.group] - groupRank[b.item.group] || a.index - b.index)
+      .map((entry) => entry.item);
+
+  if (query) return orderItems(searchLabIndex(query, 14).map(searchToItem));
 
   const state = window.labOS.getState();
   const recentItems = state.recentItems.slice(0, 5).map(recentToItem);
@@ -90,7 +133,7 @@ const buildItems = () => {
     .slice(0, 9)
     .map(commandToItem);
 
-  return [...recentItems, ...historyItems, ...launchItems].slice(0, 14);
+  return orderItems([...recentItems, ...historyItems, ...launchItems]).slice(0, 14);
 };
 
 const updateSelection = () => {
@@ -126,7 +169,18 @@ export function renderCommandPalette() {
     return;
   }
 
+  let currentGroup = "";
+
   items.forEach((item, index) => {
+    if (item.group !== currentGroup) {
+      currentGroup = item.group;
+      const group = document.createElement("div");
+      group.className = "command-group-label";
+      group.setAttribute("role", "presentation");
+      group.textContent = currentGroup;
+      nodes.results.append(group);
+    }
+
     const button = document.createElement("button");
     button.type = "button";
     button.className = "command-option";
@@ -141,9 +195,20 @@ export function renderCommandPalette() {
     description.textContent = item.description;
     content.append(title, description);
 
+    const meta = document.createElement("span");
+    meta.className = "command-option-meta";
+
+    if (item.badge) {
+      const badge = document.createElement("strong");
+      badge.className = "command-badge";
+      badge.textContent = item.badge;
+      meta.append(badge);
+    }
+
     const source = document.createElement("em");
     source.textContent = item.source;
-    button.append(content, source);
+    meta.append(source);
+    button.append(content, meta);
 
     button.addEventListener("mouseenter", () => {
       selectedIndex = index;

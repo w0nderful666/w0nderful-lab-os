@@ -1,6 +1,7 @@
 ---
 import AppWindow from "../os/AppWindow.astro";
 import Badge from "../common/Badge.astro";
+import EmptyState from "../common/EmptyState.astro";
 import { timeline, timelineTypes } from "../../data/timeline";
 import { projects } from "../../data/projects";
 
@@ -26,27 +27,35 @@ const initialProject = projects.find(
   </div>
 
   <div class="master-detail timeline-workbench" data-log-layout data-layout="idle">
-    <section class="master-panel timeline-list" data-log-list aria-label="Timeline entries">
-      {
-        timeline.map((entry, index) => (
-          <article
-            class="timeline-entry interactive-card"
-            data-log-card
-            data-log-id={entry.id}
-            data-log-type={entry.type}
-            data-log-search={`${entry.title} ${entry.description} ${entry.type} ${entry.relatedProject} ${entry.date}`.toLowerCase()}
-            data-selected={index === 0 ? "true" : "false"}
-            tabindex="0"
-          >
-            <div>
-              <p class="eyebrow">{entry.type} / {entry.date}</p>
-              <h3>{entry.title}</h3>
-              <p>{entry.description}</p>
-            </div>
-            <Badge label={entry.relatedProject} />
-          </article>
-        ))
-      }
+    <section class="master-panel timeline-list-panel" aria-label="Timeline entries">
+      <div class="timeline-list" data-log-list>
+        {
+          timeline.map((entry, index) => (
+            <article
+              class="timeline-entry interactive-card"
+              data-log-card
+              data-log-id={entry.id}
+              data-log-type={entry.type}
+              data-log-search={`${entry.title} ${entry.description} ${entry.type} ${entry.relatedProject} ${entry.date}`.toLowerCase()}
+              data-selected={index === 0 ? "true" : "false"}
+              tabindex="0"
+            >
+              <div>
+                <p class="eyebrow">{entry.type} / {entry.date}</p>
+                <h3>{entry.title}</h3>
+                <p>{entry.description}</p>
+              </div>
+              <Badge label={entry.relatedProject} />
+            </article>
+          ))
+        }
+      </div>
+      <EmptyState
+        title="No matching files found"
+        description="Try a different log type or search term."
+        data-log-empty
+        hidden
+      />
     </section>
 
     <aside class="detail-panel timeline-detail-panel" data-log-detail aria-live="polite">
@@ -115,6 +124,7 @@ const initialProject = projects.find(
   const cards = Array.from(document.querySelectorAll("[data-log-card]"));
   const detail = document.querySelector("[data-log-detail]");
   const layout = document.querySelector("[data-log-layout]");
+  const emptyState = document.querySelector("[data-log-empty]");
   if (!(layout instanceof HTMLElement) || layout.dataset.controllerReady === "true") return;
   layout.dataset.controllerReady = "true";
   let activeFilter = "all";
@@ -177,15 +187,20 @@ const initialProject = projects.find(
   const applyLogFilters = () => {
     const query = searchInput instanceof HTMLInputElement ? searchInput.value.trim().toLowerCase() : "";
     let firstVisible = "";
+    let visibleCount = 0;
     cards.forEach((card) => {
       const matchesType = activeFilter === "all" || card.getAttribute("data-log-type") === activeFilter;
       const matchesSearch = (card.getAttribute("data-log-search") || "").includes(query);
       const visible = matchesType && matchesSearch;
       (card as HTMLElement).hidden = !visible;
-      if (visible && !firstVisible) firstVisible = card.getAttribute("data-log-id") || "";
+      if (visible) {
+        visibleCount += 1;
+        if (!firstVisible) firstVisible = card.getAttribute("data-log-id") || "";
+      }
     });
+    if (emptyState instanceof HTMLElement) emptyState.hidden = visibleCount > 0;
     const selectedCard = cards.find((card) => card.getAttribute("data-log-id") === activeId);
-    if (!selectedCard || (selectedCard as HTMLElement).hidden) {
+    if (firstVisible && (!selectedCard || (selectedCard as HTMLElement).hidden)) {
       selectLog(firstVisible, layout instanceof HTMLElement && layout.dataset.layout !== "idle");
     }
   };

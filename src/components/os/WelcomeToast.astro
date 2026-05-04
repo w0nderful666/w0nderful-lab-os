@@ -1,0 +1,33 @@
+---
+import { withBase } from "../../data/site";
+---
+
+<aside
+  class="welcome-toast"
+  data-welcome-toast
+  hidden
+  aria-live="polite"
+  transition:name="lab-welcome"
+  transition:persist
+>
+  <header class="welcome-toast-header">
+    <div>
+      <p class="eyebrow">Quick Start</p>
+      <h2>Welcome to Lab OS</h2>
+    </div>
+    <button type="button" class="welcome-close" data-welcome-close aria-label="Close welcome">
+      <span aria-hidden="true">x</span>
+    </button>
+  </header>
+
+  <ul class="quick-start-list">
+    <li>Dock switches apps.</li>
+    <li>Command Palette launches pages, actions, and settings.</li>
+    <li>Settings controls theme, background, and motion.</li>
+  </ul>
+
+  <div class="welcome-actions">
+    <button type="button" class="button button-primary" data-command-palette-open>Open Palette</button>
+    <a class="button button-secondary" href={withBase("settings/")} data-app-link="settings">Open Settings</a>
+  </div>
+</aside>
