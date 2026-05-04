@@ -2,12 +2,17 @@
 type Props = {
   title: string;
   meta?: string;
+  stagger?: number;
 };
 
-const { title, meta } = Astro.props;
+const { title, meta, stagger } = Astro.props;
 ---
 
-<section class="desktop-widget motion-enter" aria-label={title}>
+<section
+  class:list={["desktop-widget", "motion-enter", stagger && "desktop-stagger"]}
+  style={stagger ? `--stagger-index: ${stagger}` : undefined}
+  aria-label={title}
+>
   <header class="widget-header">
     <h2>{title}</h2>
     {meta && <span>{meta}</span>}

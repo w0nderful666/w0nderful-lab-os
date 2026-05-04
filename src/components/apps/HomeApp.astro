@@ -16,7 +16,7 @@ const latestLogs = timeline.slice(0, 3);
 <div class="desktop-workspace">
   <AppWindow title="Home.app" subtitle="Desktop Workspace" wide>
     <div class="dashboard-grid">
-      <section class="hero-console" aria-label="Welcome Terminal">
+      <section class="hero-console desktop-stagger" style="--stagger-index: 1" aria-label="Welcome Terminal">
         <div class="terminal-topline">
           <span>Welcome Terminal</span>
           <span>zsh</span>
@@ -54,7 +54,7 @@ Local First / No Backend / GitHub Pages Ready</code></pre>
   </AppWindow>
 
   <div class="widget-grid">
-    <DesktopWidget title="Featured Projects" meta="Pinned apps">
+    <DesktopWidget title="Featured Projects" meta="Pinned apps" stagger={2}>
       <div class="compact-list">
         {
           featuredProjects.map((project) => (
@@ -67,7 +67,7 @@ Local First / No Backend / GitHub Pages Ready</code></pre>
       </div>
     </DesktopWidget>
 
-    <DesktopWidget title="Latest Posts" meta="Docs">
+    <DesktopWidget title="Latest Posts" meta="Docs" stagger={3}>
       <div class="compact-list">
         {
           latestPosts.map((post) => (
@@ -80,7 +80,7 @@ Local First / No Backend / GitHub Pages Ready</code></pre>
       </div>
     </DesktopWidget>
 
-    <DesktopWidget title="System Update Log" meta="Recent">
+    <DesktopWidget title="System Update Log" meta="Recent" stagger={4}>
       <div class="compact-list">
         {
           latestLogs.map((entry) => (
@@ -93,7 +93,7 @@ Local First / No Backend / GitHub Pages Ready</code></pre>
       </div>
     </DesktopWidget>
 
-    <DesktopWidget title="Quick Actions" meta="Launch">
+    <DesktopWidget title="Quick Actions" meta="Launch" stagger={5}>
       <div class="quick-actions">
         <a class="button button-primary" href={withBase("projects/")}>Open Projects</a>
         <a class="button button-secondary" href={withBase("blog/")}>Read Blog</a>
@@ -104,7 +104,7 @@ Local First / No Backend / GitHub Pages Ready</code></pre>
       </div>
     </DesktopWidget>
 
-    <DesktopWidget title="Experience Mode" meta="Desktop profile">
+    <DesktopWidget title="Experience Mode" meta="Desktop profile" stagger={6}>
       <ExperienceModeControl />
     </DesktopWidget>
   </div>

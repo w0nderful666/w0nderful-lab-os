@@ -1,7 +1,29 @@
 @keyframes window-enter {
   from {
     opacity: 0;
-    transform: translateY(var(--motion-distance));
+    transform: translateY(var(--motion-distance)) scale(var(--app-enter-scale));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes detail-enter {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes content-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -10,7 +32,7 @@
 }
 
 .motion-enter {
-  animation: window-enter var(--motion-duration) ease both;
+  animation: window-enter var(--app-duration) ease both;
 }
 
 .app-window,
@@ -18,11 +40,13 @@
 .interactive-card,
 .detail-panel {
   transition:
-    transform var(--motion-duration) ease,
-    border-color var(--motion-duration) ease,
-    box-shadow var(--motion-duration) ease,
-    background var(--motion-duration) ease,
-    opacity var(--motion-duration) ease;
+    flex-basis var(--panel-duration) ease,
+    padding var(--panel-duration) ease,
+    transform var(--panel-duration) ease,
+    border-color var(--panel-duration) ease,
+    box-shadow var(--panel-duration) ease,
+    background var(--panel-duration) ease,
+    opacity var(--panel-duration) ease;
 }
 
 .interactive-card:hover {
@@ -39,8 +63,24 @@
 }
 
 .reader-panel,
-.project-detail-panel {
-  animation: window-enter var(--motion-duration) ease both;
+.project-detail-panel,
+.timeline-detail-panel {
+  animation: detail-enter var(--panel-duration) ease both;
+}
+
+.reader-body section {
+  animation: content-fade-up var(--panel-duration) ease both;
+  animation-delay: calc(var(--stagger-index, 0) * 35ms);
+}
+
+.desktop-stagger {
+  animation: content-fade-up var(--app-duration) ease both;
+  animation-delay: calc(var(--stagger-index, 0) * 70ms);
+}
+
+body[data-app-leaving="true"] .app-window {
+  opacity: 0;
+  transform: scale(var(--app-exit-scale));
 }
 
 html[data-experience="performance"] .interactive-card:hover,
@@ -53,7 +93,10 @@ html[data-experience="performance"] .related-link:hover {
 
 html[data-experience="performance"] .motion-enter,
 html[data-experience="performance"] .reader-panel,
-html[data-experience="performance"] .project-detail-panel {
+html[data-experience="performance"] .project-detail-panel,
+html[data-experience="performance"] .timeline-detail-panel,
+html[data-experience="performance"] .reader-body section,
+html[data-experience="performance"] .desktop-stagger {
   animation: none;
 }
 

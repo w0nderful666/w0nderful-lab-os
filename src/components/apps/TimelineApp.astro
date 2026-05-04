@@ -14,8 +14,8 @@ const initialEntry = timeline[0];
     </div>
   </div>
 
-  <div class="split-layout">
-    <div class="timeline-list" data-log-list>
+  <div class="master-detail timeline-workbench" data-log-layout data-layout="idle">
+    <section class="master-panel timeline-list" data-log-list aria-label="Timeline entries">
       {
         timeline.map((entry, index) => (
           <article
@@ -35,9 +35,13 @@ const initialEntry = timeline[0];
           </article>
         ))
       }
-    </div>
+    </section>
 
-    <aside class="detail-panel" data-log-detail aria-live="polite">
+    <aside class="detail-panel timeline-detail-panel" data-log-detail aria-live="polite">
+      <div class="detail-actions">
+        <button type="button" class="button button-secondary" data-log-close>Close detail</button>
+        <button type="button" class="button button-secondary" data-log-expand>Expand list</button>
+      </div>
       <p class="eyebrow" data-log-detail-type>{initialEntry.type}</p>
       <h3 data-log-detail-title>{initialEntry.title}</h3>
       <p data-log-detail-description>{initialEntry.description}</p>
@@ -72,6 +76,7 @@ const initialEntry = timeline[0];
   const filterButtons = Array.from(document.querySelectorAll("[data-log-filter]"));
   const cards = Array.from(document.querySelectorAll("[data-log-card]"));
   const detail = document.querySelector("[data-log-detail]");
+  const layout = document.querySelector("[data-log-layout]");
   let activeFilter = "all";
   let activeId = new URLSearchParams(window.location.search).get("entry") || logData[0]?.id || "";
 
@@ -80,7 +85,16 @@ const initialEntry = timeline[0];
     if (node) node.textContent = value;
   };
 
-  const selectLog = (id: string) => {
+  const setLayout = (value: "idle" | "focused" | "expanded") => {
+    if (layout instanceof HTMLElement) layout.dataset.layout = value;
+    document.querySelectorAll("[data-log-expand]").forEach((node) => {
+      if (node instanceof HTMLButtonElement) {
+        node.textContent = value === "expanded" ? "Focus detail" : "Expand list";
+      }
+    });
+  };
+
+  const selectLog = (id: string, shouldFocus = true) => {
     const entry = logData.find((item) => item.id === id) || logData[0];
     if (!entry) return;
     activeId = entry.id;
@@ -90,6 +104,7 @@ const initialEntry = timeline[0];
     setText("[data-log-detail-description]", entry.description);
     setText("[data-log-detail-date]", entry.date);
     setText("[data-log-detail-project]", entry.relatedProject);
+    if (shouldFocus) setLayout("focused");
   };
 
   const applyLogFilters = () => {
@@ -101,7 +116,7 @@ const initialEntry = timeline[0];
     });
     const selectedCard = cards.find((card) => card.getAttribute("data-log-id") === activeId);
     if (!selectedCard || (selectedCard as HTMLElement).hidden) {
-      selectLog(firstVisible);
+      selectLog(firstVisible, layout instanceof HTMLElement && layout.dataset.layout !== "idle");
     }
   };
 
@@ -123,6 +138,19 @@ const initialEntry = timeline[0];
     });
   });
 
-  selectLog(activeId);
+  const closeButton = document.querySelector("[data-log-close]");
+  if (closeButton instanceof HTMLButtonElement) {
+    closeButton.addEventListener("click", () => setLayout("idle"));
+  }
+
+  const expandButton = document.querySelector("[data-log-expand]");
+  if (expandButton instanceof HTMLButtonElement) {
+    expandButton.addEventListener("click", () => {
+      const current = layout instanceof HTMLElement ? layout.dataset.layout : "idle";
+      setLayout(current === "expanded" ? "focused" : "expanded");
+    });
+  }
+
+  selectLog(activeId, new URLSearchParams(window.location.search).has("entry"));
   applyLogFilters();
 </script>

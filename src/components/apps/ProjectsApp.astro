@@ -47,8 +47,8 @@ const serializedPosts = posts.map((post) => ({
     </div>
   </div>
 
-  <div class="split-layout project-matrix-layout">
-    <section class="project-list-panel" aria-label="Project matrix">
+  <div class="master-detail project-matrix-layout" data-project-layout data-layout="idle">
+    <section class="master-panel project-list-panel" aria-label="Project matrix">
       <div class="project-grid" data-project-grid>
         {projects.map((project, index) => <ProjectCard project={project} selected={index === 0} />)}
       </div>
@@ -56,6 +56,10 @@ const serializedPosts = posts.map((post) => ({
     </section>
 
     <aside class="detail-panel project-detail-panel" data-project-detail aria-live="polite">
+      <div class="detail-actions">
+        <button type="button" class="button button-secondary" data-project-close>Close detail</button>
+        <button type="button" class="button button-secondary" data-project-expand>Expand list</button>
+      </div>
       <p class="eyebrow" data-project-detail-type>{initialProject.type}</p>
       <h3 data-project-detail-name>{initialProject.name}</h3>
       <p data-project-detail-summary>{initialProject.summary}</p>
@@ -163,6 +167,7 @@ const serializedPosts = posts.map((post) => ({
   const statusButtons = Array.from(document.querySelectorAll("[data-project-status-filter]"));
   const cards = Array.from(document.querySelectorAll("[data-project-card]"));
   const detail = document.querySelector("[data-project-detail]");
+  const layout = document.querySelector("[data-project-layout]");
   const emptyState = document.querySelector("[data-project-empty]");
   let activeCategory = "all";
   let activeStatus = "all";
@@ -216,7 +221,16 @@ const serializedPosts = posts.map((post) => ({
       });
   };
 
-  const selectProject = (slug: string) => {
+  const setLayout = (value: "idle" | "focused" | "expanded") => {
+    if (layout instanceof HTMLElement) layout.dataset.layout = value;
+    document.querySelectorAll("[data-project-expand]").forEach((node) => {
+      if (node instanceof HTMLButtonElement) {
+        node.textContent = value === "expanded" ? "Focus detail" : "Expand list";
+      }
+    });
+  };
+
+  const selectProject = (slug: string, shouldFocus = true) => {
     const project = projectData.find((item) => item.slug === slug) || projectData[0];
     if (!project) return;
     activeSlug = project.slug;
@@ -243,6 +257,7 @@ const serializedPosts = posts.map((post) => ({
       tagWrap.textContent = "";
       project.tags.forEach((tag) => tagWrap.append(createBadge(tag)));
     }
+    if (shouldFocus) setLayout("focused");
   };
 
   const applyProjectFilters = () => {
@@ -266,7 +281,7 @@ const serializedPosts = posts.map((post) => ({
 
     const selectedCard = cards.find((card) => card.getAttribute("data-project-slug") === activeSlug);
     if ((!selectedCard || (selectedCard as HTMLElement).hidden) && firstVisible) {
-      selectProject(firstVisible);
+      selectProject(firstVisible, layout instanceof HTMLElement && layout.dataset.layout !== "idle");
     }
   };
 
@@ -303,6 +318,19 @@ const serializedPosts = posts.map((post) => ({
     });
   });
 
-  selectProject(activeSlug);
+  const closeButton = document.querySelector("[data-project-close]");
+  if (closeButton instanceof HTMLButtonElement) {
+    closeButton.addEventListener("click", () => setLayout("idle"));
+  }
+
+  const expandButton = document.querySelector("[data-project-expand]");
+  if (expandButton instanceof HTMLButtonElement) {
+    expandButton.addEventListener("click", () => {
+      const current = layout instanceof HTMLElement ? layout.dataset.layout : "idle";
+      setLayout(current === "expanded" ? "focused" : "expanded");
+    });
+  }
+
+  selectProject(activeSlug, new URLSearchParams(window.location.search).has("project"));
   applyProjectFilters();
 </script>

@@ -11,6 +11,15 @@ export type TimelineEntry = {
 
 export const timeline: TimelineEntry[] = [
   {
+    id: "lab-os-visible-interaction-release",
+    date: "2026-05-04",
+    type: "Release",
+    title: "w0nderful-lab-os v0.3.0 visible interaction release",
+    description:
+      "The Lab OS interaction layer now has Master-Detail states, Motion Speed control, stronger app transitions, and clearer Dock/System Bar feedback.",
+    relatedProject: "w0nderful-lab-os"
+  },
+  {
     id: "lab-os-initialized",
     date: "2026-05-04",
     type: "Release",

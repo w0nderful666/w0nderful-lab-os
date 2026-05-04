@@ -17,13 +17,15 @@ const requiredFiles = [
 
 const requiredPageStrings = [
   "w0nderful Lab OS",
-  "v0.2.0",
+  "v0.3.0",
   "Local First",
   "No Backend",
   "GitHub Pages Ready",
   "Performance",
   "Balanced",
   "Quality",
+  "Motion",
+  "Normal",
   "Projects",
   "Blog",
   "Timeline",

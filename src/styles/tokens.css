@@ -22,11 +22,18 @@
   --glass-blur: 8px;
   --radius: 8px;
   --radius-sm: 6px;
-  --motion-duration: 180ms;
+  --motion-fast: 120ms;
+  --motion-normal: 190ms;
+  --motion-slow: 420ms;
+  --app-duration: var(--motion-normal);
+  --panel-duration: var(--motion-normal);
+  --motion-duration: var(--panel-duration);
   --motion-distance: 8px;
   --card-lift: -2px;
   --dock-lift: -2px;
   --dock-scale: 1.04;
+  --app-enter-scale: 1;
+  --app-exit-scale: 0.985;
 }
 
 html[data-theme="light"] {
@@ -50,17 +57,36 @@ html[data-theme="light"] {
   --shadow-soft: 0 10px 28px rgba(26, 43, 38, 0.1);
 }
 
+html[data-motion-speed="slow"] {
+  --app-duration: var(--motion-slow);
+  --panel-duration: var(--motion-slow);
+}
+
+html[data-motion-speed="normal"] {
+  --app-duration: var(--motion-normal);
+  --panel-duration: var(--motion-normal);
+}
+
+html[data-motion-speed="fast"] {
+  --app-duration: var(--motion-fast);
+  --panel-duration: var(--motion-fast);
+}
+
 html[data-experience="performance"] {
   --bg-elevated: rgba(25, 31, 31, 0.96);
   --bg-panel: rgba(28, 36, 35, 0.94);
   --glass-blur: 0px;
   --shadow: 0 1px 0 rgba(255, 255, 255, 0.04);
   --shadow-soft: 0 1px 0 rgba(255, 255, 255, 0.04);
+  --app-duration: 1ms;
+  --panel-duration: 1ms;
   --motion-duration: 1ms;
   --motion-distance: 0px;
   --card-lift: 0px;
   --dock-lift: 0px;
   --dock-scale: 1;
+  --app-enter-scale: 1;
+  --app-exit-scale: 1;
 }
 
 html[data-theme="light"][data-experience="performance"] {
@@ -76,11 +102,12 @@ html[data-experience="quality"] {
   --glass-blur: 14px;
   --shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
   --shadow-soft: 0 14px 34px rgba(0, 0, 0, 0.24);
-  --motion-duration: 240ms;
-  --motion-distance: 12px;
+  --motion-distance: 20px;
   --card-lift: -4px;
   --dock-lift: -4px;
   --dock-scale: 1.09;
+  --app-enter-scale: 0.985;
+  --app-exit-scale: 0.98;
 }
 
 html[data-theme="light"][data-experience="quality"] {

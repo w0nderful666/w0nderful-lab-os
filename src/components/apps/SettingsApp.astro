@@ -33,6 +33,30 @@ import ExperienceModeControl from "../os/ExperienceModeControl.astro";
 
     <section class="setting-panel">
       <div>
+        <p class="eyebrow" data-i18n="settings.motionSpeed">Motion Speed</p>
+        <h3>
+          Current:
+          <span data-current-motion-speed>Normal</span>
+        </h3>
+      </div>
+      <label class="select-field">
+        <span data-i18n="settings.motionSpeed">Motion Speed</span>
+        <select data-setting-motion-speed>
+          <option value="slow" data-i18n="settings.slow">Slow</option>
+          <option value="normal" data-i18n="settings.normal">Normal</option>
+          <option value="fast" data-i18n="settings.fast">Fast</option>
+        </select>
+      </label>
+      <div class="mode-notes">
+        <p>
+          <strong>Speed Profile</strong>
+          <span>Performance mode automatically keeps motion minimal even when a slower display speed is selected.</span>
+        </p>
+      </div>
+    </section>
+
+    <section class="setting-panel">
+      <div>
         <p class="eyebrow" data-i18n="settings.language">Language</p>
         <h3>Interface Copy</h3>
       </div>

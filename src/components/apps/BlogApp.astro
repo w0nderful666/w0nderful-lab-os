@@ -8,7 +8,7 @@ const initialPost = posts[0];
 ---
 
 <AppWindow title="Blog.app" subtitle="Reader workspace" wide>
-  <div class="blog-workbench" data-blog-workbench data-reading="false">
+  <div class="blog-workbench" data-blog-workbench data-master-detail data-layout="idle">
     <div class="toolbar toolbar-stacked">
       <label class="search-field">
         <span>Search</span>
@@ -32,8 +32,8 @@ const initialPost = posts[0];
       </div>
     </div>
 
-    <div class="blog-reader-layout">
-      <section class="blog-list-panel" data-blog-list-panel aria-label="Article list">
+    <div class="master-detail blog-reader-layout" data-blog-layout data-layout="idle">
+      <section class="master-panel blog-list-panel" data-blog-list-panel aria-label="Article list">
         <div class="post-list" data-post-list>
           {posts.map((post, index) => <PostCard post={post} selected={index === 0} />)}
         </div>
@@ -41,8 +41,9 @@ const initialPost = posts[0];
       </section>
 
       <article class="detail-panel reader-panel" data-post-reader aria-live="polite">
-        <div class="reader-topline">
-          <button type="button" class="button button-secondary reader-back" data-reader-back>Back to list</button>
+        <div class="detail-actions reader-topline">
+          <button type="button" class="button button-secondary reader-back" data-reader-back data-md-close>Back to list</button>
+          <button type="button" class="button button-secondary" data-md-expand>Expand list</button>
           <span class="meta-pill" data-post-detail-reading>{initialPost.readingTime}</span>
         </div>
 
@@ -129,6 +130,7 @@ const initialPost = posts[0];
   const dataNode = document.getElementById("posts-data");
   const postData: PostRecord[] = dataNode?.textContent ? JSON.parse(dataNode.textContent) : [];
   const workbench = document.querySelector("[data-blog-workbench]");
+  const layout = document.querySelector("[data-blog-layout]");
   const searchInput = document.querySelector("[data-post-search-input]");
   const categoryButtons = Array.from(document.querySelectorAll("[data-post-category-filter]"));
   const tagButtons = Array.from(document.querySelectorAll("[data-post-tag-filter]"));
@@ -156,8 +158,9 @@ const initialPost = posts[0];
   const renderBody = (post: PostRecord) => {
     if (!readerBody) return;
     readerBody.textContent = "";
-    post.body.forEach((block) => {
+    post.body.forEach((block, index) => {
       const section = document.createElement("section");
+      section.style.setProperty("--stagger-index", String(index));
       const heading = document.createElement("h4");
       heading.textContent = block.heading;
       section.append(heading);
@@ -218,8 +221,26 @@ const initialPost = posts[0];
   };
 
   const openReader = () => {
-    if (workbench instanceof HTMLElement) workbench.dataset.reading = "true";
+    if (workbench instanceof HTMLElement) workbench.dataset.layout = "focused";
+    if (layout instanceof HTMLElement) layout.dataset.layout = "focused";
     requestAnimationFrame(updateProgress);
+  };
+
+  const closeReader = () => {
+    if (workbench instanceof HTMLElement) workbench.dataset.layout = "idle";
+    if (layout instanceof HTMLElement) layout.dataset.layout = "idle";
+  };
+
+  const toggleExpanded = () => {
+    if (!(layout instanceof HTMLElement) || !(workbench instanceof HTMLElement)) return;
+    const next = layout.dataset.layout === "expanded" ? "focused" : "expanded";
+    layout.dataset.layout = next;
+    workbench.dataset.layout = next;
+    document.querySelectorAll("[data-md-expand]").forEach((node) => {
+      if (node instanceof HTMLButtonElement) {
+        node.textContent = next === "expanded" ? "Focus detail" : "Expand list";
+      }
+    });
   };
 
   const selectPost = (slug: string, shouldOpen = true) => {
@@ -317,9 +338,12 @@ const initialPost = posts[0];
 
   const backButton = document.querySelector("[data-reader-back]");
   if (backButton instanceof HTMLButtonElement) {
-    backButton.addEventListener("click", () => {
-      if (workbench instanceof HTMLElement) workbench.dataset.reading = "false";
-    });
+    backButton.addEventListener("click", closeReader);
+  }
+
+  const expandButton = document.querySelector("[data-md-expand]");
+  if (expandButton instanceof HTMLButtonElement) {
+    expandButton.addEventListener("click", toggleExpanded);
   }
 
   if (readerBody instanceof HTMLElement) {

@@ -2,7 +2,7 @@
 
 OS-themed personal blog, open-source lab, and project showcase hub for w0nderful666.
 
-Current version: `v0.2.0`
+Current version: `v0.3.0`
 
 Live demo: https://w0nderful666.github.io/w0nderful-lab-os/
 
@@ -24,11 +24,11 @@ This project is designed as a long-term personal brand hub, not a disposable dem
 ## Features
 
 - Desktop Workspace home page with System Bar, Dock, terminal widget, featured projects, latest posts, system log, quick actions, and Experience Mode controls.
-- Projects.app matrix with search, category filtering, status filtering, selectable project cards, details, core features, versions, Live Demo links, GitHub links, related articles, and roadmap slots.
-- Blog.app reader with category filtering, tag filtering, simple search, in-app article view, back-to-list flow, reading progress, full body blocks, related articles, and article roadmap.
-- Timeline.app with System Log entries and type filtering.
+- Projects.app matrix with search, category filtering, status filtering, selectable project cards, Master-Detail layout states, details, core features, versions, Live Demo links, GitHub links, related articles, and roadmap slots.
+- Blog.app reader with category filtering, tag filtering, simple search, Master-Detail layout states, in-app article view, back-to-list flow, reading progress, paragraph reveal, related articles, and article roadmap.
+- Timeline.app with System Log entries, type filtering, and Master-Detail detail inspection.
 - About.app with version, author, positioning, project count, post count, and tech stack.
-- Settings.app with Theme, Experience Mode, Language, and Reset local settings.
+- Settings.app with Theme, Experience Mode, Motion Speed, Language, and Reset local settings.
 - Local First, No Backend, Privacy Friendly, GitHub Pages Ready.
 
 ## OS Style
@@ -36,6 +36,16 @@ This project is designed as a long-term personal brand hub, not a disposable dem
 The interface uses a fixed System Bar, Dock navigation, framed app windows, compact widgets, terminal-style code blocks, restrained glass panels, and responsive mobile behavior. The site does not pretend to be a real operating system; the OS layer is a navigation and storytelling system for the blog and project hub.
 
 Animations are intentionally small and use `transform` and `opacity`. App windows fade in with a slight upward motion, Dock items scale on hover, active Dock items are highlighted, and cards lift on hover. `prefers-reduced-motion` is respected.
+
+## Master-Detail
+
+Projects.app, Blog.app, and Timeline.app use an OS-style Master-Detail layout with explicit state on the container:
+
+- `data-layout="idle"` keeps the list at full width and hides the detail panel.
+- `data-layout="focused"` shrinks the list to roughly one third and slides the detail panel into the main view.
+- `data-layout="expanded"` gives list and detail equal space for side-by-side scanning.
+
+On mobile, the same states become list or full-screen detail so the interface stays readable without horizontal scrolling.
 
 ## Experience Mode
 
@@ -46,6 +56,16 @@ Experience Mode is stored in `localStorage` under `w0nderful-lab-os.settings` an
 - `data-experience="quality"` increases visual depth, card lift, and Dock feedback.
 
 Theme and language settings are also persisted in the same local settings object.
+
+## Motion Speed
+
+Motion Speed is stored in the same `localStorage` settings object and applied as `html[data-motion-speed]`:
+
+- `slow` makes transitions more visible for demos and inspection.
+- `normal` is the default.
+- `fast` keeps the OS feedback crisp.
+
+The CSS defines `--motion-fast`, `--motion-normal`, `--motion-slow`, `--app-duration`, and `--panel-duration`. Performance mode automatically reduces animation even if a slower speed is selected.
 
 ## Tech Stack
 
@@ -129,7 +149,7 @@ npm run preflight
 ## Roadmap
 
 - Move Blog.app body blocks into Astro content collections.
-- Add screenshots after the v0.2.0 GitHub Pages deployment.
+- Add screenshots after the v0.3.0 GitHub Pages deployment.
 - Add project detail pages when individual projects need deeper case studies.
 - Mirror deployment to Cloudflare Pages after the GitHub Pages release is stable.
 
