@@ -2,7 +2,7 @@
 
 OS-themed personal blog, open-source lab, and project showcase hub for w0nderful666.
 
-Current version: `v0.5.0`
+Current version: `v0.5.1`
 
 Live demo: https://w0nderful666.github.io/w0nderful-lab-os/
 
@@ -112,6 +112,14 @@ Projects.app, Blog.app, and Timeline.app use an OS-style Master-Detail layout wi
 - `data-layout="idle"` keeps the list at full width and hides the detail panel.
 - `data-layout="focused"` shrinks the list to roughly 27% and gives the detail panel roughly 73% so the selected item becomes the visual subject.
 - `data-layout="expanded"` gives list and detail equal space for side-by-side scanning.
+
+### Detail Focus Mode
+
+A Focus/Restore toggle button in the detail panel header allows users to widen the detail panel to 85% for a clearer reading surface. The focus mode state persists in localStorage and is restored across page loads. On mobile, the toggle is hidden and detail panels use full-width single-column layout.
+
+### Scroll Alignment
+
+When a list item is clicked, the detail panel automatically scrolls into the current viewport using smooth scroll (or instant for reduced-motion / performance mode), keeping the selected item and its detail in the same visual context.
 
 On mobile, the same states become list or full-screen detail so the interface stays readable without horizontal scrolling.
 

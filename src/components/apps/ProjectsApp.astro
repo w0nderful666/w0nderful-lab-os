@@ -66,6 +66,7 @@ const serializedPosts = posts.map((post) => ({
       <div class="detail-actions">
         <button type="button" class="button button-secondary" data-project-close>Close detail</button>
         <button type="button" class="button button-secondary" data-project-expand>Expand list</button>
+        <button type="button" class="detail-focus-toggle" data-detail-focus-toggle aria-label="Focus detail panel" aria-pressed="false">Focus</button>
       </div>
       <p class="eyebrow" data-project-detail-type>{initialProject.type}</p>
       <h3 data-project-detail-name>{initialProject.name}</h3>
@@ -269,7 +270,17 @@ const serializedPosts = posts.map((post) => ({
       tagWrap.textContent = "";
       project.tags.forEach((tag) => tagWrap.append(createBadge(tag)));
     }
-    if (shouldFocus) setLayout("focused");
+    if (shouldFocus) {
+      setLayout("focused");
+      requestAnimationFrame(() => {
+        if (detail instanceof HTMLElement) {
+          const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          const experience = document.documentElement.dataset.experience;
+          const behavior = prefersReduced || experience === "performance" ? "instant" : "smooth";
+          detail.scrollIntoView({ behavior, block: "nearest" });
+        }
+      });
+    }
   };
 
   const applyProjectFilters = () => {
