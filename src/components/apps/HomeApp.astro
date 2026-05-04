@@ -3,18 +3,21 @@ import AppWindow from "../os/AppWindow.astro";
 import DesktopWidget from "../os/DesktopWidget.astro";
 import ExperienceModeControl from "../os/ExperienceModeControl.astro";
 import Badge from "../common/Badge.astro";
-import { posts } from "../../data/posts";
+import { getCollection } from "astro:content";
 import { projects } from "../../data/projects";
 import { site, withBase } from "../../data/site";
 import { timeline } from "../../data/timeline";
 
+const allPosts = await getCollection("blog", ({ data }) => data.status === "published");
+const sortedPosts = allPosts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+const latestPosts = sortedPosts.slice(0, 5);
+
 const featuredProjects = projects.filter((project) => project.featured).slice(0, 4);
-const latestPosts = posts.slice(0, 3);
 const latestLogs = timeline.slice(0, 3);
 
 const desktopShortcuts = [
   { id: "projects", label: "Projects.app", href: withBase("projects/"), icon: "P", status: `${projects.length} projects` },
-  { id: "blog", label: "Blog.app", href: withBase("blog/"), icon: "B", status: `${posts.length} posts` },
+  { id: "blog", label: "Blog.app", href: withBase("blog/"), icon: "B", status: `${sortedPosts.length} posts` },
   { id: "timeline", label: "Timeline.app", href: withBase("timeline/"), icon: "L", status: `${timeline.length} entries` },
   { id: "settings", label: "Settings.app", href: withBase("settings/"), icon: "S", status: "System prefs" },
   { id: "about", label: "About.app", href: withBase("about/"), icon: "A", status: "System info" }
@@ -66,7 +69,7 @@ Local First / No Backend / GitHub Pages Ready</code></pre>
             <span>Projects</span>
           </div>
           <div>
-            <strong>{posts.length}</strong>
+            <strong>{sortedPosts.length}</strong>
             <span>Posts</span>
           </div>
           <div>
@@ -95,15 +98,19 @@ Local First / No Backend / GitHub Pages Ready</code></pre>
       </div>
     </DesktopWidget>
 
-    <DesktopWidget title="Latest Posts" meta="Docs" stagger={3}>
+    <DesktopWidget title="Latest Posts" meta="Markdown" stagger={3}>
       <div class="compact-list">
         {
-          latestPosts.map((post) => (
-            <a class="compact-row" href={withBase(`blog/?post=${post.slug}`)} data-lab-open-post={post.slug}>
-              <span>{post.title}</span>
-              <small>{post.readingTime}</small>
-            </a>
-          ))
+          latestPosts.length > 0 ? (
+            latestPosts.map((post) => (
+              <a class="compact-row" href={withBase(`blog/?post=${post.id}`)} data-lab-open-post={post.id}>
+                <span>{post.data.title}</span>
+                <small>{post.data.articleStyle}</small>
+              </a>
+            ))
+          ) : (
+            <p class="empty-state">No published articles yet.</p>
+          )
         }
       </div>
     </DesktopWidget>

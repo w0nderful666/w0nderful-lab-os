@@ -2,7 +2,7 @@
 
 OS-themed personal blog, open-source lab, and project showcase hub for w0nderful666.
 
-Current version: `v0.5.1`
+Current version: `v0.6.0`
 
 Live demo: https://w0nderful666.github.io/w0nderful-lab-os/
 
@@ -23,12 +23,15 @@ This project is designed as a long-term personal brand hub, not a disposable dem
 
 ## Features
 
-- Desktop Workspace home page with System Bar, Dock, terminal widget, featured projects, latest posts, system log, quick actions, and Experience Mode controls.
+- Desktop Workspace home page with System Bar, Dock, terminal widget, featured projects, latest posts from Markdown, system log, quick actions, and Experience Mode controls.
 - Projects.app matrix with search, category filtering, status filtering, selectable project cards, Master-Detail layout states, details, core features, versions, Live Demo links, GitHub links, related articles, and roadmap slots.
-- Blog.app reader with category filtering, tag filtering, simple search, Master-Detail layout states, in-app article view, back-to-list flow, reading progress, paragraph reveal, related articles, and article roadmap.
+- Blog.app reader with Astro Content Collections, Markdown rendering, Article Style System (6 styles), Reader Style switcher, category filtering, tag filtering, search, Master-Detail layout, Copy Link, Table of Contents, and deep linking.
 - Timeline.app with System Log entries, type filtering, and Master-Detail detail inspection.
-- About.app with version, author, positioning, project count, post count, and tech stack.
-- Settings.app with Theme, Experience Mode, Motion Speed, Language, Recent Items management, Reset local settings, and Keyboard Shortcuts.
+- About.app with version, author, positioning, project count, post count, tech stack, and real-time System Health checks.
+- Settings.app with Theme, Experience Mode, Motion Speed, Language, Reader Style, Recent Items management, Reset local settings, and Keyboard Shortcuts.
+- Article Style System with 6 distinct styles: system (OS documentation), paper (long-form reading), terminal (deployment logs), magazine (showcase articles), notebook (learning notes), minimal (clean tech blog).
+- Reader Style override allowing users to choose a global article display style or follow each article's author-chosen default.
+- Markdown blog publishing with frontmatter support for title, slug, date, summary, tags, category, status, articleStyle, readerDensity, toc, and relatedProject.
 - Settings Preview Card for live theme, palette, background, motion, button, and window depth feedback.
 - Command Palette opened with Ctrl/Cmd + K for grouped Pages, Actions, Settings, Recent Items, projects, posts, timeline entries, utility actions, and Global Search with Chinese Aliases and quick actions.
 - Terminal.app with real local commands for navigation, project opening, settings changes, search, status, version, and GitHub profile launch.
@@ -184,6 +187,67 @@ Projects.app, Blog.app, and Timeline.app use OS-style toolbars for search and fi
 - GitHub Pages
 
 No backend, database, login system, or heavy client framework is required.
+
+## Blog Publishing
+
+### Adding a New Article
+
+Create a new Markdown file in `src/content/blog/`:
+
+```markdown
+---
+title: "Your Article Title"
+slug: "your-article-slug"
+date: "2026-05-05"
+summary: "A brief summary of your article."
+tags: ["Tag1", "Tag2"]
+category: "Category Name"
+status: "published"
+articleStyle: "system"
+readerDensity: "comfortable"
+toc: true
+---
+
+## Section Heading
+
+Your content here...
+```
+
+### Frontmatter Fields
+
+| Field | Required | Default | Description |
+|-------|----------|---------|-------------|
+| title | Yes | - | Article title |
+| slug | No | filename | URL slug |
+| date | Yes | - | Publication date |
+| updated | No | - | Last update date |
+| summary | Yes | - | Brief description |
+| tags | No | [] | Array of tags |
+| category | No | "General" | Article category |
+| status | No | "published" | "published" or "draft" |
+| articleStyle | No | "system" | Display style |
+| readerDensity | No | "comfortable" | Reading density |
+| toc | No | false | Show table of contents |
+| cover | No | - | Cover image path |
+| relatedProject | No | - | Related project slug |
+
+### Article Styles
+
+- **system**: OS documentation style, suitable for project reviews and technical notes
+- **paper**: Paper reading style with indented paragraphs, suitable for long-form essays
+- **terminal**: Terminal log style with highlighted code blocks, suitable for deployment records
+- **magazine**: Magazine style with impactful headings, suitable for showcase articles
+- **notebook**: Notebook style with dashed borders, suitable for learning notes
+- **minimal**: Clean tech blog style, focused on reading efficiency
+
+### Reader Style
+
+Users can override article styles globally via Settings.app or the style switcher in article detail. Options:
+
+- **Follow Article**: Use each article's author-chosen style
+- **System / Paper / Terminal / Magazine / Notebook / Minimal**: Override all articles with chosen style
+
+Preference persists in localStorage under `lab-reader-style`.
 
 ## System Health
 

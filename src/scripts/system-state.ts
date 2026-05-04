@@ -847,6 +847,13 @@ const registerSettingEvents = () => {
     if (target instanceof HTMLSelectElement && target.matches("[data-setting-background]") && isBackground(target.value)) {
       setBackground(target.value);
     }
+    if (target instanceof HTMLSelectElement && target.matches("[data-setting-reader-style]")) {
+      const value = target.value;
+      try {
+        localStorage.setItem("lab-reader-style", value);
+      } catch {}
+      document.dispatchEvent(new CustomEvent("labos:reader-style-change", { detail: { style: value } }));
+    }
   });
 
   document.addEventListener("click", (event) => {
