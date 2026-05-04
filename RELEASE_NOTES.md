@@ -1,5 +1,19 @@
 # Release Notes
 
+## v0.6.0
+
+- Added Astro Content Collections for blog posts with Markdown support, frontmatter schema validation, and static rendering.
+- Added Article Style System with 6 styles: system, paper, terminal, magazine, notebook, minimal. Each style applies distinct typography, spacing, and code block styling.
+- Added Reader Style switcher allowing users to override article styles globally. Options include Follow Article (author default) and all 6 styles. Preference persists in localStorage.
+- Added 4 example Markdown articles demonstrating different styles: system (project review), paper (local-first philosophy), terminal (deployment log), magazine (showcase).
+- Added Copy Link button in article detail for sharing deep links via clipboard.
+- Added Table of Contents (TOC) support for articles with toc: true frontmatter.
+- Added Latest Posts widget on home page reading from Content Collections.
+- Added Reader Style setting in Settings.app with Follow Article fallback.
+- Added article-styles.css with complete typography coverage for h1-h4, paragraphs, links, lists, blockquotes, code, tables, images, and horizontal rules across all 6 styles.
+- Improved Blog page to read from real Markdown content instead of hardcoded TypeScript data.
+- Improved Blog detail rendering with template-based article switching for better performance.
+
 ## v0.5.1
 
 - Added Detail Focus Mode for Projects.app, Blog.app, and Timeline.app with a Focus/Restore toggle button that widens the detail panel to 85% for a clearer reading surface.

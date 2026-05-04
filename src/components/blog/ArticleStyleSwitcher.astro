@@ -1,0 +1,43 @@
+---
+const styles = [
+  { value: "follow", label: "Follow Article" },
+  { value: "system", label: "System" },
+  { value: "paper", label: "Paper" },
+  { value: "terminal", label: "Terminal" },
+  { value: "magazine", label: "Magazine" },
+  { value: "notebook", label: "Notebook" },
+  { value: "minimal", label: "Minimal" }
+];
+---
+
+<div class="article-style-switcher" data-article-style-switcher>
+  <label class="select-field">
+    <span>Reader Style</span>
+    <select data-reader-style-select aria-label="Select reader style">
+      {styles.map((style) => (
+        <option value={style.value}>{style.label}</option>
+      ))}
+    </select>
+  </label>
+</div>
+
+<script>
+  const initStyleSwitcher = () => {
+    const select = document.querySelector("[data-reader-style-select]");
+    if (!(select instanceof HTMLSelectElement)) return;
+    if (select.dataset.switcherReady === "true") return;
+    select.dataset.switcherReady = "true";
+
+    const saved = localStorage.getItem("lab-reader-style") || "follow";
+    select.value = saved;
+
+    select.addEventListener("change", () => {
+      const value = select.value;
+      localStorage.setItem("lab-reader-style", value);
+      document.dispatchEvent(new CustomEvent("labos:reader-style-change", { detail: { style: value } }));
+    });
+  };
+
+  initStyleSwitcher();
+  document.addEventListener("astro:page-load", initStyleSwitcher);
+</script>

@@ -109,6 +109,31 @@ import ExperienceModeControl from "../os/ExperienceModeControl.astro";
       </label>
     </section>
 
+    <section class="setting-panel">
+      <div>
+        <p class="eyebrow">Article Display</p>
+        <h3>Reader Style</h3>
+      </div>
+      <label class="select-field">
+        <span>Reader Style</span>
+        <select data-setting-reader-style aria-label="Select reader style">
+          <option value="follow">Follow Article</option>
+          <option value="system">System</option>
+          <option value="paper">Paper</option>
+          <option value="terminal">Terminal</option>
+          <option value="magazine">Magazine</option>
+          <option value="notebook">Notebook</option>
+          <option value="minimal">Minimal</option>
+        </select>
+      </label>
+      <div class="mode-notes">
+        <p>
+          <strong>Follow Article</strong>
+          <span>Uses the article author's chosen style. Select a specific style to override all articles.</span>
+        </p>
+      </div>
+    </section>
+
     <section class="setting-panel settings-preview-panel" data-settings-preview>
       <div>
         <p class="eyebrow">Live Appearance</p>

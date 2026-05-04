@@ -1,0 +1,84 @@
+---
+type Props = {
+  title: string;
+  date: string;
+  summary: string;
+  tags: string[];
+  category: string;
+  articleStyle: string;
+  readerDensity: string;
+  toc: boolean;
+  headings: { depth: number; slug: string; text: string }[];
+  slug: string;
+};
+
+const { title, date, summary, tags, category, articleStyle, readerDensity, toc, headings, slug } = Astro.props;
+
+const tocItems = toc ? headings.filter((h) => h.depth >= 2 && h.depth <= 3) : [];
+const formattedDate = new Date(date).toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric" });
+---
+
+<article
+  class="article-shell"
+  data-article-style={articleStyle}
+  data-reader-density={readerDensity}
+  aria-label={title}
+>
+  <header class="article-header">
+    <div class="article-meta">
+      <span class="article-category">{category}</span>
+      <time datetime={date}>{formattedDate}</time>
+    </div>
+    <h1 class="article-title">{title}</h1>
+    <p class="article-summary">{summary}</p>
+    {tags.length > 0 && (
+      <div class="article-tags">
+        {tags.map((tag) => <span class="article-tag">{tag}</span>)}
+      </div>
+    )}
+    <div class="article-actions">
+      <button type="button" class="button button-secondary" data-copy-article-link data-article-slug={slug} aria-label="Copy article link">
+        Copy Link
+      </button>
+      <span class="article-style-badge" aria-label={`Article style: ${articleStyle}`}>{articleStyle}</span>
+    </div>
+  </header>
+
+  {tocItems.length > 0 && (
+    <nav class="article-toc" aria-label="Table of contents">
+      <details open>
+        <summary class="article-toc-toggle">Table of Contents</summary>
+        <ol class="article-toc-list">
+          {tocItems.map((heading) => (
+            <li class={`article-toc-item toc-depth-${heading.depth}`}>
+              <a href={`#${heading.slug}`}>{heading.text}</a>
+            </li>
+          ))}
+        </ol>
+      </details>
+    </nav>
+  )}
+
+  <div class="article-body">
+    <slot />
+  </div>
+</article>
+
+<script>
+  document.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const copyBtn = target.closest("[data-copy-article-link]");
+    if (!(copyBtn instanceof HTMLButtonElement)) return;
+    const slug = copyBtn.dataset.articleSlug;
+    if (!slug) return;
+    const base = import.meta.env.BASE_URL || "/";
+    const normalizedBase = base.endsWith("/") ? base : `${base}/`;
+    const url = `${window.location.origin}${normalizedBase}blog/?post=${slug}`;
+    navigator.clipboard.writeText(url).then(() => {
+      const original = copyBtn.textContent;
+      copyBtn.textContent = "Copied!";
+      setTimeout(() => { copyBtn.textContent = original; }, 2000);
+    });
+  });
+</script>

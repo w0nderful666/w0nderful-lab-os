@@ -76,10 +76,10 @@ async function readRootFile(filePath) {
 
 async function checkPackageVersion() {
   const packageJson = JSON.parse(await readRootFile("package.json"));
-  if (packageJson.version === "0.5.1") {
-    pass("package.json version is 0.5.1");
+  if (packageJson.version === "0.6.0") {
+    pass("package.json version is 0.6.0");
   } else {
-    fail(`package.json version is ${packageJson.version}, expected 0.5.1`);
+    fail(`package.json version is ${packageJson.version}, expected 0.6.0`);
   }
 }
 
@@ -375,6 +375,94 @@ async function checkInteractionPolish() {
   }
 }
 
+async function checkBlogContentSystem() {
+  const blogFiles = [
+    "src/content/blog/web-os-project-review.md",
+    "src/content/blog/local-first-no-backend.md",
+    "src/content/blog/github-pages-deployment-log.md",
+    "src/content/blog/lightweight-web-os.md"
+  ];
+
+  for (const file of blogFiles) {
+    if (await exists(file)) {
+      pass(`${file} exists`);
+    } else {
+      fail(`${file} exists`);
+    }
+  }
+
+  if (await exists("src/content.config.ts")) {
+    pass("content config exists");
+  } else {
+    fail("content config exists");
+  }
+
+  if (await exists("src/components/blog/ArticleShell.astro")) {
+    pass("ArticleShell component exists");
+  } else {
+    fail("ArticleShell component exists");
+  }
+
+  if (await exists("src/components/blog/ArticleStyleSwitcher.astro")) {
+    pass("ArticleStyleSwitcher component exists");
+  } else {
+    fail("ArticleStyleSwitcher component exists");
+  }
+
+  if (await exists("src/styles/article-styles.css")) {
+    pass("article-styles.css exists");
+  } else {
+    fail("article-styles.css exists");
+  }
+
+  const blogPage = await readRootFile("src/pages/blog/index.astro");
+  if (blogPage.includes("getCollection") && blogPage.includes("data-article-style")) {
+    pass("Blog page uses Content Collections with article styles");
+  } else {
+    fail("Blog page uses Content Collections with article styles");
+  }
+
+  if (blogPage.includes("data-copy-article-link")) {
+    pass("Blog page includes Copy Link button");
+  } else {
+    fail("Blog page includes Copy Link button");
+  }
+
+  if (blogPage.includes("article-toc")) {
+    pass("Blog page includes TOC support");
+  } else {
+    fail("Blog page includes TOC support");
+  }
+
+  const homePage = await readRootFile("src/components/apps/HomeApp.astro");
+  if (homePage.includes("getCollection") && homePage.includes("Latest Posts")) {
+    pass("HomeApp uses Content Collections for Latest Posts");
+  } else {
+    fail("HomeApp uses Content Collections for Latest Posts");
+  }
+
+  const settings = await readRootFile("src/components/apps/SettingsApp.astro");
+  if (settings.includes("data-setting-reader-style")) {
+    pass("Settings includes Reader Style setting");
+  } else {
+    fail("Settings includes Reader Style setting");
+  }
+
+  const systemState = await readRootFile("src/scripts/system-state.ts");
+  if (systemState.includes("lab-reader-style")) {
+    pass("system-state handles reader style persistence");
+  } else {
+    fail("system-state handles reader style persistence");
+  }
+
+  const readme = await readRootFile("README.md");
+  if (readme.includes("articleStyle") && readme.includes("Markdown")) {
+    pass("README documents article style system");
+  } else {
+    fail("README documents article style system");
+  }
+}
+
 async function checkAstroConfig() {
   const config = await readRootFile("astro.config.mjs");
   if (config.includes('site: "https://w0nderful666.github.io"')) {
@@ -483,6 +571,7 @@ await checkAstroConfig();
 await checkWorkflow();
 await checkControlLayer();
 await checkInteractionPolish();
+await checkBlogContentSystem();
 await checkForbiddenContent();
 await checkPrivacyBoundary();
 await checkDist();

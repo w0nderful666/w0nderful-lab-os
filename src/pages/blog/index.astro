@@ -1,8 +1,314 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import BlogApp from "../../components/apps/BlogApp.astro";
+import AppWindow from "../../components/os/AppWindow.astro";
+import EmptyState from "../../components/common/EmptyState.astro";
+import ArticleStyleSwitcher from "../../components/blog/ArticleStyleSwitcher.astro";
+import { getCollection, render } from "astro:content";
+import { projects } from "../../data/projects";
+
+const allPosts = await getCollection("blog", ({ data }) => data.status === "published");
+const sortedPosts = allPosts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+
+const postMeta = sortedPosts.map((post) => {
+  const wordCount = post.body.split(/\s+/).length;
+  return {
+    slug: post.id,
+    title: post.data.title,
+    summary: post.data.summary,
+    date: post.data.date,
+    category: post.data.category,
+    tags: post.data.tags,
+    articleStyle: post.data.articleStyle,
+    readerDensity: post.data.readerDensity,
+    toc: post.data.toc,
+    readingTime: `${Math.max(1, Math.ceil(wordCount / 200))} min read`,
+    relatedProject: post.data.relatedProject || ""
+  };
+});
+
+const postCategories = [...new Set(sortedPosts.map((p) => p.data.category))];
+const postTags = [...new Set(sortedPosts.flatMap((p) => p.data.tags))];
+const initialSlug = Astro.url.searchParams.get("post") || sortedPosts[0]?.id || "";
+const initialIndex = sortedPosts.findIndex((p) => p.id === initialSlug);
+const initialPost = sortedPosts[initialIndex >= 0 ? initialIndex : 0];
+
+let initialHeadings: { depth: number; slug: string; text: string }[] = [];
+let initialMeta: (typeof postMeta)[0] | undefined;
+let initialTocItems: { depth: number; slug: string; text: string }[] = [];
+if (initialPost) {
+  const rendered = await render(initialPost);
+  initialHeadings = rendered.headings;
+  initialMeta = postMeta.find((p) => p.slug === initialPost.id);
+  initialTocItems = initialHeadings.filter((h) => h.depth >= 2 && h.depth <= 3);
+}
+
+const formatDate = (d: string) => new Date(d).toLocaleDateString("zh-CN");
+const getSearchText = (p: (typeof postMeta)[0]) =>
+  `${p.title} ${p.summary} ${p.category} ${p.tags.join(" ")} ${p.relatedProject}`.toLowerCase();
+const getTagsStr = (t: string[]) => t.map((x) => x.toLowerCase()).join("|");
+
+const renderedArticles: Array<{ id: string; Content: any; headings: { depth: number; slug: string; text: string }[] }> = [];
+for (const post of sortedPosts) {
+  const rendered = await render(post);
+  renderedArticles.push({ id: post.id, Content: rendered.Content, headings: rendered.headings });
+}
 ---
 
-<BaseLayout active="blog" title="Blog">
-  <BlogApp />
+<BaseLayout active="blog" title="Blog.app" description="Blog reader with Markdown articles and article style system.">
+  <AppWindow title="Blog.app" subtitle="Reader workspace" wide detailControls>
+    <div class="blog-workbench" data-blog-workbench data-master-detail data-layout="idle">
+      <div class="toolbar toolbar-stacked">
+        <label class="search-field">
+          <span>Search</span>
+          <input type="search" data-post-search-input placeholder="Search title, tag, project, or body" autocomplete="off" />
+        </label>
+        <div class="filter-stack">
+          <div class="filter-group" aria-label="Post category filters">
+            <button type="button" class="filter-button is-active" data-post-category-filter="all">All</button>
+            {postCategories.map((c) => <button type="button" class="filter-button" data-post-category-filter={c}>{c}</button>)}
+          </div>
+          <div class="filter-group" aria-label="Post tag filters">
+            <button type="button" class="filter-button is-active" data-post-tag-filter="all">All tags</button>
+            {postTags.map((t) => <button type="button" class="filter-button" data-post-tag-filter={t}>{t}</button>)}
+          </div>
+        </div>
+        <button type="button" class="button button-secondary" data-post-clear-filters>Clear Filters</button>
+      </div>
+
+      <div class="master-detail blog-reader-layout" data-blog-layout data-layout="idle">
+        <section class="master-panel blog-list-panel" data-blog-list-panel aria-label="Article list">
+          <div class="post-list" data-post-list>
+            {postMeta.map((post, i) => (
+              <article
+                class="post-card interactive-card"
+                data-post-card
+                data-post-slug={post.slug}
+                data-post-category={post.category}
+                data-post-tags={getTagsStr(post.tags)}
+                data-post-search={getSearchText(post)}
+                data-post-style={post.articleStyle}
+                data-selected={i === (initialIndex >= 0 ? initialIndex : 0) ? "true" : "false"}
+                tabindex="0"
+              >
+                <div>
+                  <p class="eyebrow">{post.category}</p>
+                  <h3>{post.title}</h3>
+                  <p>{post.summary}</p>
+                </div>
+                <div class="card-meta">
+                  <span>{formatDate(post.date)}</span>
+                  <span class="meta-pill">{post.readingTime}</span>
+                  <span class="meta-pill">{post.articleStyle}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+          <EmptyState title="No matching files found" description="Try another title, tag, or clear filters." data-post-empty hidden />
+        </section>
+
+        <article class="detail-panel reader-panel" data-post-reader aria-live="polite">
+          <div class="detail-actions reader-topline">
+            <button type="button" class="button button-secondary reader-back" data-reader-back data-md-close>Back to list</button>
+            <button type="button" class="button button-secondary" data-md-expand>Expand list</button>
+            <button type="button" class="detail-focus-toggle" data-detail-focus-toggle aria-label="Focus detail panel" aria-pressed="false">Focus</button>
+            <ArticleStyleSwitcher />
+          </div>
+          <div class="reader-progress" aria-label="Reading progress"><span data-reader-progress></span></div>
+          <div data-article-rendered data-article-slug={initialPost?.id || ""}>
+            {initialMeta && (
+              <div class="article-shell" data-article-style={initialMeta.articleStyle} data-reader-density={initialMeta.readerDensity}>
+                <header class="article-header">
+                  <div class="article-meta">
+                    <span class="article-category">{initialMeta.category}</span>
+                    <time datetime={initialMeta.date}>{formatDate(initialMeta.date)}</time>
+                  </div>
+                  <h1 class="article-title">{initialMeta.title}</h1>
+                  <p class="article-summary">{initialMeta.summary}</p>
+                  {initialMeta.tags.length > 0 && (
+                    <div class="article-tags">{initialMeta.tags.map((tag) => <span class="article-tag">{tag}</span>)}</div>
+                  )}
+                  <div class="article-actions">
+                    <button type="button" class="button button-secondary" data-copy-article-link data-article-slug={initialPost!.id} aria-label="Copy article link">Copy Link</button>
+                    <span class="article-style-badge">{initialMeta.articleStyle}</span>
+                  </div>
+                </header>
+                {initialMeta.toc && initialTocItems.length > 0 && (
+                  <nav class="article-toc" aria-label="Table of contents">
+                    <details open>
+                      <summary class="article-toc-toggle">Table of Contents</summary>
+                      <ol class="article-toc-list">
+                        {initialTocItems.map((h) => <li class={`article-toc-item toc-depth-${h.depth}`}><a href={`#${h.slug}`}>{h.text}</a></li>)}
+                      </ol>
+                    </details>
+                  </nav>
+                )}
+              </div>
+            )}
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <script is:inline type="application/json" id="blog-posts-data" set:html={JSON.stringify(postMeta)} />
+    <script is:inline type="application/json" id="blog-projects-data" set:html={JSON.stringify(projects.map((p) => ({ slug: p.slug, name: p.name, type: p.type })))} />
+
+    {renderedArticles.map((article) => {
+      const meta = postMeta.find((p) => p.slug === article.id);
+      const ArticleContent = article.Content;
+      return (
+        <template data-article-template={article.id}>
+          <div class="article-shell" data-article-style={meta?.articleStyle || "system"} data-reader-density={meta?.readerDensity || "comfortable"}>
+            <header class="article-header">
+              <div class="article-meta">
+                <span class="article-category">{meta?.category}</span>
+                <time datetime={meta?.date}>{formatDate(meta?.date || "")}</time>
+              </div>
+              <h1 class="article-title">{meta?.title}</h1>
+              <p class="article-summary">{meta?.summary}</p>
+              {meta && meta.tags.length > 0 && (
+                <div class="article-tags">{meta.tags.map((tag) => <span class="article-tag">{tag}</span>)}</div>
+              )}
+              <div class="article-actions">
+                <button type="button" class="button button-secondary" data-copy-article-link data-article-slug={article.id} aria-label="Copy article link">Copy Link</button>
+                <span class="article-style-badge">{meta?.articleStyle}</span>
+              </div>
+            </header>
+            <div class="article-body"><ArticleContent /></div>
+          </div>
+        </template>
+      );
+    })}
+  </AppWindow>
 </BaseLayout>
+
+<script>
+  const initBlogApp = () => {
+  type PostRecord = {
+    slug: string; title: string; summary: string; date: string; category: string;
+    tags: string[]; articleStyle: string; readerDensity: string; readingTime: string;
+    relatedProject: string; toc: boolean;
+  };
+  type ProjectRecord = { slug: string; name: string; type: string };
+
+  const dataNode = document.getElementById("blog-posts-data");
+  const projectDataNode = document.getElementById("blog-projects-data");
+  const postData: PostRecord[] = dataNode?.textContent ? JSON.parse(dataNode.textContent) : [];
+  const projectData: ProjectRecord[] = projectDataNode?.textContent ? JSON.parse(projectDataNode.textContent) : [];
+  const workbench = document.querySelector("[data-blog-workbench]");
+  const layout = document.querySelector("[data-blog-layout]");
+  const searchInput = document.querySelector("[data-post-search-input]");
+  const categoryButtons = Array.from(document.querySelectorAll("[data-post-category-filter]"));
+  const tagButtons = Array.from(document.querySelectorAll("[data-post-tag-filter]"));
+  const cards = Array.from(document.querySelectorAll("[data-post-card]"));
+  const reader = document.querySelector("[data-post-reader]");
+  const emptyState = document.querySelector("[data-post-empty]");
+  if (!(workbench instanceof HTMLElement) || workbench.dataset.controllerReady === "true") return;
+  workbench.dataset.controllerReady = "true";
+  let activeCategory = "all";
+  let activeTag = "all";
+  let activeSlug = new URLSearchParams(window.location.search).get("post") || postData[0]?.slug || "";
+
+  const applyReaderStyle = () => {
+    const savedStyle = localStorage.getItem("lab-reader-style") || "follow";
+    document.querySelectorAll("[data-article-rendered] .article-shell").forEach((el) => {
+      if (!(el instanceof HTMLElement)) return;
+      const slug = el.closest("[data-article-slug]")?.getAttribute("data-article-slug") || "";
+      const post = postData.find((p) => p.slug === slug);
+      el.dataset.articleStyle = savedStyle === "follow" ? (post?.articleStyle || "system") : savedStyle;
+    });
+  };
+
+  const openReader = () => {
+    if (workbench instanceof HTMLElement) workbench.dataset.layout = "focused";
+    if (layout instanceof HTMLElement) layout.dataset.layout = "focused";
+    window.labOS?.setState({ layoutState: "focused" });
+    requestAnimationFrame(() => {
+      if (reader instanceof HTMLElement) {
+        const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const behavior = prefersReduced || document.documentElement.dataset.experience === "performance" ? "instant" : "smooth";
+        reader.scrollIntoView({ behavior, block: "nearest" });
+      }
+    });
+  };
+
+  const closeReader = () => {
+    if (workbench instanceof HTMLElement) workbench.dataset.layout = "idle";
+    if (layout instanceof HTMLElement) layout.dataset.layout = "idle";
+    window.labOS?.setState({ layoutState: "idle" });
+  };
+
+  const selectPost = (slug: string, shouldOpen = true) => {
+    const post = postData.find((p) => p.slug === slug) || postData[0];
+    if (!post) return;
+    activeSlug = post.slug;
+    cards.forEach((c) => c.setAttribute("data-selected", c.getAttribute("data-post-slug") === activeSlug ? "true" : "false"));
+    const container = document.querySelector("[data-article-rendered]");
+    if (container) {
+      const tpl = document.querySelector(`[data-article-template="${slug}"]`);
+      if (tpl instanceof HTMLTemplateElement) {
+        container.innerHTML = "";
+        container.appendChild(tpl.content.cloneNode(true));
+        container.setAttribute("data-article-slug", slug);
+        applyReaderStyle();
+      }
+    }
+    if (shouldOpen) openReader();
+  };
+
+  const applyPostFilters = () => {
+    const query = searchInput instanceof HTMLInputElement ? searchInput.value.trim().toLowerCase() : "";
+    let visibleCount = 0;
+    cards.forEach((card) => {
+      const cat = card.getAttribute("data-post-category") || "";
+      const tags = card.getAttribute("data-post-tags") || "";
+      const matchCat = activeCategory === "all" || cat === activeCategory;
+      const matchTag = activeTag === "all" || tags.split("|").includes(activeTag.toLowerCase());
+      const matchSearch = (card.getAttribute("data-post-search") || "").includes(query);
+      const visible = matchCat && matchTag && matchSearch;
+      (card as HTMLElement).hidden = !visible;
+      if (visible) visibleCount++;
+    });
+    if (emptyState instanceof HTMLElement) emptyState.hidden = visibleCount > 0;
+  };
+
+  categoryButtons.forEach((btn) => btn.addEventListener("click", () => {
+    activeCategory = btn.getAttribute("data-post-category-filter") || "all";
+    categoryButtons.forEach((b) => b.classList.toggle("is-active", b === btn));
+    applyPostFilters();
+  }));
+  tagButtons.forEach((btn) => btn.addEventListener("click", () => {
+    activeTag = btn.getAttribute("data-post-tag-filter") || "all";
+    tagButtons.forEach((b) => b.classList.toggle("is-active", b === btn));
+    applyPostFilters();
+  }));
+  if (searchInput instanceof HTMLInputElement) searchInput.addEventListener("input", applyPostFilters);
+  cards.forEach((card) => {
+    card.addEventListener("click", () => { selectPost(card.getAttribute("data-post-slug") || ""); });
+    card.addEventListener("keydown", (e) => { if (e instanceof KeyboardEvent && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); selectPost(card.getAttribute("data-post-slug") || ""); } });
+  });
+  document.addEventListener("labos:post-open", (e) => { if (e instanceof CustomEvent && typeof e.detail?.postSlug === "string") selectPost(e.detail.postSlug, true); });
+  document.addEventListener("labos:reader-style-change", applyReaderStyle);
+  const backBtn = document.querySelector("[data-reader-back]");
+  if (backBtn instanceof HTMLButtonElement) backBtn.addEventListener("click", closeReader);
+  const expandBtn = document.querySelector("[data-md-expand]");
+  if (expandBtn instanceof HTMLButtonElement) expandBtn.addEventListener("click", () => {
+    const current = layout instanceof HTMLElement ? layout.dataset.layout : "idle";
+    const next = current === "expanded" ? "focused" : "expanded";
+    if (layout instanceof HTMLElement) layout.dataset.layout = next;
+    if (workbench instanceof HTMLElement) workbench.dataset.layout = next;
+    expandBtn.textContent = next === "expanded" ? "Focus detail" : "Expand list";
+  });
+  const clearBtn = document.querySelector("[data-post-clear-filters]");
+  if (clearBtn instanceof HTMLButtonElement) clearBtn.addEventListener("click", () => {
+    activeCategory = "all"; activeTag = "all";
+    if (searchInput instanceof HTMLInputElement) searchInput.value = "";
+    categoryButtons.forEach((b) => b.classList.toggle("is-active", b.getAttribute("data-post-category-filter") === "all"));
+    tagButtons.forEach((b) => b.classList.toggle("is-active", b.getAttribute("data-post-tag-filter") === "all"));
+    applyPostFilters();
+  });
+  selectPost(activeSlug, new URLSearchParams(window.location.search).has("post"));
+  applyPostFilters();
+  };
+  initBlogApp();
+  document.addEventListener("astro:page-load", initBlogApp);
+</script>
