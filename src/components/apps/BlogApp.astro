@@ -53,6 +53,7 @@ const initialProject = projects.find((project) => project.slug === initialPost.r
         <div class="detail-actions reader-topline">
           <button type="button" class="button button-secondary reader-back" data-reader-back data-md-close>Back to list</button>
           <button type="button" class="button button-secondary" data-md-expand>Expand list</button>
+          <button type="button" class="detail-focus-toggle" data-detail-focus-toggle aria-label="Focus detail panel" aria-pressed="false">Focus</button>
           <span class="meta-pill" data-post-detail-reading>{initialPost.readingTime}</span>
         </div>
 
@@ -288,7 +289,15 @@ const initialProject = projects.find((project) => project.slug === initialPost.r
     if (workbench instanceof HTMLElement) workbench.dataset.layout = "focused";
     if (layout instanceof HTMLElement) layout.dataset.layout = "focused";
     window.labOS?.setState({ layoutState: "focused" });
-    requestAnimationFrame(updateProgress);
+    requestAnimationFrame(() => {
+      updateProgress();
+      if (reader instanceof HTMLElement) {
+        const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const experience = document.documentElement.dataset.experience;
+        const behavior = prefersReduced || experience === "performance" ? "instant" : "smooth";
+        reader.scrollIntoView({ behavior, block: "nearest" });
+      }
+    });
   };
 
   const closeReader = () => {

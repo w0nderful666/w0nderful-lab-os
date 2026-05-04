@@ -754,6 +754,66 @@ html[data-experience="performance"] .setting-panel {
   transform: translateX(0);
 }
 
+.master-detail[data-detail-mode="focus"] > .master-panel {
+  flex-basis: 15%;
+}
+
+.master-detail[data-detail-mode="focus"] > .detail-panel {
+  flex-basis: 85%;
+}
+
+.master-detail[data-detail-mode="focus"][data-layout="focused"] > .master-panel {
+  flex-basis: 15%;
+}
+
+.master-detail[data-detail-mode="focus"][data-layout="focused"] > .detail-panel {
+  flex-basis: 85%;
+}
+
+.detail-focus-toggle {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  background: var(--bg-soft);
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transition:
+    border-color var(--motion-duration) ease,
+    background var(--motion-duration) ease,
+    color var(--motion-duration) ease;
+}
+
+.detail-focus-toggle:hover {
+  border-color: var(--accent);
+  color: var(--text);
+  background: var(--accent-soft);
+}
+
+.detail-focus-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.detail-focus-toggle[aria-pressed="true"] {
+  border-color: var(--accent);
+  color: #07120f;
+  background: var(--accent);
+}
+
+.master-detail[data-layout="focused"] .master-panel .project-grid {
+  grid-template-columns: 1fr;
+}
+
+.master-detail[data-detail-mode="focus"][data-layout="focused"] .master-panel .project-grid {
+  grid-template-columns: 1fr;
+}
+
 .project-detail-panel .button-primary {
   box-shadow: 0 0 0 1px rgba(114, 215, 183, 0.32), var(--shadow-soft);
 }
@@ -1963,14 +2023,24 @@ kbd {
     display: none;
   }
 
+  .master-detail[data-detail-mode="focus"] > .master-panel,
+  .master-detail[data-detail-mode="focus"][data-layout="focused"] > .master-panel {
+    display: none;
+  }
+
   .master-detail[data-layout="focused"] > .detail-panel,
-  .master-detail[data-layout="expanded"] > .detail-panel {
+  .master-detail[data-layout="expanded"] > .detail-panel,
+  .master-detail[data-detail-mode="focus"][data-layout="focused"] > .detail-panel {
     display: grid;
     max-height: none;
     overflow: visible;
     opacity: 1;
     pointer-events: auto;
     transform: translateX(0);
+  }
+
+  .detail-focus-toggle {
+    display: none;
   }
 
   .reader-topline,

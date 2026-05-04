@@ -76,10 +76,10 @@ async function readRootFile(filePath) {
 
 async function checkPackageVersion() {
   const packageJson = JSON.parse(await readRootFile("package.json"));
-  if (packageJson.version === "0.5.0") {
-    pass("package.json version is 0.5.0");
+  if (packageJson.version === "0.5.1") {
+    pass("package.json version is 0.5.1");
   } else {
-    fail(`package.json version is ${packageJson.version}, expected 0.5.0`);
+    fail(`package.json version is ${packageJson.version}, expected 0.5.1`);
   }
 }
 
@@ -300,6 +300,12 @@ async function checkInteractionPolish() {
     fail("System health CSS exists");
   }
 
+  if (osTheme.includes("detail-focus-toggle") && osTheme.includes("data-detail-mode")) {
+    pass("Detail focus mode CSS exists");
+  } else {
+    fail("Detail focus mode CSS exists");
+  }
+
   const home = await readRootFile("src/components/apps/HomeApp.astro");
   if (home.includes("desktop-shortcut") && home.includes("shortcut-grid")) {
     pass("HomeApp contains desktop shortcuts");
@@ -327,6 +333,28 @@ async function checkInteractionPolish() {
     fail("Settings contains keyboard shortcut guide with G+X shortcuts");
   }
 
+  const projectsApp = await readRootFile("src/components/apps/ProjectsApp.astro");
+  const blogApp = await readRootFile("src/components/apps/BlogApp.astro");
+  const timelineApp = await readRootFile("src/components/apps/TimelineApp.astro");
+  if (projectsApp.includes("data-detail-focus-toggle") && blogApp.includes("data-detail-focus-toggle") && timelineApp.includes("data-detail-focus-toggle")) {
+    pass("Projects / Blog / Timeline include detail focus toggle");
+  } else {
+    fail("Projects / Blog / Timeline include detail focus toggle");
+  }
+
+  if (projectsApp.includes("scrollIntoView") && blogApp.includes("scrollIntoView") && timelineApp.includes("scrollIntoView")) {
+    pass("Projects / Blog / Timeline include scroll alignment");
+  } else {
+    fail("Projects / Blog / Timeline include scroll alignment");
+  }
+
+  const systemStateFile = await readRootFile("src/scripts/system-state.ts");
+  if (systemStateFile.includes("syncDetailMode") && systemStateFile.includes("w0nderful-lab-os.detail-mode")) {
+    pass("system-state handles detail mode persistence");
+  } else {
+    fail("system-state handles detail mode persistence");
+  }
+
   const commands = await readRootFile("src/data/commands.ts");
   if (commands.includes("toggle-theme") && commands.includes("Toggle Theme Mode")) {
     pass("commands.ts contains toggle-theme quick action");
@@ -340,10 +368,7 @@ async function checkInteractionPolish() {
     fail("commands.ts contains Chinese aliases");
   }
 
-  const projects = await readRootFile("src/components/apps/ProjectsApp.astro");
-  const blog = await readRootFile("src/components/apps/BlogApp.astro");
-  const timeline = await readRootFile("src/components/apps/TimelineApp.astro");
-  if (projects.includes("data-project-clear-filters") && blog.includes("data-post-clear-filters") && timeline.includes("data-log-clear-filters")) {
+  if (projectsApp.includes("data-project-clear-filters") && blogApp.includes("data-post-clear-filters") && timelineApp.includes("data-log-clear-filters")) {
     pass("Projects / Blog / Timeline include toolbar clear filters");
   } else {
     fail("Projects / Blog / Timeline include toolbar clear filters");

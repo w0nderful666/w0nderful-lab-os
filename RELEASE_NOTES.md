@@ -1,5 +1,13 @@
 # Release Notes
 
+## v0.5.1
+
+- Added Detail Focus Mode for Projects.app, Blog.app, and Timeline.app with a Focus/Restore toggle button that widens the detail panel to 85% for a clearer reading surface.
+- Added scroll alignment so clicking a list item automatically scrolls the detail panel into the current viewport with smooth or instant behavior based on motion preferences.
+- Added localStorage persistence for Detail Focus Mode state across page reloads and navigation.
+- Added responsive degradation so the Focus toggle is hidden on mobile and detail panels use full-width single-column layout.
+- Improved detail panel header controls with accessible aria-label, aria-pressed, and focus-visible states.
+
 ## v0.5.0
 
 - Added Desktop Workspace app launcher shortcuts on the home page with icon, label, status, hover lift, and real navigation to Projects.app, Blog.app, Timeline.app, Settings.app, and About.app.

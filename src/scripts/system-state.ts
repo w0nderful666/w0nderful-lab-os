@@ -491,6 +491,26 @@ const syncDocument = () => {
   syncActiveApp();
   renderRecentItems();
   syncWelcomeToast();
+  syncDetailMode();
+};
+
+const syncDetailMode = () => {
+  let savedMode = "default";
+  try {
+    savedMode = localStorage.getItem("w0nderful-lab-os.detail-mode") || "default";
+  } catch {}
+
+  document.querySelectorAll(".master-detail").forEach((node) => {
+    if (!(node instanceof HTMLElement)) return;
+    node.dataset.detailMode = savedMode;
+  });
+
+  document.querySelectorAll("[data-detail-focus-toggle]").forEach((node) => {
+    if (!(node instanceof HTMLButtonElement)) return;
+    const isFocus = savedMode === "focus";
+    node.setAttribute("aria-pressed", String(isFocus));
+    node.textContent = isFocus ? "Restore" : "Focus";
+  });
 };
 
 const commit = (partial: Partial<LabOSState>, eventName?: string, eventDetail: Record<string, unknown> = {}) => {
@@ -912,6 +932,22 @@ const registerSettingEvents = () => {
         maximizeButton.setAttribute("aria-pressed", String(maximized));
         maximizeButton.setAttribute("aria-label", maximized ? "Restore window" : "Maximize window");
       }
+    }
+
+    const focusToggle = target.closest("[data-detail-focus-toggle]");
+    if (focusToggle instanceof HTMLButtonElement) {
+      const masterDetail = focusToggle.closest(".master-detail");
+      if (masterDetail instanceof HTMLElement) {
+        const current = masterDetail.dataset.detailMode || "default";
+        const next = current === "focus" ? "default" : "focus";
+        masterDetail.dataset.detailMode = next;
+        focusToggle.setAttribute("aria-pressed", String(next === "focus"));
+        focusToggle.textContent = next === "focus" ? "Restore" : "Focus";
+        try {
+          localStorage.setItem("w0nderful-lab-os.detail-mode", next);
+        } catch {}
+      }
+      return;
     }
   });
 };
