@@ -11,9 +11,12 @@ const { project, selected = false } = Astro.props;
 const searchIndex = [
   project.name,
   project.type,
+  project.category,
   project.summary,
   project.status,
-  ...project.tags
+  project.version,
+  ...project.tags,
+  ...project.features
 ]
   .join(" ")
   .toLowerCase();
@@ -23,7 +26,8 @@ const searchIndex = [
   class="project-card interactive-card"
   data-project-card
   data-project-slug={project.slug}
-  data-project-type={project.type}
+  data-project-category={project.category}
+  data-project-status={project.status}
   data-project-search={searchIndex}
   data-selected={selected ? "true" : "false"}
   tabindex="0"
@@ -40,6 +44,10 @@ const searchIndex = [
     />
   </div>
   <p>{project.summary}</p>
+  <div class="card-meta">
+    <span>{project.category}</span>
+    <span>{project.version}</span>
+  </div>
   <div class="badge-row">
     {project.tags.map((tag) => <Badge label={tag} />)}
   </div>

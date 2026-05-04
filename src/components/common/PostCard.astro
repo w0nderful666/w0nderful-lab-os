@@ -13,10 +13,13 @@ const searchIndex = [
   post.summary,
   post.category,
   post.relatedProject,
-  ...post.tags
+  post.relatedProjectLabel,
+  ...post.tags,
+  ...post.body.flatMap((block) => [block.heading, ...block.paragraphs, ...(block.bullets || [])])
 ]
   .join(" ")
   .toLowerCase();
+const tagIndex = post.tags.join("|").toLowerCase();
 ---
 
 <article
@@ -24,6 +27,7 @@ const searchIndex = [
   data-post-card
   data-post-slug={post.slug}
   data-post-category={post.category}
+  data-post-tags={tagIndex}
   data-post-search={searchIndex}
   data-selected={selected ? "true" : "false"}
   tabindex="0"
@@ -39,7 +43,7 @@ const searchIndex = [
   <p>{post.summary}</p>
   <div class="card-meta">
     <span>{post.date}</span>
-    <span>{post.relatedProject}</span>
+    <span>{post.relatedProjectLabel}</span>
   </div>
   <div class="badge-row">
     {post.tags.map((tag) => <Badge label={tag} />)}

@@ -26,26 +26,35 @@
 }
 
 .interactive-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(var(--card-lift));
   box-shadow: var(--shadow-soft);
 }
 
 .dock-item:hover {
-  transform: translateY(-2px) scale(1.04);
-}
-
-html[data-experience="quality"] .dock-item:hover {
-  transform: translateY(-4px) scale(1.09);
+  transform: translateY(var(--dock-lift)) scale(var(--dock-scale));
 }
 
 .dock-item:active {
   transform: translateY(1px) scale(0.96);
 }
 
+.reader-panel,
+.project-detail-panel {
+  animation: window-enter var(--motion-duration) ease both;
+}
+
 html[data-experience="performance"] .interactive-card:hover,
 html[data-experience="performance"] .dock-item:hover,
-html[data-experience="performance"] .button:hover {
+html[data-experience="performance"] .button:hover,
+html[data-experience="performance"] .dock-item:active,
+html[data-experience="performance"] .related-link:hover {
   transform: none;
+}
+
+html[data-experience="performance"] .motion-enter,
+html[data-experience="performance"] .reader-panel,
+html[data-experience="performance"] .project-detail-panel {
+  animation: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

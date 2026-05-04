@@ -2,6 +2,8 @@
 
 OS-themed personal blog, open-source lab, and project showcase hub for w0nderful666.
 
+Current version: `v0.2.0`
+
 Live demo: https://w0nderful666.github.io/w0nderful-lab-os/
 
 ## Positioning
@@ -22,8 +24,8 @@ This project is designed as a long-term personal brand hub, not a disposable dem
 ## Features
 
 - Desktop Workspace home page with System Bar, Dock, terminal widget, featured projects, latest posts, system log, quick actions, and Experience Mode controls.
-- Projects.app with search, type filtering, selectable project cards, details, Live Demo links, and GitHub links.
-- Blog.app with static post data, category filtering, tags, selected post preview, and article roadmap.
+- Projects.app matrix with search, category filtering, status filtering, selectable project cards, details, core features, versions, Live Demo links, GitHub links, related articles, and roadmap slots.
+- Blog.app reader with category filtering, tag filtering, simple search, in-app article view, back-to-list flow, reading progress, full body blocks, related articles, and article roadmap.
 - Timeline.app with System Log entries and type filtering.
 - About.app with version, author, positioning, project count, post count, and tech stack.
 - Settings.app with Theme, Experience Mode, Language, and Reset local settings.
@@ -33,13 +35,15 @@ This project is designed as a long-term personal brand hub, not a disposable dem
 
 The interface uses a fixed System Bar, Dock navigation, framed app windows, compact widgets, terminal-style code blocks, restrained glass panels, and responsive mobile behavior. The site does not pretend to be a real operating system; the OS layer is a navigation and storytelling system for the blog and project hub.
 
+Animations are intentionally small and use `transform` and `opacity`. App windows fade in with a slight upward motion, Dock items scale on hover, active Dock items are highlighted, and cards lift on hover. `prefers-reduced-motion` is respected.
+
 ## Experience Mode
 
 Experience Mode is stored in `localStorage` under `w0nderful-lab-os.settings` and applied on the `html` element:
 
-- `data-experience="performance"` reduces animation, blur, and shadows.
-- `data-experience="balanced"` is the default profile.
-- `data-experience="quality"` increases visual depth and Dock feedback.
+- `data-experience="performance"` uses almost no animation, disables blur, and keeps shadows minimal.
+- `data-experience="balanced"` uses light animation and modest depth.
+- `data-experience="quality"` increases visual depth, card lift, and Dock feedback.
 
 Theme and language settings are also persisted in the same local settings object.
 
@@ -69,7 +73,7 @@ npm run preview
 
 ## GitHub Pages Deployment
 
-The workflow at `.github/workflows/pages.yml` runs on pushes to `main` and manual `workflow_dispatch`. It uses Node.js 20, installs dependencies with `npm ci`, runs build/check/self-test/preflight, uploads `dist`, and deploys to GitHub Pages.
+The workflow at `.github/workflows/pages.yml` runs on pushes to `main` and `dev`, plus manual `workflow_dispatch`. It uses Node.js 20, installs dependencies with `npm ci`, runs build/check/self-test/preflight, uploads `dist`, and deploys to GitHub Pages.
 
 Astro is configured for:
 
@@ -124,8 +128,8 @@ npm run preflight
 
 ## Roadmap
 
-- Add Astro content collections for full article pages.
-- Add screenshots after the first GitHub Pages deployment.
+- Move Blog.app body blocks into Astro content collections.
+- Add screenshots after the v0.2.0 GitHub Pages deployment.
 - Add project detail pages when individual projects need deeper case studies.
 - Mirror deployment to Cloudflare Pages after the GitHub Pages release is stable.
 

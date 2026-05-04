@@ -54,7 +54,7 @@ const pageTitle = title === site.title ? site.title : `${title} | ${site.name}`;
       })();
     </script>
   </head>
-  <body>
+  <body data-experience="balanced">
     <SystemBar active={active} />
     <main class="desktop-shell">
       <slot />
@@ -141,6 +141,7 @@ const pageTitle = title === site.title ? site.title : `${title} | ${site.name}`;
           html.dataset.themeSetting = settings.theme;
           html.dataset.experience = settings.experience;
           html.lang = settings.language === "zh" ? "zh-CN" : "en";
+          document.body.dataset.experience = settings.experience;
 
           document.querySelectorAll("[data-i18n]").forEach((node) => {
             const keyName = node.getAttribute("data-i18n");

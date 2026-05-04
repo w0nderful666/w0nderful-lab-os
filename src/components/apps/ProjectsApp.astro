@@ -2,45 +2,94 @@
 import AppWindow from "../os/AppWindow.astro";
 import ProjectCard from "../common/ProjectCard.astro";
 import Badge from "../common/Badge.astro";
-import { projectTypes, projects } from "../../data/projects";
+import { postCategories, posts } from "../../data/posts";
+import { projectCategories, projects, projectStatuses } from "../../data/projects";
+import { withBase } from "../../data/site";
 
 const initialProject = projects[0];
+const postsBySlug = new Map(posts.map((post) => [post.slug, post]));
+const initialRelatedPosts = initialProject.relatedPostSlugs
+  .map((slug) => postsBySlug.get(slug))
+  .filter(Boolean);
+const serializedPosts = posts.map((post) => ({
+  slug: post.slug,
+  title: post.title,
+  category: post.category,
+  date: post.date
+}));
 ---
 
 <AppWindow title="Projects.app" subtitle="Open-source project matrix" wide>
-  <div class="toolbar">
+  <div class="toolbar toolbar-stacked">
     <label class="search-field">
       <span>Search</span>
-      <input type="search" data-project-search-input placeholder="Search projects" autocomplete="off" />
+      <input type="search" data-project-search-input placeholder="Search projects, tags, or features" autocomplete="off" />
     </label>
-    <div class="filter-group" aria-label="Project type filters">
-      <button type="button" class="filter-button is-active" data-project-filter="all">All</button>
-      {projectTypes.map((type) => <button type="button" class="filter-button" data-project-filter={type}>{type}</button>)}
+
+    <div class="filter-stack">
+      <div class="filter-group" aria-label="Project category filters">
+        <button type="button" class="filter-button is-active" data-project-category-filter="all">All</button>
+        {
+          projectCategories.map((category) => (
+            <button type="button" class="filter-button" data-project-category-filter={category}>{category}</button>
+          ))
+        }
+      </div>
+
+      <div class="filter-group" aria-label="Project status filters">
+        <button type="button" class="filter-button is-active" data-project-status-filter="all">All status</button>
+        {
+          projectStatuses.map((status) => (
+            <button type="button" class="filter-button" data-project-status-filter={status}>{status}</button>
+          ))
+        }
+      </div>
     </div>
   </div>
 
-  <div class="split-layout">
-    <div class="project-grid" data-project-grid>
-      {projects.map((project, index) => <ProjectCard project={project} selected={index === 0} />)}
-    </div>
+  <div class="split-layout project-matrix-layout">
+    <section class="project-list-panel" aria-label="Project matrix">
+      <div class="project-grid" data-project-grid>
+        {projects.map((project, index) => <ProjectCard project={project} selected={index === 0} />)}
+      </div>
+      <p class="empty-state" data-project-empty hidden>No matching projects.</p>
+    </section>
 
-    <aside class="detail-panel" data-project-detail aria-live="polite">
+    <aside class="detail-panel project-detail-panel" data-project-detail aria-live="polite">
       <p class="eyebrow" data-project-detail-type>{initialProject.type}</p>
       <h3 data-project-detail-name>{initialProject.name}</h3>
       <p data-project-detail-summary>{initialProject.summary}</p>
+
       <div class="detail-stack">
+        <span>
+          Category:
+          <strong data-project-detail-category>{initialProject.category}</strong>
+        </span>
         <span>
           Status:
           <strong data-project-detail-status>{initialProject.status}</strong>
+        </span>
+        <span>
+          Version:
+          <strong data-project-detail-version>{initialProject.version}</strong>
         </span>
         <span>
           Repository:
           <strong data-project-detail-repo>{initialProject.githubUrl.replace("https://github.com/", "")}</strong>
         </span>
       </div>
+
+      <section class="feature-panel">
+        <h4>Core Features</h4>
+        <ul data-project-detail-features>
+          {initialProject.features.map((item) => <li>{item}</li>)}
+        </ul>
+      </section>
+
       <div class="badge-row" data-project-detail-tags>
         {initialProject.tags.map((tag) => <Badge label={tag} />)}
       </div>
+
       <div class="card-actions">
         <a class="button button-primary" data-project-detail-live href={initialProject.liveUrl} target="_blank" rel="noreferrer">
           Live Demo
@@ -49,10 +98,35 @@ const initialProject = projects[0];
           GitHub
         </a>
       </div>
+
+      <section class="related-panel">
+        <h4>Related Articles</h4>
+        <div class="related-list" data-project-detail-posts>
+          {
+            initialRelatedPosts.map((post) => (
+              post && (
+                <a class="related-link" href={withBase(`blog/?post=${post.slug}`)}>
+                  {post.title}
+                  <span>{postCategories.includes(post.category) ? post.category : "Post"}</span>
+                </a>
+              )
+            ))
+          }
+        </div>
+      </section>
+
+      <section class="roadmap-panel">
+        <h4>Roadmap</h4>
+        <ul data-project-detail-roadmap>
+          {initialProject.roadmap.map((item) => <li>{item}</li>)}
+        </ul>
+      </section>
     </aside>
   </div>
 
   <script is:inline type="application/json" id="projects-data" set:html={JSON.stringify(projects)} />
+  <script is:inline type="application/json" id="project-posts-data" set:html={JSON.stringify(serializedPosts)} />
+  <span data-base-url={import.meta.env.BASE_URL} hidden></span>
 </AppWindow>
 
 <script>
@@ -60,25 +134,86 @@ const initialProject = projects[0];
     slug: string;
     name: string;
     type: string;
+    category: string;
     summary: string;
     status: string;
+    version: string;
+    features: string[];
     tags: string[];
     liveUrl: string;
     githubUrl: string;
+    relatedPostSlugs: string[];
+    roadmap: string[];
+  };
+
+  type RelatedPostRecord = {
+    slug: string;
+    title: string;
+    category: string;
+    date: string;
   };
 
   const dataNode = document.getElementById("projects-data");
+  const postDataNode = document.getElementById("project-posts-data");
   const projectData: ProjectRecord[] = dataNode?.textContent ? JSON.parse(dataNode.textContent) : [];
+  const relatedPostData: RelatedPostRecord[] = postDataNode?.textContent ? JSON.parse(postDataNode.textContent) : [];
+  const baseUrl = document.querySelector("[data-base-url]")?.getAttribute("data-base-url") || "/";
   const searchInput = document.querySelector("[data-project-search-input]");
-  const filterButtons = Array.from(document.querySelectorAll("[data-project-filter]"));
+  const categoryButtons = Array.from(document.querySelectorAll("[data-project-category-filter]"));
+  const statusButtons = Array.from(document.querySelectorAll("[data-project-status-filter]"));
   const cards = Array.from(document.querySelectorAll("[data-project-card]"));
   const detail = document.querySelector("[data-project-detail]");
-  let activeFilter = "all";
+  const emptyState = document.querySelector("[data-project-empty]");
+  let activeCategory = "all";
+  let activeStatus = "all";
   let activeSlug = new URLSearchParams(window.location.search).get("project") || projectData[0]?.slug || "";
+
+  const withBasePath = (path: string) => {
+    const normalizedBase = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
+    return `${normalizedBase}${path.replace(/^\/+/, "")}`;
+  };
 
   const setText = (selector: string, value: string) => {
     const node = detail?.querySelector(selector);
     if (node) node.textContent = value;
+  };
+
+  const createBadge = (label: string) => {
+    const badge = document.createElement("span");
+    badge.className = "badge badge-default";
+    badge.textContent = label;
+    return badge;
+  };
+
+  const renderList = (selector: string, values: string[]) => {
+    const list = detail?.querySelector(selector);
+    if (!list) return;
+    list.textContent = "";
+    values.forEach((value) => {
+      const li = document.createElement("li");
+      li.textContent = value;
+      list.append(li);
+    });
+  };
+
+  const renderRelatedPosts = (project: ProjectRecord) => {
+    const wrap = detail?.querySelector("[data-project-detail-posts]");
+    if (!wrap) return;
+    wrap.textContent = "";
+    project.relatedPostSlugs
+      .map((slug) => relatedPostData.find((post) => post.slug === slug))
+      .filter((post): post is RelatedPostRecord => Boolean(post))
+      .forEach((post) => {
+        const link = document.createElement("a");
+        link.className = "related-link";
+        link.href = withBasePath(`blog/?post=${post.slug}`);
+        link.textContent = post.title;
+
+        const meta = document.createElement("span");
+        meta.textContent = post.category;
+        link.append(meta);
+        wrap.append(link);
+      });
   };
 
   const selectProject = (slug: string) => {
@@ -89,44 +224,64 @@ const initialProject = projects[0];
     setText("[data-project-detail-type]", project.type);
     setText("[data-project-detail-name]", project.name);
     setText("[data-project-detail-summary]", project.summary);
+    setText("[data-project-detail-category]", project.category);
     setText("[data-project-detail-status]", project.status);
+    setText("[data-project-detail-version]", project.version);
     setText("[data-project-detail-repo]", project.githubUrl.replace("https://github.com/", ""));
+
+    renderList("[data-project-detail-features]", project.features);
+    renderList("[data-project-detail-roadmap]", project.roadmap);
+    renderRelatedPosts(project);
+
     const live = detail?.querySelector("[data-project-detail-live]");
     const github = detail?.querySelector("[data-project-detail-github]");
     if (live instanceof HTMLAnchorElement) live.href = project.liveUrl;
     if (github instanceof HTMLAnchorElement) github.href = project.githubUrl;
+
     const tagWrap = detail?.querySelector("[data-project-detail-tags]");
     if (tagWrap) {
-      tagWrap.innerHTML = "";
-      project.tags.forEach((tag) => {
-        const badge = document.createElement("span");
-        badge.className = "badge badge-default";
-        badge.textContent = tag;
-        tagWrap.append(badge);
-      });
+      tagWrap.textContent = "";
+      project.tags.forEach((tag) => tagWrap.append(createBadge(tag)));
     }
   };
 
   const applyProjectFilters = () => {
     const query = searchInput instanceof HTMLInputElement ? searchInput.value.trim().toLowerCase() : "";
     let firstVisible = "";
+    let visibleCount = 0;
+
     cards.forEach((card) => {
-      const matchesType = activeFilter === "all" || card.getAttribute("data-project-type") === activeFilter;
+      const matchesCategory = activeCategory === "all" || card.getAttribute("data-project-category") === activeCategory;
+      const matchesStatus = activeStatus === "all" || card.getAttribute("data-project-status") === activeStatus;
       const matchesSearch = (card.getAttribute("data-project-search") || "").includes(query);
-      const visible = matchesType && matchesSearch;
+      const visible = matchesCategory && matchesStatus && matchesSearch;
       (card as HTMLElement).hidden = !visible;
-      if (visible && !firstVisible) firstVisible = card.getAttribute("data-project-slug") || "";
+      if (visible) {
+        visibleCount += 1;
+        if (!firstVisible) firstVisible = card.getAttribute("data-project-slug") || "";
+      }
     });
+
+    if (emptyState instanceof HTMLElement) emptyState.hidden = visibleCount > 0;
+
     const selectedCard = cards.find((card) => card.getAttribute("data-project-slug") === activeSlug);
-    if (!selectedCard || (selectedCard as HTMLElement).hidden) {
+    if ((!selectedCard || (selectedCard as HTMLElement).hidden) && firstVisible) {
       selectProject(firstVisible);
     }
   };
 
-  filterButtons.forEach((button) => {
+  categoryButtons.forEach((button) => {
     button.addEventListener("click", () => {
-      activeFilter = button.getAttribute("data-project-filter") || "all";
-      filterButtons.forEach((item) => item.classList.toggle("is-active", item === button));
+      activeCategory = button.getAttribute("data-project-category-filter") || "all";
+      categoryButtons.forEach((item) => item.classList.toggle("is-active", item === button));
+      applyProjectFilters();
+    });
+  });
+
+  statusButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      activeStatus = button.getAttribute("data-project-status-filter") || "all";
+      statusButtons.forEach((item) => item.classList.toggle("is-active", item === button));
       applyProjectFilters();
     });
   });

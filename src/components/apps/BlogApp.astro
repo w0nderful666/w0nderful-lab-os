@@ -2,62 +2,116 @@
 import AppWindow from "../os/AppWindow.astro";
 import PostCard from "../common/PostCard.astro";
 import Badge from "../common/Badge.astro";
-import { postCategories, posts } from "../../data/posts";
+import { postCategories, posts, postTags } from "../../data/posts";
 
 const initialPost = posts[0];
 ---
 
-<AppWindow title="Blog.app" subtitle="Docs and build notes" wide>
-  <div class="toolbar">
-    <label class="search-field">
-      <span>Search</span>
-      <input type="search" data-post-search-input placeholder="Search posts" autocomplete="off" />
-    </label>
-    <div class="filter-group" aria-label="Post category filters">
-      <button type="button" class="filter-button is-active" data-post-filter="all">All</button>
-      {postCategories.map((category) => <button type="button" class="filter-button" data-post-filter={category}>{category}</button>)}
-    </div>
-  </div>
+<AppWindow title="Blog.app" subtitle="Reader workspace" wide>
+  <div class="blog-workbench" data-blog-workbench data-reading="false">
+    <div class="toolbar toolbar-stacked">
+      <label class="search-field">
+        <span>Search</span>
+        <input type="search" data-post-search-input placeholder="Search title, tag, project, or body" autocomplete="off" />
+      </label>
 
-  <div class="split-layout">
-    <div class="post-list" data-post-list>
-      {posts.map((post, index) => <PostCard post={post} selected={index === 0} />)}
+      <div class="filter-stack">
+        <div class="filter-group" aria-label="Post category filters">
+          <button type="button" class="filter-button is-active" data-post-category-filter="all">All</button>
+          {
+            postCategories.map((category) => (
+              <button type="button" class="filter-button" data-post-category-filter={category}>{category}</button>
+            ))
+          }
+        </div>
+
+        <div class="filter-group" aria-label="Post tag filters">
+          <button type="button" class="filter-button is-active" data-post-tag-filter="all">All tags</button>
+          {postTags.map((tag) => <button type="button" class="filter-button" data-post-tag-filter={tag}>{tag}</button>)}
+        </div>
+      </div>
     </div>
 
-    <aside class="detail-panel" data-post-detail aria-live="polite">
-      <p class="eyebrow" data-post-detail-category>{initialPost.category}</p>
-      <h3 data-post-detail-title>{initialPost.title}</h3>
-      <p data-post-detail-summary>{initialPost.summary}</p>
-      <div class="detail-stack">
-        <span>
-          Date:
-          <strong data-post-detail-date>{initialPost.date}</strong>
-        </span>
-        <span>
-          Related project:
-          <strong data-post-detail-project>{initialPost.relatedProject}</strong>
-        </span>
-        <span>
-          Reading time:
-          <strong data-post-detail-reading>{initialPost.readingTime}</strong>
-        </span>
-      </div>
-      <div class="badge-row" data-post-detail-tags>
-        {initialPost.tags.map((tag) => <Badge label={tag} />)}
-      </div>
-      <section class="roadmap-panel">
-        <h4>Preview and Roadmap</h4>
-        <ul data-post-detail-roadmap>
-          {initialPost.roadmap.map((item) => <li>{item}</li>)}
-        </ul>
+    <div class="blog-reader-layout">
+      <section class="blog-list-panel" data-blog-list-panel aria-label="Article list">
+        <div class="post-list" data-post-list>
+          {posts.map((post, index) => <PostCard post={post} selected={index === 0} />)}
+        </div>
+        <p class="empty-state" data-post-empty hidden>No matching posts.</p>
       </section>
-    </aside>
+
+      <article class="detail-panel reader-panel" data-post-reader aria-live="polite">
+        <div class="reader-topline">
+          <button type="button" class="button button-secondary reader-back" data-reader-back>Back to list</button>
+          <span class="meta-pill" data-post-detail-reading>{initialPost.readingTime}</span>
+        </div>
+
+        <div class="reader-progress" aria-label="Reading progress">
+          <span data-reader-progress></span>
+        </div>
+
+        <p class="eyebrow" data-post-detail-category>{initialPost.category}</p>
+        <h3 data-post-detail-title>{initialPost.title}</h3>
+        <p class="reader-summary" data-post-detail-summary>{initialPost.summary}</p>
+
+        <div class="detail-stack">
+          <span>
+            Date:
+            <strong data-post-detail-date>{initialPost.date}</strong>
+          </span>
+          <span>
+            Related project:
+            <strong data-post-detail-project>{initialPost.relatedProjectLabel}</strong>
+          </span>
+        </div>
+
+        <div class="badge-row" data-post-detail-tags>
+          {initialPost.tags.map((tag) => <Badge label={tag} />)}
+        </div>
+
+        <div class="reader-body" data-reader-body tabindex="0">
+          {
+            initialPost.body.map((block) => (
+              <section>
+                <h4>{block.heading}</h4>
+                {block.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+                {
+                  block.bullets && (
+                    <ul>
+                      {block.bullets.map((item) => <li>{item}</li>)}
+                    </ul>
+                  )
+                }
+              </section>
+            ))
+          }
+        </div>
+
+        <section class="related-panel">
+          <h4>Related Articles</h4>
+          <div class="related-list" data-post-related></div>
+        </section>
+
+        <section class="roadmap-panel">
+          <h4>Roadmap</h4>
+          <ul data-post-detail-roadmap>
+            {initialPost.roadmap.map((item) => <li>{item}</li>)}
+          </ul>
+        </section>
+      </article>
+    </div>
   </div>
 
   <script is:inline type="application/json" id="posts-data" set:html={JSON.stringify(posts)} />
 </AppWindow>
 
 <script>
+  type PostBodyBlock = {
+    heading: string;
+    paragraphs: string[];
+    bullets?: string[];
+  };
+
   type PostRecord = {
     slug: string;
     title: string;
@@ -66,25 +120,109 @@ const initialPost = posts[0];
     category: string;
     tags: string[];
     relatedProject: string;
+    relatedProjectLabel: string;
     readingTime: string;
+    body: PostBodyBlock[];
     roadmap: string[];
   };
 
   const dataNode = document.getElementById("posts-data");
   const postData: PostRecord[] = dataNode?.textContent ? JSON.parse(dataNode.textContent) : [];
+  const workbench = document.querySelector("[data-blog-workbench]");
   const searchInput = document.querySelector("[data-post-search-input]");
-  const filterButtons = Array.from(document.querySelectorAll("[data-post-filter]"));
+  const categoryButtons = Array.from(document.querySelectorAll("[data-post-category-filter]"));
+  const tagButtons = Array.from(document.querySelectorAll("[data-post-tag-filter]"));
   const cards = Array.from(document.querySelectorAll("[data-post-card]"));
-  const detail = document.querySelector("[data-post-detail]");
-  let activeFilter = "all";
+  const reader = document.querySelector("[data-post-reader]");
+  const readerBody = document.querySelector("[data-reader-body]");
+  const progress = document.querySelector("[data-reader-progress]");
+  const emptyState = document.querySelector("[data-post-empty]");
+  let activeCategory = "all";
+  let activeTag = "all";
   let activeSlug = new URLSearchParams(window.location.search).get("post") || postData[0]?.slug || "";
 
   const setText = (selector: string, value: string) => {
-    const node = detail?.querySelector(selector);
+    const node = reader?.querySelector(selector);
     if (node) node.textContent = value;
   };
 
-  const selectPost = (slug: string) => {
+  const createBadge = (label: string) => {
+    const badge = document.createElement("span");
+    badge.className = "badge badge-default";
+    badge.textContent = label;
+    return badge;
+  };
+
+  const renderBody = (post: PostRecord) => {
+    if (!readerBody) return;
+    readerBody.textContent = "";
+    post.body.forEach((block) => {
+      const section = document.createElement("section");
+      const heading = document.createElement("h4");
+      heading.textContent = block.heading;
+      section.append(heading);
+
+      block.paragraphs.forEach((paragraph) => {
+        const p = document.createElement("p");
+        p.textContent = paragraph;
+        section.append(p);
+      });
+
+      if (block.bullets?.length) {
+        const list = document.createElement("ul");
+        block.bullets.forEach((item) => {
+          const li = document.createElement("li");
+          li.textContent = item;
+          list.append(li);
+        });
+        section.append(list);
+      }
+
+      readerBody.append(section);
+    });
+  };
+
+  const getRelatedPosts = (post: PostRecord) => {
+    return postData
+      .filter((item) => item.slug !== post.slug)
+      .map((item) => {
+        const sharedTags = item.tags.filter((tag) => post.tags.includes(tag)).length;
+        const sameProject = item.relatedProject === post.relatedProject ? 2 : 0;
+        return { item, score: sharedTags + sameProject };
+      })
+      .filter((entry) => entry.score > 0)
+      .sort((a, b) => b.score - a.score || b.item.date.localeCompare(a.item.date))
+      .slice(0, 3)
+      .map((entry) => entry.item);
+  };
+
+  const renderRelated = (post: PostRecord) => {
+    const wrap = reader?.querySelector("[data-post-related]");
+    if (!wrap) return;
+    wrap.textContent = "";
+    getRelatedPosts(post).forEach((related) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "related-link";
+      button.dataset.relatedPost = related.slug;
+      button.textContent = related.title;
+      wrap.append(button);
+    });
+  };
+
+  const updateProgress = () => {
+    if (!(readerBody instanceof HTMLElement) || !(progress instanceof HTMLElement)) return;
+    const max = readerBody.scrollHeight - readerBody.clientHeight;
+    const value = max <= 0 ? 100 : Math.min(100, Math.max(0, (readerBody.scrollTop / max) * 100));
+    progress.style.width = `${value}%`;
+  };
+
+  const openReader = () => {
+    if (workbench instanceof HTMLElement) workbench.dataset.reading = "true";
+    requestAnimationFrame(updateProgress);
+  };
+
+  const selectPost = (slug: string, shouldOpen = true) => {
     const post = postData.find((item) => item.slug === slug) || postData[0];
     if (!post) return;
     activeSlug = post.slug;
@@ -93,49 +231,63 @@ const initialPost = posts[0];
     setText("[data-post-detail-title]", post.title);
     setText("[data-post-detail-summary]", post.summary);
     setText("[data-post-detail-date]", post.date);
-    setText("[data-post-detail-project]", post.relatedProject);
+    setText("[data-post-detail-project]", post.relatedProjectLabel);
     setText("[data-post-detail-reading]", post.readingTime);
-    const tagWrap = detail?.querySelector("[data-post-detail-tags]");
+
+    const tagWrap = reader?.querySelector("[data-post-detail-tags]");
     if (tagWrap) {
-      tagWrap.innerHTML = "";
-      post.tags.forEach((tag) => {
-        const badge = document.createElement("span");
-        badge.className = "badge badge-default";
-        badge.textContent = tag;
-        tagWrap.append(badge);
-      });
+      tagWrap.textContent = "";
+      post.tags.forEach((tag) => tagWrap.append(createBadge(tag)));
     }
-    const roadmap = detail?.querySelector("[data-post-detail-roadmap]");
+
+    renderBody(post);
+    renderRelated(post);
+
+    const roadmap = reader?.querySelector("[data-post-detail-roadmap]");
     if (roadmap) {
-      roadmap.innerHTML = "";
+      roadmap.textContent = "";
       post.roadmap.forEach((item) => {
         const li = document.createElement("li");
         li.textContent = item;
         roadmap.append(li);
       });
     }
+
+    if (readerBody instanceof HTMLElement) readerBody.scrollTop = 0;
+    updateProgress();
+    if (shouldOpen) openReader();
   };
 
   const applyPostFilters = () => {
     const query = searchInput instanceof HTMLInputElement ? searchInput.value.trim().toLowerCase() : "";
-    let firstVisible = "";
+    let visibleCount = 0;
+
     cards.forEach((card) => {
-      const matchesCategory = activeFilter === "all" || card.getAttribute("data-post-category") === activeFilter;
+      const category = card.getAttribute("data-post-category") || "";
+      const tags = card.getAttribute("data-post-tags") || "";
+      const matchesCategory = activeCategory === "all" || category === activeCategory;
+      const matchesTag = activeTag === "all" || tags.split("|").includes(activeTag.toLowerCase());
       const matchesSearch = (card.getAttribute("data-post-search") || "").includes(query);
-      const visible = matchesCategory && matchesSearch;
+      const visible = matchesCategory && matchesTag && matchesSearch;
       (card as HTMLElement).hidden = !visible;
-      if (visible && !firstVisible) firstVisible = card.getAttribute("data-post-slug") || "";
+      if (visible) visibleCount += 1;
     });
-    const selectedCard = cards.find((card) => card.getAttribute("data-post-slug") === activeSlug);
-    if (!selectedCard || (selectedCard as HTMLElement).hidden) {
-      selectPost(firstVisible);
-    }
+
+    if (emptyState instanceof HTMLElement) emptyState.hidden = visibleCount > 0;
   };
 
-  filterButtons.forEach((button) => {
+  categoryButtons.forEach((button) => {
     button.addEventListener("click", () => {
-      activeFilter = button.getAttribute("data-post-filter") || "all";
-      filterButtons.forEach((item) => item.classList.toggle("is-active", item === button));
+      activeCategory = button.getAttribute("data-post-category-filter") || "all";
+      categoryButtons.forEach((item) => item.classList.toggle("is-active", item === button));
+      applyPostFilters();
+    });
+  });
+
+  tagButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      activeTag = button.getAttribute("data-post-tag-filter") || "all";
+      tagButtons.forEach((item) => item.classList.toggle("is-active", item === button));
       applyPostFilters();
     });
   });
@@ -154,6 +306,27 @@ const initialPost = posts[0];
     });
   });
 
-  selectPost(activeSlug);
+  reader?.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const related = target.closest("[data-related-post]");
+    if (related instanceof HTMLButtonElement) {
+      selectPost(related.dataset.relatedPost || "");
+    }
+  });
+
+  const backButton = document.querySelector("[data-reader-back]");
+  if (backButton instanceof HTMLButtonElement) {
+    backButton.addEventListener("click", () => {
+      if (workbench instanceof HTMLElement) workbench.dataset.reading = "false";
+    });
+  }
+
+  if (readerBody instanceof HTMLElement) {
+    readerBody.addEventListener("scroll", updateProgress);
+  }
+  window.addEventListener("resize", updateProgress);
+
+  selectPost(activeSlug, new URLSearchParams(window.location.search).has("post"));
   applyPostFilters();
 </script>

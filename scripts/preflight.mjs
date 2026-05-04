@@ -76,10 +76,10 @@ async function readRootFile(filePath) {
 
 async function checkPackageVersion() {
   const packageJson = JSON.parse(await readRootFile("package.json"));
-  if (packageJson.version === "0.1.0") {
-    pass("package.json version is 0.1.0");
+  if (packageJson.version === "0.2.0") {
+    pass("package.json version is 0.2.0");
   } else {
-    fail(`package.json version is ${packageJson.version}, expected 0.1.0`);
+    fail(`package.json version is ${packageJson.version}, expected 0.2.0`);
   }
 }
 
@@ -103,10 +103,10 @@ async function checkReadme() {
 
 async function checkReleaseNotes() {
   const releaseNotes = await readRootFile("RELEASE_NOTES.md");
-  if (releaseNotes.includes("v0.1.0")) {
-    pass("RELEASE_NOTES contains v0.1.0");
+  if (releaseNotes.includes("v0.2.0")) {
+    pass("RELEASE_NOTES contains v0.2.0");
   } else {
-    fail("RELEASE_NOTES contains v0.1.0");
+    fail("RELEASE_NOTES contains v0.2.0");
   }
 }
 
