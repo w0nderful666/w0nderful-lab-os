@@ -1,5 +1,19 @@
 # Release Notes
 
+## v0.5.0
+
+- Added Desktop Workspace app launcher shortcuts on the home page with icon, label, status, hover lift, and real navigation to Projects.app, Blog.app, Timeline.app, Settings.app, and About.app.
+- Enhanced System Bar to display current app name, palette name, background name, version (clickable to Settings), and local time with mobile-friendly folding.
+- Enhanced About.app into a System Info page with Lab Specs, Tech Stack, Core Features, and real-time System Health checks for localStorage, reduced motion, palette, background, command palette, and client navigation.
+- Added centralized Keyboard Shortcuts system with G+H (Home), G+P (Projects), G+B (Blog), G+T (Timeline), G+S (Settings) navigation, respecting input fields and lifecycle-safe after ClientRouter navigation.
+- Added Command Palette Chinese aliases (xiangmu, wenzhang, shijianxian, shezhi, guanyu) and quick actions including Toggle Theme Mode and Go Home.
+- Added System Bar status pills showing current palette, background, and app name with live CSS variable sync.
+- Added Desktop shortcut grid CSS with responsive 5-column (desktop), 3-column (tablet), and 2-column (mobile) layouts.
+- Added System Health CSS with ok/warn status badges for real-time environment checks.
+- Added toggle-theme command action for light/dark switching from Command Palette.
+- Updated Settings.app keyboard shortcuts section with G+X navigation shortcuts.
+- Improved mobile responsiveness for Desktop shortcuts, System Bar status pills, and toolbar layouts.
+
 ## v0.4.2
 
 - Enhanced Dock active state with glow, indicator, icon lift, and unified hover / active / focus-visible feedback while keeping the mobile Dock overflow-safe.

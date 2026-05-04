@@ -2,7 +2,7 @@
 
 OS-themed personal blog, open-source lab, and project showcase hub for w0nderful666.
 
-Current version: `v0.4.2`
+Current version: `v0.5.0`
 
 Live demo: https://w0nderful666.github.io/w0nderful-lab-os/
 
@@ -30,9 +30,13 @@ This project is designed as a long-term personal brand hub, not a disposable dem
 - About.app with version, author, positioning, project count, post count, and tech stack.
 - Settings.app with Theme, Experience Mode, Motion Speed, Language, Recent Items management, Reset local settings, and Keyboard Shortcuts.
 - Settings Preview Card for live theme, palette, background, motion, button, and window depth feedback.
-- Command Palette opened with Ctrl/Cmd + K for grouped Pages, Actions, Settings, Recent Items, projects, posts, timeline entries, utility actions, and Global Search.
+- Command Palette opened with Ctrl/Cmd + K for grouped Pages, Actions, Settings, Recent Items, projects, posts, timeline entries, utility actions, and Global Search with Chinese Aliases and quick actions.
 - Terminal.app with real local commands for navigation, project opening, settings changes, search, status, version, and GitHub profile launch.
 - System State shared by Dock, System Bar, Command Palette, Terminal.app, Settings.app, and Master-Detail apps.
+- Desktop Workspace with app launcher shortcuts for Projects.app, Blog.app, Timeline.app, Settings.app, and About.app with real navigation.
+- Enhanced System Bar showing current app, palette, background, clickable version, and local time with mobile folding.
+- System Info / About.app with Lab Specs, Tech Stack, Core Features, and real-time System Health checks for localStorage, reduced motion, palette, background, command palette, and client navigation.
+- Keyboard Shortcuts with centralized G+H/P/B/T/S navigation, input field respect, and lifecycle-safe bindings.
 - Dock active indicators with glow, open-window feedback, bottom/side indicators, and unified hover/focus-visible states.
 - SPA-like Navigation powered by Astro View Transitions and ClientRouter, keeping the OS shell visually continuous while preserving static routes.
 - Welcome / Quick Start prompt for first-time visitors, persisted through localStorage after dismissal.
@@ -67,19 +71,31 @@ The v0.4.2 experience pass keeps the same static architecture while improving th
 ## Keyboard Shortcuts
 
 - `Ctrl/Cmd + K`: open Command Palette.
-- `Esc`: close Command Palette.
+- `Esc`: close Command Palette, Welcome Toast, or dismissible panels.
 - `Enter`: execute the selected command or terminal input.
 - `ArrowUp` / `ArrowDown`: move through Command Palette results or Terminal.app history.
+- `G then H`: Go Home.
+- `G then P`: Go Projects.
+- `G then B`: Go Blog.
+- `G then T`: Go Timeline.
+- `G then S`: Go Settings.
 
 ## OS Style
 
-The interface uses a fixed System Bar, Dock navigation, framed app windows, compact widgets, terminal-style code blocks, restrained layered panels, and responsive mobile behavior. The site does not pretend to be a real operating system; the OS layer is a navigation and storytelling system for the blog and project hub.
+The interface uses a fixed System Bar, Dock navigation, framed app windows, desktop app launcher shortcuts, compact widgets, terminal-style code blocks, restrained layered panels, and responsive mobile behavior. The site does not pretend to be a real operating system; the OS layer is a navigation and storytelling system for the blog and project hub.
 
 Animations are intentionally small and use `transform` and `opacity`. App windows fade in with a slight upward motion, page transitions preserve the shell, Dock items scale on hover, active Dock items show an open-window indicator, and cards lift on hover. `prefers-reduced-motion` is respected.
 
 ## OS-like Experience Enhancements
 
-v0.4.2 focuses on detail rather than broad new features:
+v0.5.0 focuses on systemization of the OS experience:
+
+- Desktop Workspace with app launcher shortcuts that behave like OS desktop icons with hover lift and real navigation.
+- Enhanced System Bar showing current app, palette, background, clickable version, and local time.
+- System Info / About.app with real-time System Health checks for environment capabilities.
+- Centralized Keyboard Shortcuts with G+X navigation for quick app switching.
+- Command Palette with Chinese Aliases, Toggle Theme quick action, and Go Home shortcut.
+- System Bar status pills that sync with CSS variables across palette, background, and app changes.
 
 - Dock active state now combines border, glow, icon lift, and an indicator so the current route reads as an open app.
 - AppWindow, Detail Panel, and Settings Panel use stronger but restrained border, shadow, backdrop blur, and inner highlight layering.
@@ -160,6 +176,18 @@ Projects.app, Blog.app, and Timeline.app use OS-style toolbars for search and fi
 - GitHub Pages
 
 No backend, database, login system, or heavy client framework is required.
+
+## System Health
+
+About.app includes real-time System Health checks:
+
+- localStorage availability detection
+- Reduced motion preference detection
+- Current palette and background status
+- Command Palette availability
+- Client navigation status
+
+All checks read live environment state, not hardcoded values.
 
 ## Local Development
 

@@ -353,6 +353,14 @@ const syncSettingsControls = () => {
     node.textContent = backgroundLabels[state.background];
   });
 
+  document.querySelectorAll("[data-system-palette-label]").forEach((node) => {
+    node.textContent = paletteLabels[state.palette];
+  });
+
+  document.querySelectorAll("[data-system-background-label]").forEach((node) => {
+    node.textContent = backgroundLabels[state.background];
+  });
+
   document.querySelectorAll("[data-exp-choice]").forEach((node) => {
     const active = node.getAttribute("data-exp-choice") === state.experienceMode;
     node.toggleAttribute("aria-pressed", active);
@@ -367,6 +375,16 @@ const syncSettingsControls = () => {
 };
 
 const syncActiveApp = () => {
+  const appLabelMap: Record<string, string> = {
+    home: "Home",
+    projects: "Projects",
+    blog: "Blog",
+    timeline: "Timeline",
+    about: "About",
+    settings: "Settings",
+    terminal: "Terminal"
+  };
+
   document.querySelectorAll("[data-app-link]").forEach((node) => {
     const active = node.getAttribute("data-app-link") === state.currentApp;
     node.classList.toggle("is-active", active);
@@ -377,6 +395,10 @@ const syncActiveApp = () => {
         node.removeAttribute("aria-current");
       }
     }
+  });
+
+  document.querySelectorAll("[data-system-app-label]").forEach((node) => {
+    node.textContent = appLabelMap[state.currentApp] || "Home";
   });
 };
 
@@ -755,6 +777,13 @@ const executeCommand = async (commandOrId: Command | string, historyLabel?: stri
     case "copy-site-url":
       await copySiteUrl();
       break;
+    case "toggle-theme": {
+      const currentTheme = getAppliedTheme(state.theme);
+      const nextTheme = currentTheme === "dark" ? "light" : "dark";
+      setTheme(nextTheme);
+      announce(`Theme toggled to ${nextTheme}.`);
+      break;
+    }
     case "clear-recent":
       clearRecentItems();
       announce("Recent Items cleared.");

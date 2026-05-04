@@ -15,6 +15,7 @@ const requiredFiles = [
   "src/scripts/search-index.ts",
   "src/scripts/command-palette.ts",
   "src/scripts/terminal.ts",
+  "src/scripts/shortcuts.ts",
   "src/components/common/EmptyState.astro",
   "src/components/os/CommandPalette.astro",
   "src/components/os/WelcomeToast.astro",
@@ -35,7 +36,7 @@ const requiredFiles = [
 
 const requiredPageStrings = [
   "w0nderful Lab OS",
-  "v0.4.2",
+  "v0.5.0",
   "Local First",
   "No Backend",
   "GitHub Pages Ready",
@@ -58,7 +59,10 @@ const requiredPageStrings = [
   "Timeline",
   "Settings",
   "Quick Start",
-  "Welcome to Lab OS"
+  "Welcome to Lab OS",
+  "Desktop",
+  "desktop-shortcut",
+  "shortcut-grid"
 ];
 
 async function exists(filePath) {

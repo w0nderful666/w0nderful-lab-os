@@ -76,10 +76,10 @@ async function readRootFile(filePath) {
 
 async function checkPackageVersion() {
   const packageJson = JSON.parse(await readRootFile("package.json"));
-  if (packageJson.version === "0.4.2") {
-    pass("package.json version is 0.4.2");
+  if (packageJson.version === "0.5.0") {
+    pass("package.json version is 0.5.0");
   } else {
-    fail(`package.json version is ${packageJson.version}, expected 0.4.2`);
+    fail(`package.json version is ${packageJson.version}, expected 0.5.0`);
   }
 }
 
@@ -112,7 +112,12 @@ async function checkReadme() {
     "Welcome / Quick Start",
     "Empty State",
     "404 System Notice",
-    "Dock active state"
+    "Dock active state",
+    "Desktop Workspace",
+    "System Health",
+    "Keyboard Shortcuts",
+    "Chinese Aliases",
+    "Toggle Theme"
   ];
 
   for (const value of required) {
@@ -166,6 +171,7 @@ async function checkControlLayer() {
     "src/scripts/search-index.ts",
     "src/scripts/command-palette.ts",
     "src/scripts/terminal.ts",
+    "src/scripts/shortcuts.ts",
     "docs/COMMAND_SYSTEM.md",
     "docs/MOTION_GUIDE.md",
     "docs/INTERACTION_RULES.md",
@@ -237,6 +243,12 @@ async function checkInteractionPolish() {
     fail("BaseLayout contains transition names and persistent shell markers");
   }
 
+  if (layout.includes("shortcuts")) {
+    pass("BaseLayout wires keyboard shortcuts");
+  } else {
+    fail("BaseLayout wires keyboard shortcuts");
+  }
+
   const systemState = await readRootFile("src/scripts/system-state.ts");
   if (systemState.includes("astro:page-load") && systemState.includes("astro:transitions/client") && systemState.includes("dataset.palette")) {
     pass("system-state is lifecycle-safe and palette-aware");
@@ -248,6 +260,12 @@ async function checkInteractionPolish() {
     pass("system-state contains background preset logic");
   } else {
     fail("system-state contains background preset logic");
+  }
+
+  if (systemState.includes("toggle-theme")) {
+    pass("system-state handles toggle-theme action");
+  } else {
+    fail("system-state handles toggle-theme action");
   }
 
   const tokens = await readRootFile("src/styles/tokens.css");
@@ -270,11 +288,56 @@ async function checkInteractionPolish() {
     fail("Sticky Detail Panel CSS exists");
   }
 
+  if (osTheme.includes("shortcut-grid") && osTheme.includes("desktop-shortcut")) {
+    pass("Desktop shortcuts CSS exists");
+  } else {
+    fail("Desktop shortcuts CSS exists");
+  }
+
+  if (osTheme.includes("system-health") && osTheme.includes("health-item")) {
+    pass("System health CSS exists");
+  } else {
+    fail("System health CSS exists");
+  }
+
+  const home = await readRootFile("src/components/apps/HomeApp.astro");
+  if (home.includes("desktop-shortcut") && home.includes("shortcut-grid")) {
+    pass("HomeApp contains desktop shortcuts");
+  } else {
+    fail("HomeApp contains desktop shortcuts");
+  }
+
+  const about = await readRootFile("src/components/apps/AboutApp.astro");
+  if (about.includes("system-health") && about.includes("health-item")) {
+    pass("AboutApp contains system health checks");
+  } else {
+    fail("AboutApp contains system health checks");
+  }
+
   const settings = await readRootFile("src/components/apps/SettingsApp.astro");
   if (settings.includes("Theme Palette") && settings.includes("Background Preset")) {
     pass("Settings contains Palette and Background Preset");
   } else {
     fail("Settings contains Palette and Background Preset");
+  }
+
+  if (settings.includes("G</kbd> then") && settings.includes("Go Home")) {
+    pass("Settings contains keyboard shortcut guide with G+X shortcuts");
+  } else {
+    fail("Settings contains keyboard shortcut guide with G+X shortcuts");
+  }
+
+  const commands = await readRootFile("src/data/commands.ts");
+  if (commands.includes("toggle-theme") && commands.includes("Toggle Theme Mode")) {
+    pass("commands.ts contains toggle-theme quick action");
+  } else {
+    fail("commands.ts contains toggle-theme quick action");
+  }
+
+  if (commands.includes("xiangmu") && commands.includes("wenzhang") && commands.includes("shezhi")) {
+    pass("commands.ts contains Chinese aliases");
+  } else {
+    fail("commands.ts contains Chinese aliases");
   }
 
   const projects = await readRootFile("src/components/apps/ProjectsApp.astro");

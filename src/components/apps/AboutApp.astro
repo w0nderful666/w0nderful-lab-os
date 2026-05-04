@@ -6,7 +6,7 @@ import { projects } from "../../data/projects";
 import { site } from "../../data/site";
 ---
 
-<AppWindow title="About This Lab" subtitle="About.app" wide>
+<AppWindow title="System Info" subtitle="About.app" wide>
   <div class="about-grid">
     <section class="about-identity">
       <img src={`${import.meta.env.BASE_URL}assets/lab-sigil.svg`} alt="" width="96" height="96" />
@@ -38,6 +38,18 @@ import { site } from "../../data/site";
           <dt>Deployment</dt>
           <dd>GitHub Pages Ready</dd>
         </div>
+        <div>
+          <dt>Build Type</dt>
+          <dd>Static Site (Astro)</dd>
+        </div>
+        <div>
+          <dt>Backend</dt>
+          <dd>None / Local First</dd>
+        </div>
+        <div>
+          <dt>User Data</dt>
+          <dd>Not uploaded</dd>
+        </div>
       </dl>
     </section>
 
@@ -47,5 +59,105 @@ import { site } from "../../data/site";
         {site.techStack.map((item) => <Badge label={item} />)}
       </div>
     </section>
+
+    <section class="about-specs">
+      <h2>Core Features</h2>
+      <div class="badge-row">
+        <Badge label="Local First" />
+        <Badge label="No Backend" />
+        <Badge label="GitHub Pages Ready" />
+        <Badge label="OS-like Navigation" />
+        <Badge label="View Transitions" />
+        <Badge label="Command Palette" />
+        <Badge label="Theme Palette" />
+        <Badge label="Background Presets" />
+      </div>
+    </section>
+
+    <section class="about-specs system-health-section">
+      <h2>System Health</h2>
+      <div class="system-health-list" data-system-health-list>
+        <div class="health-item" data-health-item="storage">
+          <span class="health-label">localStorage</span>
+          <span class="health-status" data-health-storage>Checking...</span>
+        </div>
+        <div class="health-item" data-health-item="motion">
+          <span class="health-label">Reduced Motion</span>
+          <span class="health-status" data-health-motion>Checking...</span>
+        </div>
+        <div class="health-item" data-health-item="palette">
+          <span class="health-label">Current Palette</span>
+          <span class="health-status" data-health-palette>Checking...</span>
+        </div>
+        <div class="health-item" data-health-item="background">
+          <span class="health-label">Current Background</span>
+          <span class="health-status" data-health-background>Checking...</span>
+        </div>
+        <div class="health-item" data-health-item="palette-cmd">
+          <span class="health-label">Command Palette</span>
+          <span class="health-status" data-health-palette-cmd>Checking...</span>
+        </div>
+        <div class="health-item" data-health-item="nav">
+          <span class="health-label">Client Navigation</span>
+          <span class="health-status" data-health-nav>Checking...</span>
+        </div>
+      </div>
+    </section>
   </div>
+
+  <script>
+    const updateSystemHealth = () => {
+      const state = window.labOS?.getState();
+
+      const storageEl = document.querySelector("[data-health-storage]");
+      if (storageEl) {
+        try {
+          const testKey = "__health_test__";
+          localStorage.setItem(testKey, "1");
+          localStorage.removeItem(testKey);
+          storageEl.textContent = "Available";
+          storageEl.classList.add("health-ok");
+        } catch {
+          storageEl.textContent = "Unavailable";
+          storageEl.classList.add("health-warn");
+        }
+      }
+
+      const motionEl = document.querySelector("[data-health-motion]");
+      if (motionEl) {
+        const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        motionEl.textContent = prefersReduced ? "Detected" : "Not detected";
+        motionEl.classList.add(prefersReduced ? "health-warn" : "health-ok");
+      }
+
+      const paletteEl = document.querySelector("[data-health-palette]");
+      if (paletteEl && state) {
+        paletteEl.textContent = state.palette;
+        paletteEl.classList.add("health-ok");
+      }
+
+      const backgroundEl = document.querySelector("[data-health-background]");
+      if (backgroundEl && state) {
+        backgroundEl.textContent = state.background;
+        backgroundEl.classList.add("health-ok");
+      }
+
+      const paletteCmdEl = document.querySelector("[data-health-palette-cmd]");
+      if (paletteCmdEl) {
+        const paletteNode = document.querySelector("[data-command-palette]");
+        paletteCmdEl.textContent = paletteNode ? "Available" : "Not found";
+        paletteCmdEl.classList.add(paletteNode ? "health-ok" : "health-warn");
+      }
+
+      const navEl = document.querySelector("[data-health-nav]");
+      if (navEl) {
+        const hasClientRouter = !!document.querySelector("astro-island");
+        navEl.textContent = hasClientRouter ? "Active" : "Static fallback";
+        navEl.classList.add("health-ok");
+      }
+    };
+
+    updateSystemHealth();
+    document.addEventListener("astro:page-load", updateSystemHealth);
+  </script>
 </AppWindow>

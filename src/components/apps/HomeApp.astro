@@ -11,9 +11,37 @@ import { timeline } from "../../data/timeline";
 const featuredProjects = projects.filter((project) => project.featured).slice(0, 4);
 const latestPosts = posts.slice(0, 3);
 const latestLogs = timeline.slice(0, 3);
+
+const desktopShortcuts = [
+  { id: "projects", label: "Projects.app", href: withBase("projects/"), icon: "P", status: `${projects.length} projects` },
+  { id: "blog", label: "Blog.app", href: withBase("blog/"), icon: "B", status: `${posts.length} posts` },
+  { id: "timeline", label: "Timeline.app", href: withBase("timeline/"), icon: "L", status: `${timeline.length} entries` },
+  { id: "settings", label: "Settings.app", href: withBase("settings/"), icon: "S", status: "System prefs" },
+  { id: "about", label: "About.app", href: withBase("about/"), icon: "A", status: "System info" }
+];
 ---
 
 <div class="desktop-workspace">
+  <section class="desktop-shortcuts" aria-label="Desktop application shortcuts">
+    <p class="eyebrow desktop-stagger" style="--stagger-index: 0">Desktop</p>
+    <div class="shortcut-grid">
+      {
+        desktopShortcuts.map((shortcut) => (
+          <a
+            href={shortcut.href}
+            class="desktop-shortcut desktop-stagger"
+            style={`--stagger-index: ${desktopShortcuts.indexOf(shortcut) + 1}`}
+            data-app-link={shortcut.id}
+          >
+            <span class="shortcut-icon" aria-hidden="true">{shortcut.icon}</span>
+            <span class="shortcut-label">{shortcut.label}</span>
+            <span class="shortcut-status">{shortcut.status}</span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
   <AppWindow title="Home.app" subtitle="Desktop Workspace" wide>
     <div class="dashboard-grid">
       <section class="hero-console desktop-stagger" style="--stagger-index: 1" aria-label="Welcome Terminal">
