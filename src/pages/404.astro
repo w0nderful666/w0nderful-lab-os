@@ -1,0 +1,21 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import AppWindow from "../components/os/AppWindow.astro";
+import EmptyState from "../components/common/EmptyState.astro";
+import { withBase } from "../data/site";
+---
+
+<BaseLayout active="home" title="404 System Notice" description="OS-style 404 system notice for w0nderful Lab OS.">
+  <AppWindow title="System Notice" subtitle="404 route not found" wide>
+    <section class="system-notice">
+      <EmptyState
+        title="404: Route not mounted"
+        description="The requested file is not available in this Lab OS build."
+      />
+      <div class="notice-actions">
+        <button type="button" class="button button-secondary" data-command-palette-open>Open Command Palette</button>
+        <a class="button button-primary" href={withBase("")} data-app-link="home">Return Home</a>
+      </div>
+    </section>
+  </AppWindow>
+</BaseLayout>

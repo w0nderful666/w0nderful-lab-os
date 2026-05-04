@@ -2,7 +2,7 @@
 
 OS-themed personal blog, open-source lab, and project showcase hub for w0nderful666.
 
-Current version: `v0.4.1`
+Current version: `v0.4.2`
 
 Live demo: https://w0nderful666.github.io/w0nderful-lab-os/
 
@@ -29,10 +29,14 @@ This project is designed as a long-term personal brand hub, not a disposable dem
 - Timeline.app with System Log entries, type filtering, and Master-Detail detail inspection.
 - About.app with version, author, positioning, project count, post count, and tech stack.
 - Settings.app with Theme, Experience Mode, Motion Speed, Language, Recent Items management, Reset local settings, and Keyboard Shortcuts.
-- Command Palette opened with Ctrl/Cmd + K for apps, projects, posts, timeline entries, settings, utility actions, and Global Search.
+- Settings Preview Card for live theme, palette, background, motion, button, and window depth feedback.
+- Command Palette opened with Ctrl/Cmd + K for grouped Pages, Actions, Settings, Recent Items, projects, posts, timeline entries, utility actions, and Global Search.
 - Terminal.app with real local commands for navigation, project opening, settings changes, search, status, version, and GitHub profile launch.
 - System State shared by Dock, System Bar, Command Palette, Terminal.app, Settings.app, and Master-Detail apps.
+- Dock active indicators with glow, open-window feedback, bottom/side indicators, and unified hover/focus-visible states.
 - SPA-like Navigation powered by Astro View Transitions and ClientRouter, keeping the OS shell visually continuous while preserving static routes.
+- Welcome / Quick Start prompt for first-time visitors, persisted through localStorage after dismissal.
+- Unified OS-style Empty State and 404 System Notice with return-home and Command Palette actions.
 - Recent Items for recently opened projects, posts, timeline entries, and important commands.
 - Project / Blog / Timeline Linking so related projects, articles, and log entries open through the same control layer.
 - Sticky Detail Panel and focused Master-Detail layout so details become the primary reading surface on desktop.
@@ -58,6 +62,8 @@ The v0.4.0 Control Layer is built from small vanilla TypeScript modules:
 
 State changes sync to `html` and `body` data attributes, persist lightweight preferences to `localStorage`, and dispatch `labos:*` custom events for app changes, settings changes, command execution, and content opening.
 
+The v0.4.2 experience pass keeps the same static architecture while improving the feeling of one continuous OS surface: Dock active state, grouped Command Palette results, Settings.app visual preview, first-visit guidance, empty states, and the 404 notice all use the same System State and transition lifecycle.
+
 ## Keyboard Shortcuts
 
 - `Ctrl/Cmd + K`: open Command Palette.
@@ -67,9 +73,21 @@ State changes sync to `html` and `body` data attributes, persist lightweight pre
 
 ## OS Style
 
-The interface uses a fixed System Bar, Dock navigation, framed app windows, compact widgets, terminal-style code blocks, restrained glass panels, and responsive mobile behavior. The site does not pretend to be a real operating system; the OS layer is a navigation and storytelling system for the blog and project hub.
+The interface uses a fixed System Bar, Dock navigation, framed app windows, compact widgets, terminal-style code blocks, restrained layered panels, and responsive mobile behavior. The site does not pretend to be a real operating system; the OS layer is a navigation and storytelling system for the blog and project hub.
 
-Animations are intentionally small and use `transform` and `opacity`. App windows fade in with a slight upward motion, Dock items scale on hover, active Dock items are highlighted, and cards lift on hover. `prefers-reduced-motion` is respected.
+Animations are intentionally small and use `transform` and `opacity`. App windows fade in with a slight upward motion, page transitions preserve the shell, Dock items scale on hover, active Dock items show an open-window indicator, and cards lift on hover. `prefers-reduced-motion` is respected.
+
+## OS-like Experience Enhancements
+
+v0.4.2 focuses on detail rather than broad new features:
+
+- Dock active state now combines border, glow, icon lift, and an indicator so the current route reads as an open app.
+- AppWindow, Detail Panel, and Settings Panel use stronger but restrained border, shadow, backdrop blur, and inner highlight layering.
+- Command Palette behaves more like a system launcher with backdrop depth, grouped Pages / Actions / Settings / Recent results, and subtle current or recommended badges.
+- Settings.app includes a Preview Card that reacts immediately to Palette, Background, Theme, Experience Mode, and Motion Speed changes through existing CSS variables.
+- Projects.app, Blog.app, and Timeline.app show a unified OS-style empty state when filters return no results.
+- The static 404 page is an OS-style System Notice with return-home and Command Palette controls.
+- First-time visitors get a dismissible Welcome / Quick Start prompt for Dock, Command Palette, Theme, Background, and Motion.
 
 ## Master-Detail
 
@@ -233,7 +251,7 @@ npm run preflight
 ## Roadmap
 
 - Move Blog.app body blocks into Astro content collections.
-- Add screenshots after the v0.4.1 GitHub Pages deployment.
+- Add screenshots after the v0.4.2 GitHub Pages deployment.
 - Add project detail pages when individual projects need deeper case studies.
 - Expand terminal command aliases only after the core command surface stays stable.
 

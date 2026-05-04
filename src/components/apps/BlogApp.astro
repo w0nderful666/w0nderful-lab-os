@@ -2,6 +2,7 @@
 import AppWindow from "../os/AppWindow.astro";
 import PostCard from "../common/PostCard.astro";
 import Badge from "../common/Badge.astro";
+import EmptyState from "../common/EmptyState.astro";
 import { postCategories, posts, postTags } from "../../data/posts";
 import { projects } from "../../data/projects";
 
@@ -40,7 +41,12 @@ const initialProject = projects.find((project) => project.slug === initialPost.r
         <div class="post-list" data-post-list>
           {posts.map((post, index) => <PostCard post={post} selected={index === 0} />)}
         </div>
-        <p class="empty-state" data-post-empty hidden>No matching posts.</p>
+        <EmptyState
+          title="No matching files found"
+          description="Try another title, tag, project, or clear the current filters."
+          data-post-empty
+          hidden
+        />
       </section>
 
       <article class="detail-panel reader-panel" data-post-reader aria-live="polite">

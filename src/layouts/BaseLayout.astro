@@ -2,6 +2,7 @@
 import SystemBar from "../components/os/SystemBar.astro";
 import Dock from "../components/os/Dock.astro";
 import CommandPalette from "../components/os/CommandPalette.astro";
+import WelcomeToast from "../components/os/WelcomeToast.astro";
 import { ClientRouter } from "astro:transitions";
 import { site } from "../data/site";
 import type { ActiveApp } from "../data/navigation";
@@ -91,6 +92,7 @@ const pageTitle = title === site.title ? site.title : `${title} | ${site.name}`;
     </main>
     <Dock active={active} />
     <CommandPalette />
+    <WelcomeToast />
     <footer class="site-footer" transition:name="lab-footer" transition:persist>
       <span>{site.name}</span>
       <span>{site.displayVersion}</span>

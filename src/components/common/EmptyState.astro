@@ -1,0 +1,50 @@
+---
+type Props = {
+  title: string;
+  description?: string;
+  actionLabel?: string;
+  actionHref?: string;
+  actionCommandPalette?: boolean;
+  hidden?: boolean;
+  class?: string;
+  [key: string]: unknown;
+};
+
+const {
+  title,
+  description,
+  actionLabel,
+  actionHref,
+  actionCommandPalette = false,
+  hidden = false,
+  class: className,
+  ...attrs
+} = Astro.props;
+---
+
+<section class:list={["empty-state", "empty-state-os", className]} hidden={hidden} {...attrs}>
+  <span class="empty-state-icon" aria-hidden="true">0</span>
+  <div class="empty-state-copy">
+    <h3>{title}</h3>
+    {description && <p>{description}</p>}
+  </div>
+  {
+    actionLabel && (
+      <div class="empty-state-actions">
+        {
+          actionCommandPalette ? (
+            <button type="button" class="button button-secondary" data-command-palette-open>
+              {actionLabel}
+            </button>
+          ) : (
+            actionHref && (
+              <a class="button button-primary" href={actionHref}>
+                {actionLabel}
+              </a>
+            )
+          )
+        }
+      </div>
+    )
+  }
+</section>

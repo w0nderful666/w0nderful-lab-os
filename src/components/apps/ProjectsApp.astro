@@ -2,6 +2,7 @@
 import AppWindow from "../os/AppWindow.astro";
 import ProjectCard from "../common/ProjectCard.astro";
 import Badge from "../common/Badge.astro";
+import EmptyState from "../common/EmptyState.astro";
 import { postCategories, posts } from "../../data/posts";
 import { projectCategories, projects, projectStatuses } from "../../data/projects";
 import { withBase } from "../../data/site";
@@ -53,7 +54,12 @@ const serializedPosts = posts.map((post) => ({
       <div class="project-grid" data-project-grid>
         {projects.map((project, index) => <ProjectCard project={project} selected={index === 0} />)}
       </div>
-      <p class="empty-state" data-project-empty hidden>No matching projects.</p>
+      <EmptyState
+        title="No matching files found"
+        description="Try clearing filters or searching another project tag."
+        data-project-empty
+        hidden
+      />
     </section>
 
     <aside class="detail-panel project-detail-panel" data-project-detail aria-live="polite">

@@ -55,6 +55,8 @@
 ::view-transition-new(lab-dock),
 ::view-transition-old(lab-command-palette),
 ::view-transition-new(lab-command-palette),
+::view-transition-old(lab-welcome),
+::view-transition-new(lab-welcome),
 ::view-transition-old(lab-footer),
 ::view-transition-new(lab-footer) {
   animation-duration: 1ms;
@@ -63,6 +65,7 @@
 @keyframes lab-page-out {
   to {
     opacity: 0;
+    filter: saturate(0.92);
     transform: translateY(calc(var(--page-transition-distance) * -0.35)) scale(var(--page-transition-scale));
   }
 }
@@ -70,6 +73,7 @@
 @keyframes lab-page-in {
   from {
     opacity: 0;
+    filter: saturate(1.04);
     transform: translateY(var(--page-transition-distance)) scale(var(--page-transition-scale));
   }
 }
@@ -126,6 +130,10 @@ body[data-app-leaving="true"] .app-window {
   transform: scale(var(--app-exit-scale));
 }
 
+body[data-app-leaving="true"] .desktop-shell {
+  filter: saturate(0.94);
+}
+
 html[data-experience="performance"] .interactive-card:hover,
 html[data-experience="performance"] .dock-item:hover,
 html[data-experience="performance"] .button:hover,
@@ -140,6 +148,7 @@ html[data-experience="performance"] .project-detail-panel,
 html[data-experience="performance"] .timeline-detail-panel,
 html[data-experience="performance"] .command-palette-overlay,
 html[data-experience="performance"] .command-palette-panel,
+html[data-experience="performance"] .welcome-toast,
 html[data-experience="performance"] .reader-body section,
 html[data-experience="performance"] .desktop-stagger {
   animation: none;

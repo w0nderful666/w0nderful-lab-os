@@ -1,5 +1,16 @@
 # Release Notes
 
+## v0.4.2
+
+- Enhanced Dock active state with glow, indicator, icon lift, and unified hover / active / focus-visible feedback while keeping the mobile Dock overflow-safe.
+- Refined AppWindow, Detail Panel, and Settings Panel depth with restrained borders, shadows, backdrop blur, and inner highlights for a more realistic OS-like Web Experience.
+- Polished page-level smooth transitions on top of Astro View Transitions and ClientRouter with subtle entering / leaving feedback, Persistent OS shell continuity, Performance mode reductions, and reduced-motion support.
+- Upgraded Command Palette into a more launcher-like surface with backdrop depth, grouped Pages / Actions / Settings / Recent / History results, current-page badges, and lifecycle-safe bindings after ClientRouter navigation.
+- Added Settings Preview Card so Palette, Background Presets, Theme, Experience Mode, and Motion Speed changes are visible immediately through the existing System State variables.
+- Added unified OS-style Empty State surfaces for Projects.app, Blog.app, and Timeline.app search/filter misses.
+- Added a static 404 System Notice with return-home and Command Palette actions for GitHub Pages friendly error handling.
+- Added a dismissible Welcome / Quick Start prompt stored in localStorage for first-time guidance around Dock, Command Palette, Theme, Background, and Motion.
+
 ## v0.4.1
 
 - Added page-level smooth transitions with Astro View Transitions and ClientRouter for SPA-like Navigation while preserving static routes, GitHub Pages deployment, and SEO-friendly HTML.

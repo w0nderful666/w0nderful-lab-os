@@ -102,6 +102,7 @@ const appIds = new Set<LabOSApp>([
 ]);
 
 const storageKey = site.storageKey;
+const welcomeStorageKey = `${storageKey}.welcome-dismissed`;
 const listLimit = 10;
 const defaultSettings = {
   theme: "system" as ThemeSetting,
@@ -256,6 +257,7 @@ const createInitialState = (): LabOSState => {
 };
 
 let state = createInitialState();
+let welcomeDismissedThisSession = false;
 
 const getAppliedTheme = (theme: ThemeSetting) => {
   if (theme !== "system") return theme;
@@ -407,6 +409,35 @@ const renderRecentItems = () => {
   });
 };
 
+const isWelcomeDismissed = () => {
+  if (welcomeDismissedThisSession) return true;
+  try {
+    return localStorage.getItem(welcomeStorageKey) === "true";
+  } catch {
+    return false;
+  }
+};
+
+const syncWelcomeToast = () => {
+  const dismissed = isWelcomeDismissed();
+  document.querySelectorAll("[data-welcome-toast]").forEach((node) => {
+    if (!(node instanceof HTMLElement)) return;
+    node.hidden = dismissed;
+    node.dataset.welcomeState = dismissed ? "dismissed" : "ready";
+  });
+};
+
+const dismissWelcomeToast = () => {
+  welcomeDismissedThisSession = true;
+  try {
+    localStorage.setItem(welcomeStorageKey, "true");
+  } catch {
+    // The close action still applies for this session when persistent storage is unavailable.
+  }
+  syncWelcomeToast();
+  dispatch("labos:welcome-dismiss");
+};
+
 const syncDocument = () => {
   const html = document.documentElement;
   const body = document.body;
@@ -437,6 +468,7 @@ const syncDocument = () => {
   syncSettingsControls();
   syncActiveApp();
   renderRecentItems();
+  syncWelcomeToast();
 };
 
 const commit = (partial: Partial<LabOSState>, eventName?: string, eventDetail: Record<string, unknown> = {}) => {
@@ -787,6 +819,12 @@ const registerSettingEvents = () => {
     const clearRecentButton = target.closest("[data-clear-recent-items]");
     if (clearRecentButton instanceof HTMLButtonElement) {
       clearRecentItems();
+      return;
+    }
+
+    const welcomeCloseButton = target.closest("[data-welcome-close]");
+    if (welcomeCloseButton instanceof HTMLButtonElement) {
+      dismissWelcomeToast();
       return;
     }
 
