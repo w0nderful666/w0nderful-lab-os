@@ -42,6 +42,12 @@ html[data-experience="performance"] .setting-panel {
 
 .system-nav-link,
 .system-command-button,
+.system-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .system-bar-right a,
 .system-bar-right span,
 .system-bar-right time {
@@ -52,7 +58,42 @@ html[data-experience="performance"] .setting-panel {
   padding: 0 8px;
   border-radius: var(--radius-sm);
   color: var(--text-muted);
-  font-size: 0.88rem;
+  font-size: 0.82rem;
+}
+
+.system-bar-status {
+  display: inline-flex;
+  min-height: 26px;
+  align-items: center;
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-muted);
+  background: var(--bg-soft);
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.system-bar-version {
+  color: var(--accent) !important;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.system-bar-version:hover {
+  background: var(--accent-soft) !important;
+}
+
+.system-bar-compact {
+  display: inline-flex;
+}
+
+@media (max-width: 760px) {
+  .system-bar-status,
+  .system-bar-compact {
+    display: none;
+  }
 }
 
 .system-command-button {
@@ -238,6 +279,91 @@ html[data-experience="performance"] .setting-panel {
   display: grid;
   gap: 18px;
   min-width: 0;
+}
+
+.desktop-shortcuts {
+  display: grid;
+  gap: 12px;
+}
+
+.shortcut-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.desktop-shortcut {
+  display: grid;
+  gap: 6px;
+  padding: 16px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent),
+    var(--bg-soft);
+  text-align: center;
+  transition:
+    transform var(--motion-duration) ease,
+    border-color var(--motion-duration) ease,
+    box-shadow var(--motion-duration) ease,
+    background var(--motion-duration) ease;
+}
+
+.desktop-shortcut:hover {
+  border-color: var(--accent);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent),
+    var(--accent-soft);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+  transform: translateY(var(--card-lift));
+}
+
+.desktop-shortcut:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.shortcut-icon {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  margin: 0 auto;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  color: #07120f;
+  background: var(--accent);
+  font-size: 1.1rem;
+  font-weight: 800;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.shortcut-label {
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.shortcut-status {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.search-result-count {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  background: var(--bg-soft);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.search-result-count strong {
+  color: var(--text);
 }
 
 .app-window,
@@ -1531,6 +1657,54 @@ kbd {
   font-size: 0.76rem;
 }
 
+.system-health-section {
+  grid-column: 1 / -1;
+}
+
+.system-health-list {
+  display: grid;
+  gap: 8px;
+}
+
+.health-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-soft);
+}
+
+.health-label {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.health-status {
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-muted);
+  background: var(--bg-soft);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.health-ok {
+  border-color: rgba(135, 211, 124, 0.45);
+  background: rgba(135, 211, 124, 0.14);
+  color: var(--success);
+}
+
+.health-warn {
+  border-color: rgba(243, 201, 107, 0.5);
+  background: rgba(243, 201, 107, 0.14);
+  color: var(--warning);
+}
+
 .system-notice {
   display: grid;
   gap: 16px;
@@ -1643,6 +1817,10 @@ kbd {
     grid-template-columns: 1fr;
   }
 
+  .shortcut-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .widget-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1723,6 +1901,10 @@ kbd {
   .project-grid,
   .stat-grid {
     grid-template-columns: 1fr;
+  }
+
+  .shortcut-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .desktop-widget {

@@ -1,12 +1,22 @@
 ---
 import { site } from "../../data/site";
 import { topNavigation, type ActiveApp } from "../../data/navigation";
+import { withBase } from "../../data/site";
 
 type Props = {
   active: ActiveApp;
 };
 
 const { active } = Astro.props;
+const appLabels: Record<string, string> = {
+  home: "Home",
+  projects: "Projects",
+  blog: "Blog",
+  timeline: "Timeline",
+  about: "About",
+  settings: "Settings",
+  terminal: "Terminal"
+};
 ---
 
 <header class="system-bar" transition:name="lab-system-bar" transition:persist>
@@ -33,8 +43,11 @@ const { active } = Astro.props;
       Command
     </button>
     <a href={site.repositoryUrl} target="_blank" rel="noreferrer">GitHub</a>
-    <span>{site.displayVersion}</span>
-    <span>Local First</span>
+    <span class="system-bar-status" data-system-app-label>{appLabels[active] || "Home"}</span>
+    <span class="system-bar-status" data-system-palette-label>Aurora</span>
+    <span class="system-bar-status" data-system-background-label>Aurora Mist</span>
+    <a class="system-bar-version" href={withBase("settings/")} data-app-link="settings" title="Open Settings">{site.displayVersion}</a>
+    <span class="system-bar-compact">Local First</span>
     <time data-system-time datetime="">--:--</time>
   </div>
 </header>
