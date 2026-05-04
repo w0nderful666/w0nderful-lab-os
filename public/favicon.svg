@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="w0nderful Lab OS">
+  <rect width="64" height="64" rx="12" fill="#101416"/>
+  <path d="M14 18h36v28H14z" fill="#72d7b7" opacity=".18"/>
+  <path d="M18 23h28M18 31h18M18 39h24" stroke="#72d7b7" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="48" cy="18" r="5" fill="#f3c96b"/>
+</svg>

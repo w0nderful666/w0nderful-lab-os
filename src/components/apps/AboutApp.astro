@@ -1,0 +1,51 @@
+---
+import AppWindow from "../os/AppWindow.astro";
+import Badge from "../common/Badge.astro";
+import { posts } from "../../data/posts";
+import { projects } from "../../data/projects";
+import { site } from "../../data/site";
+---
+
+<AppWindow title="About This Lab" subtitle="About.app" wide>
+  <div class="about-grid">
+    <section class="about-identity">
+      <img src={`${import.meta.env.BASE_URL}assets/lab-sigil.svg`} alt="" width="96" height="96" />
+      <p class="eyebrow">Personal Open Source Lab</p>
+      <h1>{site.name}</h1>
+      <p>Version {site.displayVersion}</p>
+      <p>Built by {site.author}</p>
+      <div class="badge-row">
+        {site.brandTags.slice(0, 3).map((tag) => <Badge label={tag} />)}
+      </div>
+    </section>
+
+    <section class="about-specs">
+      <h2>Lab Specs</h2>
+      <dl class="spec-list">
+        <div>
+          <dt>Positioning</dt>
+          <dd>OS-themed personal blog and open-source project hub.</dd>
+        </div>
+        <div>
+          <dt>Project Count</dt>
+          <dd>{projects.length}</dd>
+        </div>
+        <div>
+          <dt>Post Count</dt>
+          <dd>{posts.length}</dd>
+        </div>
+        <div>
+          <dt>Deployment</dt>
+          <dd>GitHub Pages Ready</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="about-specs">
+      <h2>Tech Stack</h2>
+      <div class="badge-row">
+        {site.techStack.map((item) => <Badge label={item} />)}
+      </div>
+    </section>
+  </div>
+</AppWindow>

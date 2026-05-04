@@ -1,0 +1,33 @@
+---
+import { dockNavigation, type ActiveApp } from "../../data/navigation";
+
+type Props = {
+  active: ActiveApp;
+};
+
+const { active } = Astro.props;
+
+const dockInitials: Record<string, string> = {
+  home: "H",
+  projects: "P",
+  blog: "B",
+  timeline: "T",
+  about: "A",
+  settings: "S"
+};
+---
+
+<nav class="dock" aria-label="Dock">
+  {
+    dockNavigation.map((item) => (
+      <a
+        href={item.href}
+        class:list={["dock-item", active === item.id && "is-active"]}
+        aria-current={active === item.id ? "page" : undefined}
+      >
+        <span class="dock-icon" aria-hidden="true">{dockInitials[item.id]}</span>
+        <span class="dock-label" data-i18n={item.i18nKey}>{item.label}</span>
+      </a>
+    ))
+  }
+</nav>

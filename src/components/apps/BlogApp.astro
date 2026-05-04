@@ -1,0 +1,159 @@
+---
+import AppWindow from "../os/AppWindow.astro";
+import PostCard from "../common/PostCard.astro";
+import Badge from "../common/Badge.astro";
+import { postCategories, posts } from "../../data/posts";
+
+const initialPost = posts[0];
+---
+
+<AppWindow title="Blog.app" subtitle="Docs and build notes" wide>
+  <div class="toolbar">
+    <label class="search-field">
+      <span>Search</span>
+      <input type="search" data-post-search-input placeholder="Search posts" autocomplete="off" />
+    </label>
+    <div class="filter-group" aria-label="Post category filters">
+      <button type="button" class="filter-button is-active" data-post-filter="all">All</button>
+      {postCategories.map((category) => <button type="button" class="filter-button" data-post-filter={category}>{category}</button>)}
+    </div>
+  </div>
+
+  <div class="split-layout">
+    <div class="post-list" data-post-list>
+      {posts.map((post, index) => <PostCard post={post} selected={index === 0} />)}
+    </div>
+
+    <aside class="detail-panel" data-post-detail aria-live="polite">
+      <p class="eyebrow" data-post-detail-category>{initialPost.category}</p>
+      <h3 data-post-detail-title>{initialPost.title}</h3>
+      <p data-post-detail-summary>{initialPost.summary}</p>
+      <div class="detail-stack">
+        <span>
+          Date:
+          <strong data-post-detail-date>{initialPost.date}</strong>
+        </span>
+        <span>
+          Related project:
+          <strong data-post-detail-project>{initialPost.relatedProject}</strong>
+        </span>
+        <span>
+          Reading time:
+          <strong data-post-detail-reading>{initialPost.readingTime}</strong>
+        </span>
+      </div>
+      <div class="badge-row" data-post-detail-tags>
+        {initialPost.tags.map((tag) => <Badge label={tag} />)}
+      </div>
+      <section class="roadmap-panel">
+        <h4>Preview and Roadmap</h4>
+        <ul data-post-detail-roadmap>
+          {initialPost.roadmap.map((item) => <li>{item}</li>)}
+        </ul>
+      </section>
+    </aside>
+  </div>
+
+  <script is:inline type="application/json" id="posts-data" set:html={JSON.stringify(posts)} />
+</AppWindow>
+
+<script>
+  type PostRecord = {
+    slug: string;
+    title: string;
+    summary: string;
+    date: string;
+    category: string;
+    tags: string[];
+    relatedProject: string;
+    readingTime: string;
+    roadmap: string[];
+  };
+
+  const dataNode = document.getElementById("posts-data");
+  const postData: PostRecord[] = dataNode?.textContent ? JSON.parse(dataNode.textContent) : [];
+  const searchInput = document.querySelector("[data-post-search-input]");
+  const filterButtons = Array.from(document.querySelectorAll("[data-post-filter]"));
+  const cards = Array.from(document.querySelectorAll("[data-post-card]"));
+  const detail = document.querySelector("[data-post-detail]");
+  let activeFilter = "all";
+  let activeSlug = new URLSearchParams(window.location.search).get("post") || postData[0]?.slug || "";
+
+  const setText = (selector: string, value: string) => {
+    const node = detail?.querySelector(selector);
+    if (node) node.textContent = value;
+  };
+
+  const selectPost = (slug: string) => {
+    const post = postData.find((item) => item.slug === slug) || postData[0];
+    if (!post) return;
+    activeSlug = post.slug;
+    cards.forEach((card) => card.setAttribute("data-selected", card.getAttribute("data-post-slug") === activeSlug ? "true" : "false"));
+    setText("[data-post-detail-category]", post.category);
+    setText("[data-post-detail-title]", post.title);
+    setText("[data-post-detail-summary]", post.summary);
+    setText("[data-post-detail-date]", post.date);
+    setText("[data-post-detail-project]", post.relatedProject);
+    setText("[data-post-detail-reading]", post.readingTime);
+    const tagWrap = detail?.querySelector("[data-post-detail-tags]");
+    if (tagWrap) {
+      tagWrap.innerHTML = "";
+      post.tags.forEach((tag) => {
+        const badge = document.createElement("span");
+        badge.className = "badge badge-default";
+        badge.textContent = tag;
+        tagWrap.append(badge);
+      });
+    }
+    const roadmap = detail?.querySelector("[data-post-detail-roadmap]");
+    if (roadmap) {
+      roadmap.innerHTML = "";
+      post.roadmap.forEach((item) => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        roadmap.append(li);
+      });
+    }
+  };
+
+  const applyPostFilters = () => {
+    const query = searchInput instanceof HTMLInputElement ? searchInput.value.trim().toLowerCase() : "";
+    let firstVisible = "";
+    cards.forEach((card) => {
+      const matchesCategory = activeFilter === "all" || card.getAttribute("data-post-category") === activeFilter;
+      const matchesSearch = (card.getAttribute("data-post-search") || "").includes(query);
+      const visible = matchesCategory && matchesSearch;
+      (card as HTMLElement).hidden = !visible;
+      if (visible && !firstVisible) firstVisible = card.getAttribute("data-post-slug") || "";
+    });
+    const selectedCard = cards.find((card) => card.getAttribute("data-post-slug") === activeSlug);
+    if (!selectedCard || (selectedCard as HTMLElement).hidden) {
+      selectPost(firstVisible);
+    }
+  };
+
+  filterButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      activeFilter = button.getAttribute("data-post-filter") || "all";
+      filterButtons.forEach((item) => item.classList.toggle("is-active", item === button));
+      applyPostFilters();
+    });
+  });
+
+  if (searchInput instanceof HTMLInputElement) {
+    searchInput.addEventListener("input", applyPostFilters);
+  }
+
+  cards.forEach((card) => {
+    card.addEventListener("click", () => selectPost(card.getAttribute("data-post-slug") || ""));
+    card.addEventListener("keydown", (event) => {
+      if (event instanceof KeyboardEvent && (event.key === "Enter" || event.key === " ")) {
+        event.preventDefault();
+        selectPost(card.getAttribute("data-post-slug") || "");
+      }
+    });
+  });
+
+  selectPost(activeSlug);
+  applyPostFilters();
+</script>

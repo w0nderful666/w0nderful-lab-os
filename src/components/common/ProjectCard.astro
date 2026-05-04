@@ -1,0 +1,54 @@
+---
+import Badge from "./Badge.astro";
+import type { Project } from "../../data/projects";
+
+type Props = {
+  project: Project;
+  selected?: boolean;
+};
+
+const { project, selected = false } = Astro.props;
+const searchIndex = [
+  project.name,
+  project.type,
+  project.summary,
+  project.status,
+  ...project.tags
+]
+  .join(" ")
+  .toLowerCase();
+---
+
+<article
+  class="project-card interactive-card"
+  data-project-card
+  data-project-slug={project.slug}
+  data-project-type={project.type}
+  data-project-search={searchIndex}
+  data-selected={selected ? "true" : "false"}
+  tabindex="0"
+  aria-label={`${project.name} project details`}
+>
+  <div class="card-heading">
+    <div>
+      <p class="eyebrow">{project.type}</p>
+      <h3>{project.name}</h3>
+    </div>
+    <Badge
+      label={project.status}
+      tone={project.status === "Active" ? "success" : project.status === "Experimental" ? "warning" : "accent"}
+    />
+  </div>
+  <p>{project.summary}</p>
+  <div class="badge-row">
+    {project.tags.map((tag) => <Badge label={tag} />)}
+  </div>
+  <div class="card-actions" aria-label={`${project.name} links`}>
+    <a class="button button-primary" href={project.liveUrl} target="_blank" rel="noreferrer">
+      Live Demo
+    </a>
+    <a class="button button-secondary" href={project.githubUrl} target="_blank" rel="noreferrer">
+      GitHub
+    </a>
+  </div>
+</article>

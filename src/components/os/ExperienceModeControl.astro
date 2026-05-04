@@ -1,0 +1,44 @@
+---
+const modes = [
+  {
+    id: "performance",
+    label: "Performance",
+    i18nKey: "settings.performance",
+    detail: "Lean motion, lighter blur, fast response."
+  },
+  {
+    id: "balanced",
+    label: "Balanced",
+    i18nKey: "settings.balanced",
+    detail: "Default desktop profile."
+  },
+  {
+    id: "quality",
+    label: "Quality",
+    i18nKey: "settings.quality",
+    detail: "Richer depth and stronger Dock feedback."
+  }
+] as const;
+---
+
+<div class="experience-control" data-experience-control>
+  <div class="segmented-control" role="group" aria-label="Experience Mode">
+    {
+      modes.map((mode) => (
+        <button type="button" class="segment-button" data-exp-choice={mode.id}>
+          <span data-i18n={mode.i18nKey}>{mode.label}</span>
+        </button>
+      ))
+    }
+  </div>
+  <div class="mode-notes">
+    {
+      modes.map((mode) => (
+        <p data-mode-note={mode.id}>
+          <strong data-i18n={mode.i18nKey}>{mode.label}</strong>
+          <span>{mode.detail}</span>
+        </p>
+      ))
+    }
+  </div>
+</div>

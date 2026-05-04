@@ -1,0 +1,16 @@
+---
+type Props = {
+  title: string;
+  meta?: string;
+};
+
+const { title, meta } = Astro.props;
+---
+
+<section class="desktop-widget motion-enter" aria-label={title}>
+  <header class="widget-header">
+    <h2>{title}</h2>
+    {meta && <span>{meta}</span>}
+  </header>
+  <slot />
+</section>

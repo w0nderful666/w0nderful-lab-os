@@ -1,0 +1,111 @@
+---
+import AppWindow from "../os/AppWindow.astro";
+import DesktopWidget from "../os/DesktopWidget.astro";
+import ExperienceModeControl from "../os/ExperienceModeControl.astro";
+import Badge from "../common/Badge.astro";
+import { posts } from "../../data/posts";
+import { projects } from "../../data/projects";
+import { site, withBase } from "../../data/site";
+import { timeline } from "../../data/timeline";
+
+const featuredProjects = projects.filter((project) => project.featured).slice(0, 4);
+const latestPosts = posts.slice(0, 3);
+const latestLogs = timeline.slice(0, 3);
+---
+
+<div class="desktop-workspace">
+  <AppWindow title="Home.app" subtitle="Desktop Workspace" wide>
+    <div class="dashboard-grid">
+      <section class="hero-console" aria-label="Welcome Terminal">
+        <div class="terminal-topline">
+          <span>Welcome Terminal</span>
+          <span>zsh</span>
+        </div>
+        <pre><code>$ whoami
+w0nderful666
+$ lab status
+A-Level Open Source Lab
+Local First / No Backend / GitHub Pages Ready</code></pre>
+      </section>
+
+      <section class="status-panel">
+        <p class="eyebrow">Personal Open Source Lab</p>
+        <h1>{site.name}</h1>
+        <p>{site.description}</p>
+        <div class="stat-grid">
+          <div>
+            <strong>{projects.length}</strong>
+            <span>Projects</span>
+          </div>
+          <div>
+            <strong>{posts.length}</strong>
+            <span>Posts</span>
+          </div>
+          <div>
+            <strong>{timeline[0].date}</strong>
+            <span>Latest Update</span>
+          </div>
+        </div>
+        <div class="badge-row">
+          {site.brandTags.map((tag) => <Badge label={tag} />)}
+        </div>
+      </section>
+    </div>
+  </AppWindow>
+
+  <div class="widget-grid">
+    <DesktopWidget title="Featured Projects" meta="Pinned apps">
+      <div class="compact-list">
+        {
+          featuredProjects.map((project) => (
+            <a class="compact-row" href={withBase(`projects/?project=${project.slug}`)}>
+              <span>{project.name}</span>
+              <small>{project.type}</small>
+            </a>
+          ))
+        }
+      </div>
+    </DesktopWidget>
+
+    <DesktopWidget title="Latest Posts" meta="Docs">
+      <div class="compact-list">
+        {
+          latestPosts.map((post) => (
+            <a class="compact-row" href={withBase(`blog/?post=${post.slug}`)}>
+              <span>{post.title}</span>
+              <small>{post.readingTime}</small>
+            </a>
+          ))
+        }
+      </div>
+    </DesktopWidget>
+
+    <DesktopWidget title="System Update Log" meta="Recent">
+      <div class="compact-list">
+        {
+          latestLogs.map((entry) => (
+            <a class="compact-row" href={withBase(`timeline/?entry=${entry.id}`)}>
+              <span>{entry.title}</span>
+              <small>{entry.type} / {entry.date}</small>
+            </a>
+          ))
+        }
+      </div>
+    </DesktopWidget>
+
+    <DesktopWidget title="Quick Actions" meta="Launch">
+      <div class="quick-actions">
+        <a class="button button-primary" href={withBase("projects/")}>Open Projects</a>
+        <a class="button button-secondary" href={withBase("blog/")}>Read Blog</a>
+        <a class="button button-secondary" href={withBase("timeline/")}>View Timeline</a>
+        <a class="button button-secondary" href={site.repositoryUrl} target="_blank" rel="noreferrer">
+          Open GitHub
+        </a>
+      </div>
+    </DesktopWidget>
+
+    <DesktopWidget title="Experience Mode" meta="Desktop profile">
+      <ExperienceModeControl />
+    </DesktopWidget>
+  </div>
+</div>

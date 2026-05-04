@@ -1,0 +1,47 @@
+---
+import Badge from "./Badge.astro";
+import type { Post } from "../../data/posts";
+
+type Props = {
+  post: Post;
+  selected?: boolean;
+};
+
+const { post, selected = false } = Astro.props;
+const searchIndex = [
+  post.title,
+  post.summary,
+  post.category,
+  post.relatedProject,
+  ...post.tags
+]
+  .join(" ")
+  .toLowerCase();
+---
+
+<article
+  class="post-card interactive-card"
+  data-post-card
+  data-post-slug={post.slug}
+  data-post-category={post.category}
+  data-post-search={searchIndex}
+  data-selected={selected ? "true" : "false"}
+  tabindex="0"
+  aria-label={`${post.title} article preview`}
+>
+  <div class="card-heading">
+    <div>
+      <p class="eyebrow">{post.category}</p>
+      <h3>{post.title}</h3>
+    </div>
+    <span class="meta-pill">{post.readingTime}</span>
+  </div>
+  <p>{post.summary}</p>
+  <div class="card-meta">
+    <span>{post.date}</span>
+    <span>{post.relatedProject}</span>
+  </div>
+  <div class="badge-row">
+    {post.tags.map((tag) => <Badge label={tag} />)}
+  </div>
+</article>

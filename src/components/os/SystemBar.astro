@@ -1,0 +1,51 @@
+---
+import { site } from "../../data/site";
+import { topNavigation, type ActiveApp } from "../../data/navigation";
+
+type Props = {
+  active: ActiveApp;
+};
+
+const { active } = Astro.props;
+---
+
+<header class="system-bar">
+  <div class="system-bar-left">
+    <a class="system-brand" href={topNavigation[0].href}>{site.name}</a>
+    <nav class="system-nav" aria-label="Primary">
+      {
+        topNavigation.map((item) => (
+          <a
+            href={item.href}
+            class:list={["system-nav-link", active === item.id && "is-active"]}
+            data-i18n={item.i18nKey}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+  <div class="system-bar-right">
+    <a href={site.repositoryUrl} target="_blank" rel="noreferrer">GitHub</a>
+    <span>{site.displayVersion}</span>
+    <span>Local First</span>
+    <time data-system-time datetime="">--:--</time>
+  </div>
+</header>
+
+<script>
+  const timeNode = document.querySelector("[data-system-time]");
+  const updateSystemTime = () => {
+    if (!(timeNode instanceof HTMLTimeElement)) return;
+    const now = new Date();
+    timeNode.textContent = new Intl.DateTimeFormat(undefined, {
+      hour: "2-digit",
+      minute: "2-digit"
+    }).format(now);
+    timeNode.dateTime = now.toISOString();
+  };
+
+  updateSystemTime();
+  window.setInterval(updateSystemTime, 30000);
+</script>

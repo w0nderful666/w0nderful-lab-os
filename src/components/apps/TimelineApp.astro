@@ -1,0 +1,128 @@
+---
+import AppWindow from "../os/AppWindow.astro";
+import Badge from "../common/Badge.astro";
+import { timeline, timelineTypes } from "../../data/timeline";
+
+const initialEntry = timeline[0];
+---
+
+<AppWindow title="Timeline.app" subtitle="System Log" wide>
+  <div class="toolbar toolbar-compact">
+    <div class="filter-group" aria-label="Timeline type filters">
+      <button type="button" class="filter-button is-active" data-log-filter="all">All</button>
+      {timelineTypes.map((type) => <button type="button" class="filter-button" data-log-filter={type}>{type}</button>)}
+    </div>
+  </div>
+
+  <div class="split-layout">
+    <div class="timeline-list" data-log-list>
+      {
+        timeline.map((entry, index) => (
+          <article
+            class="timeline-entry interactive-card"
+            data-log-card
+            data-log-id={entry.id}
+            data-log-type={entry.type}
+            data-selected={index === 0 ? "true" : "false"}
+            tabindex="0"
+          >
+            <div>
+              <p class="eyebrow">{entry.type} / {entry.date}</p>
+              <h3>{entry.title}</h3>
+              <p>{entry.description}</p>
+            </div>
+            <Badge label={entry.relatedProject} />
+          </article>
+        ))
+      }
+    </div>
+
+    <aside class="detail-panel" data-log-detail aria-live="polite">
+      <p class="eyebrow" data-log-detail-type>{initialEntry.type}</p>
+      <h3 data-log-detail-title>{initialEntry.title}</h3>
+      <p data-log-detail-description>{initialEntry.description}</p>
+      <div class="detail-stack">
+        <span>
+          Date:
+          <strong data-log-detail-date>{initialEntry.date}</strong>
+        </span>
+        <span>
+          Related project:
+          <strong data-log-detail-project>{initialEntry.relatedProject}</strong>
+        </span>
+      </div>
+    </aside>
+  </div>
+
+  <script is:inline type="application/json" id="timeline-data" set:html={JSON.stringify(timeline)} />
+</AppWindow>
+
+<script>
+  type LogRecord = {
+    id: string;
+    date: string;
+    type: string;
+    title: string;
+    description: string;
+    relatedProject: string;
+  };
+
+  const dataNode = document.getElementById("timeline-data");
+  const logData: LogRecord[] = dataNode?.textContent ? JSON.parse(dataNode.textContent) : [];
+  const filterButtons = Array.from(document.querySelectorAll("[data-log-filter]"));
+  const cards = Array.from(document.querySelectorAll("[data-log-card]"));
+  const detail = document.querySelector("[data-log-detail]");
+  let activeFilter = "all";
+  let activeId = new URLSearchParams(window.location.search).get("entry") || logData[0]?.id || "";
+
+  const setText = (selector: string, value: string) => {
+    const node = detail?.querySelector(selector);
+    if (node) node.textContent = value;
+  };
+
+  const selectLog = (id: string) => {
+    const entry = logData.find((item) => item.id === id) || logData[0];
+    if (!entry) return;
+    activeId = entry.id;
+    cards.forEach((card) => card.setAttribute("data-selected", card.getAttribute("data-log-id") === activeId ? "true" : "false"));
+    setText("[data-log-detail-type]", entry.type);
+    setText("[data-log-detail-title]", entry.title);
+    setText("[data-log-detail-description]", entry.description);
+    setText("[data-log-detail-date]", entry.date);
+    setText("[data-log-detail-project]", entry.relatedProject);
+  };
+
+  const applyLogFilters = () => {
+    let firstVisible = "";
+    cards.forEach((card) => {
+      const visible = activeFilter === "all" || card.getAttribute("data-log-type") === activeFilter;
+      (card as HTMLElement).hidden = !visible;
+      if (visible && !firstVisible) firstVisible = card.getAttribute("data-log-id") || "";
+    });
+    const selectedCard = cards.find((card) => card.getAttribute("data-log-id") === activeId);
+    if (!selectedCard || (selectedCard as HTMLElement).hidden) {
+      selectLog(firstVisible);
+    }
+  };
+
+  filterButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      activeFilter = button.getAttribute("data-log-filter") || "all";
+      filterButtons.forEach((item) => item.classList.toggle("is-active", item === button));
+      applyLogFilters();
+    });
+  });
+
+  cards.forEach((card) => {
+    card.addEventListener("click", () => selectLog(card.getAttribute("data-log-id") || ""));
+    card.addEventListener("keydown", (event) => {
+      if (event instanceof KeyboardEvent && (event.key === "Enter" || event.key === " ")) {
+        event.preventDefault();
+        selectLog(card.getAttribute("data-log-id") || "");
+      }
+    });
+  });
+
+  selectLog(activeId);
+  applyLogFilters();
+</script>

@@ -1,0 +1,26 @@
+---
+type Props = {
+  title: string;
+  subtitle?: string;
+  wide?: boolean;
+};
+
+const { title, subtitle, wide = false } = Astro.props;
+---
+
+<section class={`app-window motion-enter${wide ? " app-window-wide" : ""}`} aria-label={title}>
+  <header class="window-header">
+    <div class="window-controls" aria-hidden="true">
+      <span class="control control-close"></span>
+      <span class="control control-minimize"></span>
+      <span class="control control-maximize"></span>
+    </div>
+    <div>
+      <h2>{title}</h2>
+      {subtitle && <p>{subtitle}</p>}
+    </div>
+  </header>
+  <div class="window-body">
+    <slot />
+  </div>
+</section>

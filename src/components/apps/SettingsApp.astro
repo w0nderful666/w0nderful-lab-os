@@ -1,0 +1,58 @@
+---
+import AppWindow from "../os/AppWindow.astro";
+import ExperienceModeControl from "../os/ExperienceModeControl.astro";
+---
+
+<AppWindow title="Settings.app" subtitle="System Settings" wide>
+  <div class="settings-grid">
+    <section class="setting-panel">
+      <div>
+        <p class="eyebrow" data-i18n="settings.theme">Theme</p>
+        <h3>Display</h3>
+      </div>
+      <label class="select-field">
+        <span data-i18n="settings.theme">Theme</span>
+        <select data-setting-theme>
+          <option value="light" data-i18n="settings.light">Light</option>
+          <option value="dark" data-i18n="settings.dark">Dark</option>
+          <option value="system" data-i18n="settings.system">System</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="setting-panel">
+      <div>
+        <p class="eyebrow" data-i18n="settings.experience">Experience Mode</p>
+        <h3>
+          Current:
+          <span data-current-experience>Balanced</span>
+        </h3>
+      </div>
+      <ExperienceModeControl />
+    </section>
+
+    <section class="setting-panel">
+      <div>
+        <p class="eyebrow" data-i18n="settings.language">Language</p>
+        <h3>Interface Copy</h3>
+      </div>
+      <label class="select-field">
+        <span data-i18n="settings.language">Language</span>
+        <select data-setting-language>
+          <option value="en">English</option>
+          <option value="zh">&#20013;&#25991;</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="setting-panel">
+      <div>
+        <p class="eyebrow" data-i18n="settings.storage">Saved to localStorage</p>
+        <h3>Local Settings</h3>
+      </div>
+      <button type="button" class="button button-danger" data-reset-settings data-i18n="settings.reset">
+        Reset local settings
+      </button>
+    </section>
+  </div>
+</AppWindow>

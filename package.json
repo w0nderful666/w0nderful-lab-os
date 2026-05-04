@@ -1,0 +1,39 @@
+{
+  "name": "w0nderful-lab-os",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "OS-themed personal blog and open-source lab hub for w0nderful666.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/w0nderful666/w0nderful-lab-os"
+  },
+  "homepage": "https://w0nderful666.github.io/w0nderful-lab-os/",
+  "keywords": [
+    "astro",
+    "typescript",
+    "github-pages",
+    "local-first",
+    "no-backend",
+    "personal-blog",
+    "open-source-lab",
+    "os-theme"
+  ],
+  "scripts": {
+    "dev": "node scripts/run-astro.mjs dev",
+    "build": "node scripts/run-astro.mjs build",
+    "preview": "node scripts/run-astro.mjs preview",
+    "check": "node scripts/run-astro.mjs check",
+    "self-test": "node scripts/self-test.mjs",
+    "preflight": "node scripts/preflight.mjs"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "astro": "^5.13.5",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

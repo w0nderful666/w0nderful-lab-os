@@ -1,0 +1,153 @@
+---
+import AppWindow from "../os/AppWindow.astro";
+import ProjectCard from "../common/ProjectCard.astro";
+import Badge from "../common/Badge.astro";
+import { projectTypes, projects } from "../../data/projects";
+
+const initialProject = projects[0];
+---
+
+<AppWindow title="Projects.app" subtitle="Open-source project matrix" wide>
+  <div class="toolbar">
+    <label class="search-field">
+      <span>Search</span>
+      <input type="search" data-project-search-input placeholder="Search projects" autocomplete="off" />
+    </label>
+    <div class="filter-group" aria-label="Project type filters">
+      <button type="button" class="filter-button is-active" data-project-filter="all">All</button>
+      {projectTypes.map((type) => <button type="button" class="filter-button" data-project-filter={type}>{type}</button>)}
+    </div>
+  </div>
+
+  <div class="split-layout">
+    <div class="project-grid" data-project-grid>
+      {projects.map((project, index) => <ProjectCard project={project} selected={index === 0} />)}
+    </div>
+
+    <aside class="detail-panel" data-project-detail aria-live="polite">
+      <p class="eyebrow" data-project-detail-type>{initialProject.type}</p>
+      <h3 data-project-detail-name>{initialProject.name}</h3>
+      <p data-project-detail-summary>{initialProject.summary}</p>
+      <div class="detail-stack">
+        <span>
+          Status:
+          <strong data-project-detail-status>{initialProject.status}</strong>
+        </span>
+        <span>
+          Repository:
+          <strong data-project-detail-repo>{initialProject.githubUrl.replace("https://github.com/", "")}</strong>
+        </span>
+      </div>
+      <div class="badge-row" data-project-detail-tags>
+        {initialProject.tags.map((tag) => <Badge label={tag} />)}
+      </div>
+      <div class="card-actions">
+        <a class="button button-primary" data-project-detail-live href={initialProject.liveUrl} target="_blank" rel="noreferrer">
+          Live Demo
+        </a>
+        <a class="button button-secondary" data-project-detail-github href={initialProject.githubUrl} target="_blank" rel="noreferrer">
+          GitHub
+        </a>
+      </div>
+    </aside>
+  </div>
+
+  <script is:inline type="application/json" id="projects-data" set:html={JSON.stringify(projects)} />
+</AppWindow>
+
+<script>
+  type ProjectRecord = {
+    slug: string;
+    name: string;
+    type: string;
+    summary: string;
+    status: string;
+    tags: string[];
+    liveUrl: string;
+    githubUrl: string;
+  };
+
+  const dataNode = document.getElementById("projects-data");
+  const projectData: ProjectRecord[] = dataNode?.textContent ? JSON.parse(dataNode.textContent) : [];
+  const searchInput = document.querySelector("[data-project-search-input]");
+  const filterButtons = Array.from(document.querySelectorAll("[data-project-filter]"));
+  const cards = Array.from(document.querySelectorAll("[data-project-card]"));
+  const detail = document.querySelector("[data-project-detail]");
+  let activeFilter = "all";
+  let activeSlug = new URLSearchParams(window.location.search).get("project") || projectData[0]?.slug || "";
+
+  const setText = (selector: string, value: string) => {
+    const node = detail?.querySelector(selector);
+    if (node) node.textContent = value;
+  };
+
+  const selectProject = (slug: string) => {
+    const project = projectData.find((item) => item.slug === slug) || projectData[0];
+    if (!project) return;
+    activeSlug = project.slug;
+    cards.forEach((card) => card.setAttribute("data-selected", card.getAttribute("data-project-slug") === activeSlug ? "true" : "false"));
+    setText("[data-project-detail-type]", project.type);
+    setText("[data-project-detail-name]", project.name);
+    setText("[data-project-detail-summary]", project.summary);
+    setText("[data-project-detail-status]", project.status);
+    setText("[data-project-detail-repo]", project.githubUrl.replace("https://github.com/", ""));
+    const live = detail?.querySelector("[data-project-detail-live]");
+    const github = detail?.querySelector("[data-project-detail-github]");
+    if (live instanceof HTMLAnchorElement) live.href = project.liveUrl;
+    if (github instanceof HTMLAnchorElement) github.href = project.githubUrl;
+    const tagWrap = detail?.querySelector("[data-project-detail-tags]");
+    if (tagWrap) {
+      tagWrap.innerHTML = "";
+      project.tags.forEach((tag) => {
+        const badge = document.createElement("span");
+        badge.className = "badge badge-default";
+        badge.textContent = tag;
+        tagWrap.append(badge);
+      });
+    }
+  };
+
+  const applyProjectFilters = () => {
+    const query = searchInput instanceof HTMLInputElement ? searchInput.value.trim().toLowerCase() : "";
+    let firstVisible = "";
+    cards.forEach((card) => {
+      const matchesType = activeFilter === "all" || card.getAttribute("data-project-type") === activeFilter;
+      const matchesSearch = (card.getAttribute("data-project-search") || "").includes(query);
+      const visible = matchesType && matchesSearch;
+      (card as HTMLElement).hidden = !visible;
+      if (visible && !firstVisible) firstVisible = card.getAttribute("data-project-slug") || "";
+    });
+    const selectedCard = cards.find((card) => card.getAttribute("data-project-slug") === activeSlug);
+    if (!selectedCard || (selectedCard as HTMLElement).hidden) {
+      selectProject(firstVisible);
+    }
+  };
+
+  filterButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      activeFilter = button.getAttribute("data-project-filter") || "all";
+      filterButtons.forEach((item) => item.classList.toggle("is-active", item === button));
+      applyProjectFilters();
+    });
+  });
+
+  if (searchInput instanceof HTMLInputElement) {
+    searchInput.addEventListener("input", applyProjectFilters);
+  }
+
+  cards.forEach((card) => {
+    card.addEventListener("click", (event) => {
+      if ((event.target as Element).closest("a")) return;
+      selectProject(card.getAttribute("data-project-slug") || "");
+    });
+    card.addEventListener("keydown", (event) => {
+      if (event instanceof KeyboardEvent && (event.key === "Enter" || event.key === " ")) {
+        event.preventDefault();
+        selectProject(card.getAttribute("data-project-slug") || "");
+      }
+    });
+  });
+
+  selectProject(activeSlug);
+  applyProjectFilters();
+</script>

@@ -1,0 +1,58 @@
+@keyframes window-enter {
+  from {
+    opacity: 0;
+    transform: translateY(var(--motion-distance));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.motion-enter {
+  animation: window-enter var(--motion-duration) ease both;
+}
+
+.app-window,
+.desktop-widget,
+.interactive-card,
+.detail-panel {
+  transition:
+    transform var(--motion-duration) ease,
+    border-color var(--motion-duration) ease,
+    box-shadow var(--motion-duration) ease,
+    background var(--motion-duration) ease,
+    opacity var(--motion-duration) ease;
+}
+
+.interactive-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
+}
+
+.dock-item:hover {
+  transform: translateY(-2px) scale(1.04);
+}
+
+html[data-experience="quality"] .dock-item:hover {
+  transform: translateY(-4px) scale(1.09);
+}
+
+.dock-item:active {
+  transform: translateY(1px) scale(0.96);
+}
+
+html[data-experience="performance"] .interactive-card:hover,
+html[data-experience="performance"] .dock-item:hover,
+html[data-experience="performance"] .button:hover {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
