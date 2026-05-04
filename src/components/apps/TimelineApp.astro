@@ -13,11 +13,16 @@ const initialProject = projects.find(
 ---
 
 <AppWindow title="Timeline.app" subtitle="System Log" wide detailControls>
-  <div class="toolbar toolbar-compact">
+  <div class="toolbar toolbar-stacked">
+    <label class="search-field">
+      <span>Search</span>
+      <input type="search" data-log-search-input placeholder="Search timeline entries" autocomplete="off" />
+    </label>
     <div class="filter-group" aria-label="Timeline type filters">
       <button type="button" class="filter-button is-active" data-log-filter="all">All</button>
       {timelineTypes.map((type) => <button type="button" class="filter-button" data-log-filter={type}>{type}</button>)}
     </div>
+    <button type="button" class="button button-secondary" data-log-clear-filters>Clear Filters</button>
   </div>
 
   <div class="master-detail timeline-workbench" data-log-layout data-layout="idle">
@@ -29,6 +34,7 @@ const initialProject = projects.find(
             data-log-card
             data-log-id={entry.id}
             data-log-type={entry.type}
+            data-log-search={`${entry.title} ${entry.description} ${entry.type} ${entry.relatedProject} ${entry.date}`.toLowerCase()}
             data-selected={index === 0 ? "true" : "false"}
             tabindex="0"
           >
@@ -84,6 +90,7 @@ const initialProject = projects.find(
 </AppWindow>
 
 <script>
+  const initTimelineApp = () => {
   type LogRecord = {
     id: string;
     date: string;
@@ -103,10 +110,13 @@ const initialProject = projects.find(
   const projectDataNode = document.getElementById("timeline-projects-data");
   const logData: LogRecord[] = dataNode?.textContent ? JSON.parse(dataNode.textContent) : [];
   const projectData: ProjectRecord[] = projectDataNode?.textContent ? JSON.parse(projectDataNode.textContent) : [];
+  const searchInput = document.querySelector("[data-log-search-input]");
   const filterButtons = Array.from(document.querySelectorAll("[data-log-filter]"));
   const cards = Array.from(document.querySelectorAll("[data-log-card]"));
   const detail = document.querySelector("[data-log-detail]");
   const layout = document.querySelector("[data-log-layout]");
+  if (!(layout instanceof HTMLElement) || layout.dataset.controllerReady === "true") return;
+  layout.dataset.controllerReady = "true";
   let activeFilter = "all";
   let activeId = new URLSearchParams(window.location.search).get("entry") || logData[0]?.id || "";
 
@@ -165,9 +175,12 @@ const initialProject = projects.find(
   };
 
   const applyLogFilters = () => {
+    const query = searchInput instanceof HTMLInputElement ? searchInput.value.trim().toLowerCase() : "";
     let firstVisible = "";
     cards.forEach((card) => {
-      const visible = activeFilter === "all" || card.getAttribute("data-log-type") === activeFilter;
+      const matchesType = activeFilter === "all" || card.getAttribute("data-log-type") === activeFilter;
+      const matchesSearch = (card.getAttribute("data-log-search") || "").includes(query);
+      const visible = matchesType && matchesSearch;
       (card as HTMLElement).hidden = !visible;
       if (visible && !firstVisible) firstVisible = card.getAttribute("data-log-id") || "";
     });
@@ -184,6 +197,10 @@ const initialProject = projects.find(
       applyLogFilters();
     });
   });
+
+  if (searchInput instanceof HTMLInputElement) {
+    searchInput.addEventListener("input", applyLogFilters);
+  }
 
   cards.forEach((card) => {
     card.addEventListener("click", () => {
@@ -220,6 +237,20 @@ const initialProject = projects.find(
     });
   }
 
+  const clearButton = document.querySelector("[data-log-clear-filters]");
+  if (clearButton instanceof HTMLButtonElement) {
+    clearButton.addEventListener("click", () => {
+      activeFilter = "all";
+      if (searchInput instanceof HTMLInputElement) searchInput.value = "";
+      filterButtons.forEach((item) => item.classList.toggle("is-active", item.getAttribute("data-log-filter") === "all"));
+      applyLogFilters();
+    });
+  }
+
   selectLog(activeId, new URLSearchParams(window.location.search).has("entry"));
   applyLogFilters();
+  };
+
+  initTimelineApp();
+  document.addEventListener("astro:page-load", initTimelineApp);
 </script>

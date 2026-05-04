@@ -153,7 +153,7 @@ html[data-experience="performance"] .setting-panel {
 }
 
 .dock-item.is-active .dock-icon {
-  box-shadow: 0 0 18px rgba(114, 215, 183, 0.38);
+  box-shadow: 0 0 18px var(--active-glow);
 }
 
 .dock-icon {
@@ -423,6 +423,10 @@ html[data-experience="performance"] .setting-panel {
   gap: 14px;
   margin-bottom: 18px;
   min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-soft);
 }
 
 .toolbar-compact {
@@ -430,9 +434,18 @@ html[data-experience="performance"] .setting-panel {
 }
 
 .toolbar-stacked {
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
   align-items: stretch;
-  grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
+}
+
+.toolbar-stacked .search-field {
+  flex: 1 1 320px;
+}
+
+.toolbar .button {
+  width: auto;
+  min-height: 38px;
 }
 
 .filter-stack {
@@ -481,6 +494,13 @@ html[data-experience="performance"] .setting-panel {
   border-radius: var(--radius-sm);
   color: var(--text-muted);
   background: var(--bg-soft);
+}
+
+.filter-group {
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.025);
 }
 
 .filter-button:hover,
@@ -537,11 +557,11 @@ html[data-experience="performance"] .setting-panel {
 }
 
 .master-detail[data-layout="focused"] > .master-panel {
-  flex-basis: 36%;
+  flex-basis: 27%;
 }
 
 .master-detail[data-layout="focused"] > .detail-panel {
-  flex-basis: 64%;
+  flex-basis: 73%;
   overflow: auto;
   opacity: 1;
   pointer-events: auto;
@@ -584,6 +604,36 @@ html[data-experience="performance"] .setting-panel {
 
 .master-detail[data-layout="focused"] .project-grid {
   grid-template-columns: 1fr;
+}
+
+.master-detail[data-layout="focused"] .project-card,
+.master-detail[data-layout="focused"] .post-card,
+.master-detail[data-layout="focused"] .timeline-entry {
+  min-height: auto;
+  gap: 8px;
+  padding: 12px;
+}
+
+.master-detail[data-layout="focused"] .project-card p:not(.eyebrow),
+.master-detail[data-layout="focused"] .post-card p:not(.eyebrow),
+.master-detail[data-layout="focused"] .timeline-entry p:not(.eyebrow) {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.master-detail[data-layout="focused"] .master-panel .badge-row {
+  gap: 5px;
+}
+
+.master-detail[data-layout="focused"] .master-panel .badge-row .badge:nth-child(n + 4) {
+  display: none;
+}
+
+.master-detail[data-layout="focused"] .master-panel .card-actions,
+.master-detail[data-layout="focused"] .master-panel .card-meta span:nth-child(n + 2) {
+  display: none;
 }
 
 .post-list,
@@ -658,11 +708,13 @@ html[data-experience="performance"] .setting-panel {
 
 .detail-panel {
   position: sticky;
-  top: 88px;
+  top: var(--system-bar-offset);
   display: grid;
   gap: 12px;
   padding: 16px;
   min-width: 0;
+  max-height: var(--detail-panel-max-height);
+  overflow: auto;
 }
 
 .detail-panel h3 {
@@ -1197,6 +1249,7 @@ kbd {
 
   .detail-panel {
     position: static;
+    max-height: none;
   }
 }
 
@@ -1278,7 +1331,7 @@ kbd {
   }
 
   .toolbar-stacked {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
 
   .search-field,

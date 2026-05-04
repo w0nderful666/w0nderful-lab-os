@@ -1,5 +1,16 @@
 # Release Notes
 
+## v0.4.1
+
+- Added page-level smooth transitions with Astro View Transitions and ClientRouter for SPA-like Navigation while preserving static routes, GitHub Pages deployment, and SEO-friendly HTML.
+- Added Persistent OS shell transition names so System Bar, Dock, Command Palette host, and footer feel continuous across internal page navigation.
+- Made scripts lifecycle-safe for ClientRouter by initializing System State, Command Palette, Terminal.app, and Master-Detail apps through `astro:page-load` compatible controllers.
+- Improved focused Master-Detail layout from roughly 36/64 to 27/73 so the detail panel becomes the main reading surface.
+- Added sticky desktop detail panels with internal scrolling for Projects.app, Blog.app, and Timeline.app.
+- Added Theme Palette options: Aurora, Graphite, Ubuntu, Mint, and Neon Terminal.
+- Added Background Presets: Aurora Mist, Desktop Grid, Terminal Glow, Paper Light, and Space Lab.
+- Refined Projects.app, Blog.app, and Timeline.app toolbar and filter UX with clearer wrapping, stronger active states, search priority, and Clear Filters actions.
+
 ## v0.4.0
 
 - Added the Control Layer Release foundation with shared System State for current app, selected project/post/timeline item, layout state, preferences, Recent Items, and command history.

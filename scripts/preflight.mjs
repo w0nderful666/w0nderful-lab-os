@@ -76,10 +76,10 @@ async function readRootFile(filePath) {
 
 async function checkPackageVersion() {
   const packageJson = JSON.parse(await readRootFile("package.json"));
-  if (packageJson.version === "0.4.0") {
-    pass("package.json version is 0.4.0");
+  if (packageJson.version === "0.4.1") {
+    pass("package.json version is 0.4.1");
   } else {
-    fail(`package.json version is ${packageJson.version}, expected 0.4.0`);
+    fail(`package.json version is ${packageJson.version}, expected 0.4.1`);
   }
 }
 
@@ -98,6 +98,13 @@ async function checkReadme() {
     "Recent Items",
     "Global Search",
     "Project / Blog / Timeline Linking",
+    "SPA-like Navigation",
+    "Astro View Transitions",
+    "Persistent OS Shell",
+    "Sticky Detail Panel",
+    "Theme Palette",
+    "Background Presets",
+    "Toolbar / Filter UX",
     "Motion Speed",
     "Master-Detail"
   ];
@@ -113,10 +120,27 @@ async function checkReadme() {
 
 async function checkReleaseNotes() {
   const releaseNotes = await readRootFile("RELEASE_NOTES.md");
-  if (releaseNotes.includes("v0.4.0")) {
-    pass("RELEASE_NOTES contains v0.4.0");
+  if (releaseNotes.includes("v0.4.1")) {
+    pass("RELEASE_NOTES contains v0.4.1");
   } else {
-    fail("RELEASE_NOTES contains v0.4.0");
+    fail("RELEASE_NOTES contains v0.4.1");
+  }
+
+  const required = [
+    "page-level smooth transitions",
+    "ClientRouter",
+    "Persistent OS shell",
+    "lifecycle-safe",
+    "Theme Palette",
+    "Background Presets"
+  ];
+
+  for (const value of required) {
+    if (releaseNotes.includes(value)) {
+      pass(`RELEASE_NOTES contains ${value}`);
+    } else {
+      fail(`RELEASE_NOTES contains ${value}`);
+    }
   }
 }
 
@@ -131,7 +155,11 @@ async function checkControlLayer() {
     "src/scripts/command-palette.ts",
     "src/scripts/terminal.ts",
     "docs/COMMAND_SYSTEM.md",
+    "docs/MOTION_GUIDE.md",
+    "docs/INTERACTION_RULES.md",
+    "docs/APP_LAYOUT_STANDARD.md",
     "docs/SYSTEM_STATE.md",
+    "docs/THEME_SYSTEM.md",
     "docs/TERMINAL_COMMANDS.md"
   ];
 
@@ -180,6 +208,70 @@ async function checkControlLayer() {
     } else {
       fail(`commands.ts contains ${value}`);
     }
+  }
+}
+
+async function checkInteractionPolish() {
+  const layout = await readRootFile("src/layouts/BaseLayout.astro");
+  if (layout.includes("ClientRouter") && layout.includes("astro:transitions")) {
+    pass("BaseLayout uses Astro ClientRouter / View Transitions");
+  } else {
+    fail("BaseLayout uses Astro ClientRouter / View Transitions");
+  }
+
+  if (layout.includes("transition:name") && layout.includes("lab-main") && layout.includes("transition:persist")) {
+    pass("BaseLayout contains transition names and persistent shell markers");
+  } else {
+    fail("BaseLayout contains transition names and persistent shell markers");
+  }
+
+  const systemState = await readRootFile("src/scripts/system-state.ts");
+  if (systemState.includes("astro:page-load") && systemState.includes("astro:transitions/client") && systemState.includes("dataset.palette")) {
+    pass("system-state is lifecycle-safe and palette-aware");
+  } else {
+    fail("system-state is lifecycle-safe and palette-aware");
+  }
+
+  if (systemState.includes("dataset.background") && systemState.includes("setBackground")) {
+    pass("system-state contains background preset logic");
+  } else {
+    fail("system-state contains background preset logic");
+  }
+
+  const tokens = await readRootFile("src/styles/tokens.css");
+  if (tokens.includes('html[data-palette="graphite"]') && tokens.includes('html[data-background="space"]')) {
+    pass("tokens.css contains palette and background presets");
+  } else {
+    fail("tokens.css contains palette and background presets");
+  }
+
+  const osTheme = await readRootFile("src/styles/os-theme.css");
+  if (osTheme.includes("flex-basis: 27%") && osTheme.includes("flex-basis: 73%")) {
+    pass("focused Master-Detail ratio is optimized");
+  } else {
+    fail("focused Master-Detail ratio is optimized");
+  }
+
+  if (osTheme.includes("position: sticky") && osTheme.includes("--detail-panel-max-height")) {
+    pass("Sticky Detail Panel CSS exists");
+  } else {
+    fail("Sticky Detail Panel CSS exists");
+  }
+
+  const settings = await readRootFile("src/components/apps/SettingsApp.astro");
+  if (settings.includes("Theme Palette") && settings.includes("Background Preset")) {
+    pass("Settings contains Palette and Background Preset");
+  } else {
+    fail("Settings contains Palette and Background Preset");
+  }
+
+  const projects = await readRootFile("src/components/apps/ProjectsApp.astro");
+  const blog = await readRootFile("src/components/apps/BlogApp.astro");
+  const timeline = await readRootFile("src/components/apps/TimelineApp.astro");
+  if (projects.includes("data-project-clear-filters") && blog.includes("data-post-clear-filters") && timeline.includes("data-log-clear-filters")) {
+    pass("Projects / Blog / Timeline include toolbar clear filters");
+  } else {
+    fail("Projects / Blog / Timeline include toolbar clear filters");
   }
 }
 
@@ -290,6 +382,7 @@ await checkReleaseNotes();
 await checkAstroConfig();
 await checkWorkflow();
 await checkControlLayer();
+await checkInteractionPolish();
 await checkForbiddenContent();
 await checkPrivacyBoundary();
 await checkDist();

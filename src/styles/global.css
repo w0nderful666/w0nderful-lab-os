@@ -17,15 +17,7 @@ body {
   font-size: 16px;
   line-height: 1.5;
   letter-spacing: 0;
-  background:
-    linear-gradient(135deg, rgba(21, 54, 47, 0.88), rgba(47, 42, 30, 0.72) 48%, rgba(18, 23, 27, 0.92)),
-    var(--bg);
-}
-
-html[data-theme="light"] body {
-  background:
-    linear-gradient(135deg, rgba(222, 242, 235, 0.96), rgba(239, 231, 211, 0.9) 52%, rgba(228, 236, 241, 0.96)),
-    var(--bg);
+  background: var(--body-background), var(--bg);
 }
 
 body::before {
@@ -34,17 +26,9 @@ body::before {
   z-index: -1;
   pointer-events: none;
   content: "";
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
-  background-size: 64px 64px;
+  background-image: var(--body-pattern);
+  background-size: var(--body-pattern-size);
   mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.58), transparent 82%);
-}
-
-html[data-theme="light"] body::before {
-  background-image:
-    linear-gradient(rgba(13, 62, 52, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(13, 62, 52, 0.045) 1px, transparent 1px);
 }
 
 a {

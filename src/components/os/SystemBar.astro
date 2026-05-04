@@ -9,7 +9,7 @@ type Props = {
 const { active } = Astro.props;
 ---
 
-<header class="system-bar">
+<header class="system-bar" transition:name="lab-system-bar" transition:persist>
   <div class="system-bar-left">
     <a class="system-brand" href={topNavigation[0].href}>{site.name}</a>
     <nav class="system-nav" aria-label="Primary">

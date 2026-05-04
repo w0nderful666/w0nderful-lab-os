@@ -18,7 +18,7 @@ const dockInitials: Record<string, string> = {
 };
 ---
 
-<nav class="dock" aria-label="Dock">
+<nav class="dock" aria-label="Dock" transition:name="lab-dock" transition:persist>
   {
     dockNavigation.map((item) => (
       <a

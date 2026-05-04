@@ -31,6 +31,49 @@
   }
 }
 
+::view-transition-old(lab-main),
+::view-transition-new(lab-main),
+::view-transition-old(lab-app-window),
+::view-transition-new(lab-app-window) {
+  animation-duration: var(--app-duration);
+  animation-timing-function: ease;
+}
+
+::view-transition-old(lab-main),
+::view-transition-old(lab-app-window) {
+  animation-name: lab-page-out;
+}
+
+::view-transition-new(lab-main),
+::view-transition-new(lab-app-window) {
+  animation-name: lab-page-in;
+}
+
+::view-transition-old(lab-system-bar),
+::view-transition-new(lab-system-bar),
+::view-transition-old(lab-dock),
+::view-transition-new(lab-dock),
+::view-transition-old(lab-command-palette),
+::view-transition-new(lab-command-palette),
+::view-transition-old(lab-footer),
+::view-transition-new(lab-footer) {
+  animation-duration: 1ms;
+}
+
+@keyframes lab-page-out {
+  to {
+    opacity: 0;
+    transform: translateY(calc(var(--page-transition-distance) * -0.35)) scale(var(--page-transition-scale));
+  }
+}
+
+@keyframes lab-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--page-transition-distance)) scale(var(--page-transition-scale));
+  }
+}
+
 .motion-enter {
   animation: window-enter var(--app-duration) ease both;
 }
@@ -102,11 +145,23 @@ html[data-experience="performance"] .desktop-stagger {
   animation: none;
 }
 
+html[data-experience="performance"]::view-transition-old(lab-main),
+html[data-experience="performance"]::view-transition-new(lab-main),
+html[data-experience="performance"]::view-transition-old(lab-app-window),
+html[data-experience="performance"]::view-transition-new(lab-app-window) {
+  animation-duration: 1ms;
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 1ms !important;
   }
 }

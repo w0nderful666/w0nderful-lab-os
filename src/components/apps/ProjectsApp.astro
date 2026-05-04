@@ -26,7 +26,7 @@ const serializedPosts = posts.map((post) => ({
       <input type="search" data-project-search-input placeholder="Search projects, tags, or features" autocomplete="off" />
     </label>
 
-    <div class="filter-stack">
+      <div class="filter-stack">
       <div class="filter-group" aria-label="Project category filters">
         <button type="button" class="filter-button is-active" data-project-category-filter="all">All</button>
         {
@@ -44,6 +44,7 @@ const serializedPosts = posts.map((post) => ({
           ))
         }
       </div>
+      <button type="button" class="button button-secondary" data-project-clear-filters>Clear Filters</button>
     </div>
   </div>
 
@@ -134,6 +135,7 @@ const serializedPosts = posts.map((post) => ({
 </AppWindow>
 
 <script>
+  const initProjectsApp = () => {
   type ProjectRecord = {
     slug: string;
     name: string;
@@ -169,6 +171,8 @@ const serializedPosts = posts.map((post) => ({
   const detail = document.querySelector("[data-project-detail]");
   const layout = document.querySelector("[data-project-layout]");
   const emptyState = document.querySelector("[data-project-empty]");
+  if (!(layout instanceof HTMLElement) || layout.dataset.controllerReady === "true") return;
+  layout.dataset.controllerReady = "true";
   let activeCategory = "all";
   let activeStatus = "all";
   let activeSlug = new URLSearchParams(window.location.search).get("project") || projectData[0]?.slug || "";
@@ -343,6 +347,22 @@ const serializedPosts = posts.map((post) => ({
     });
   }
 
+  const clearButton = document.querySelector("[data-project-clear-filters]");
+  if (clearButton instanceof HTMLButtonElement) {
+    clearButton.addEventListener("click", () => {
+      activeCategory = "all";
+      activeStatus = "all";
+      if (searchInput instanceof HTMLInputElement) searchInput.value = "";
+      categoryButtons.forEach((item) => item.classList.toggle("is-active", item.getAttribute("data-project-category-filter") === "all"));
+      statusButtons.forEach((item) => item.classList.toggle("is-active", item.getAttribute("data-project-status-filter") === "all"));
+      applyProjectFilters();
+    });
+  }
+
   selectProject(activeSlug, new URLSearchParams(window.location.search).has("project"));
   applyProjectFilters();
+  };
+
+  initProjectsApp();
+  document.addEventListener("astro:page-load", initProjectsApp);
 </script>

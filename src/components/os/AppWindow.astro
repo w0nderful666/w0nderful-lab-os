@@ -10,7 +10,13 @@ const { title, subtitle, wide = false, detailControls = false } = Astro.props;
 const windowId = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 ---
 
-<section class={`app-window motion-enter${wide ? " app-window-wide" : ""}`} aria-label={title} data-app-window={windowId}>
+<section
+  class={`app-window motion-enter${wide ? " app-window-wide" : ""}`}
+  aria-label={title}
+  data-app-window={windowId}
+  transition:name="lab-app-window"
+  transition:animate="fade"
+>
   <header class="window-header">
     <div class="window-controls">
       <button type="button" class="control control-close" data-window-close-app aria-label="Close app">

@@ -2,7 +2,7 @@
 
 OS-themed personal blog, open-source lab, and project showcase hub for w0nderful666.
 
-Current version: `v0.4.0`
+Current version: `v0.4.1`
 
 Live demo: https://w0nderful666.github.io/w0nderful-lab-os/
 
@@ -32,9 +32,19 @@ This project is designed as a long-term personal brand hub, not a disposable dem
 - Command Palette opened with Ctrl/Cmd + K for apps, projects, posts, timeline entries, settings, utility actions, and Global Search.
 - Terminal.app with real local commands for navigation, project opening, settings changes, search, status, version, and GitHub profile launch.
 - System State shared by Dock, System Bar, Command Palette, Terminal.app, Settings.app, and Master-Detail apps.
+- SPA-like Navigation powered by Astro View Transitions and ClientRouter, keeping the OS shell visually continuous while preserving static routes.
 - Recent Items for recently opened projects, posts, timeline entries, and important commands.
 - Project / Blog / Timeline Linking so related projects, articles, and log entries open through the same control layer.
+- Sticky Detail Panel and focused Master-Detail layout so details become the primary reading surface on desktop.
+- Theme Palette and Background Presets controlled from Settings.app through CSS variables.
+- Toolbar / Filter UX for Projects.app, Blog.app, and Timeline.app search and filters.
 - Local First, No Backend, Privacy Friendly, GitHub Pages Ready.
+
+## SPA-like Navigation
+
+Astro View Transitions and `<ClientRouter />` provide page-level smooth transitions without turning the project into a React or Vue SPA. Every route still builds as static HTML, remains GitHub Pages friendly, and keeps SEO-friendly page structure. Internal page navigation feels like switching apps inside one Persistent OS Shell: the main content fades and lifts, while System Bar, Dock, Command Palette host, and footer use persistent transition names to avoid distracting reload flashes.
+
+The OS control layer still owns app state. Command Palette and Terminal.app use System State plus Astro client navigation for real route changes, while repeated clicks on the current route are guarded so they update app state without forcing another transition.
 
 ## Control Layer
 
@@ -66,10 +76,12 @@ Animations are intentionally small and use `transform` and `opacity`. App window
 Projects.app, Blog.app, and Timeline.app use an OS-style Master-Detail layout with explicit state on the container:
 
 - `data-layout="idle"` keeps the list at full width and hides the detail panel.
-- `data-layout="focused"` shrinks the list to roughly one third and slides the detail panel into the main view.
+- `data-layout="focused"` shrinks the list to roughly 27% and gives the detail panel roughly 73% so the selected item becomes the visual subject.
 - `data-layout="expanded"` gives list and detail equal space for side-by-side scanning.
 
 On mobile, the same states become list or full-screen detail so the interface stays readable without horizontal scrolling.
+
+Desktop detail panels use sticky positioning with their own scroll area. This keeps project, article, and timeline details visible while the master list scrolls.
 
 ## Experience Mode
 
@@ -90,6 +102,36 @@ Motion Speed is stored in the same `localStorage` settings object and applied as
 - `fast` keeps the OS feedback crisp.
 
 The CSS defines `--motion-fast`, `--motion-normal`, `--motion-slow`, `--app-duration`, and `--panel-duration`. Performance mode automatically reduces animation even if a slower speed is selected.
+
+Page transitions reuse the same variables. Performance mode shortens transitions to near-instant, Balanced mode uses light fade and translate motion, Quality mode increases the OS-level lift, and `prefers-reduced-motion` disables complex transition timing.
+
+## Theme Palette
+
+Settings.app exposes five Theme Palette options through `data-palette` on `html` and `body`:
+
+- `aurora`: default Aurora identity.
+- `graphite`: professional low-saturation reading palette.
+- `ubuntu`: Linux-inspired orange and purple accent system.
+- `mint`: clean green and cyan reading palette.
+- `terminal`: Neon Terminal accent palette with restrained glow.
+
+Each palette updates CSS variables for accent color, borders, glow, active indicators, and button hover states.
+
+## Background Presets
+
+Settings.app also exposes five CSS-only Background Presets through `data-background`:
+
+- `aurora`: Aurora Mist.
+- `grid`: Desktop Grid.
+- `terminal`: Terminal Glow.
+- `paper`: Paper Light.
+- `space`: Space Lab.
+
+The backgrounds use gradients and lightweight patterns only. There are no uploaded images, videos, or backend dependencies.
+
+## Toolbar / Filter UX
+
+Projects.app, Blog.app, and Timeline.app use OS-style toolbars for search and filters. Search gets priority width on desktop, filter chips wrap cleanly, and each app has a real Clear Filters action. On mobile the toolbar stacks into readable rows instead of squeezing controls together.
 
 ## Tech Stack
 
@@ -156,9 +198,16 @@ w0nderful-lab-os/
       system-state.ts
       terminal.ts
     styles/
+      motion.css
+      os-theme.css
+      tokens.css
   docs/
+    APP_LAYOUT_STANDARD.md
     COMMAND_SYSTEM.md
+    INTERACTION_RULES.md
+    MOTION_GUIDE.md
     SYSTEM_STATE.md
+    THEME_SYSTEM.md
     TERMINAL_COMMANDS.md
   astro.config.mjs
   package.json
@@ -184,7 +233,7 @@ npm run preflight
 ## Roadmap
 
 - Move Blog.app body blocks into Astro content collections.
-- Add screenshots after the v0.4.0 GitHub Pages deployment.
+- Add screenshots after the v0.4.1 GitHub Pages deployment.
 - Add project detail pages when individual projects need deeper case studies.
 - Expand terminal command aliases only after the core command surface stays stable.
 

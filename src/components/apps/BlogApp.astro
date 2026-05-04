@@ -32,6 +32,7 @@ const initialProject = projects.find((project) => project.slug === initialPost.r
           {postTags.map((tag) => <button type="button" class="filter-button" data-post-tag-filter={tag}>{tag}</button>)}
         </div>
       </div>
+      <button type="button" class="button button-secondary" data-post-clear-filters>Clear Filters</button>
     </div>
 
     <div class="master-detail blog-reader-layout" data-blog-layout data-layout="idle">
@@ -126,6 +127,7 @@ const initialProject = projects.find((project) => project.slug === initialPost.r
 </AppWindow>
 
 <script>
+  const initBlogApp = () => {
   type PostBodyBlock = {
     heading: string;
     paragraphs: string[];
@@ -166,6 +168,8 @@ const initialProject = projects.find((project) => project.slug === initialPost.r
   const readerBody = document.querySelector("[data-reader-body]");
   const progress = document.querySelector("[data-reader-progress]");
   const emptyState = document.querySelector("[data-post-empty]");
+  if (!(workbench instanceof HTMLElement) || workbench.dataset.controllerReady === "true") return;
+  workbench.dataset.controllerReady = "true";
   let activeCategory = "all";
   let activeTag = "all";
   let activeSlug = new URLSearchParams(window.location.search).get("post") || postData[0]?.slug || "";
@@ -407,6 +411,18 @@ const initialProject = projects.find((project) => project.slug === initialPost.r
     expandButton.addEventListener("click", toggleExpanded);
   }
 
+  const clearButton = document.querySelector("[data-post-clear-filters]");
+  if (clearButton instanceof HTMLButtonElement) {
+    clearButton.addEventListener("click", () => {
+      activeCategory = "all";
+      activeTag = "all";
+      if (searchInput instanceof HTMLInputElement) searchInput.value = "";
+      categoryButtons.forEach((item) => item.classList.toggle("is-active", item.getAttribute("data-post-category-filter") === "all"));
+      tagButtons.forEach((item) => item.classList.toggle("is-active", item.getAttribute("data-post-tag-filter") === "all"));
+      applyPostFilters();
+    });
+  }
+
   if (readerBody instanceof HTMLElement) {
     readerBody.addEventListener("scroll", updateProgress);
   }
@@ -414,4 +430,8 @@ const initialProject = projects.find((project) => project.slug === initialPost.r
 
   selectPost(activeSlug, new URLSearchParams(window.location.search).has("post"));
   applyPostFilters();
+  };
+
+  initBlogApp();
+  document.addEventListener("astro:page-load", initBlogApp);
 </script>

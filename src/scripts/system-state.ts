@@ -3,6 +3,7 @@ import { posts } from "../data/posts";
 import { projects } from "../data/projects";
 import { site } from "../data/site";
 import { timeline } from "../data/timeline";
+import { navigate } from "astro:transitions/client";
 
 export type LabOSApp =
   | "home"
@@ -18,6 +19,8 @@ export type ThemeSetting = "light" | "dark" | "system";
 export type ExperienceMode = "performance" | "balanced" | "quality";
 export type MotionSpeed = "slow" | "normal" | "fast";
 export type Language = "en" | "zh";
+export type ThemePalette = "aurora" | "graphite" | "ubuntu" | "mint" | "terminal";
+export type BackgroundPreset = "aurora" | "grid" | "terminal" | "paper" | "space";
 export type RecentItemType = "app" | "project" | "post" | "timeline" | "command";
 
 export type RecentItem = {
@@ -39,6 +42,8 @@ export type LabOSState = {
   experienceMode: ExperienceMode;
   motionSpeed: MotionSpeed;
   language: Language;
+  palette: ThemePalette;
+  background: BackgroundPreset;
   recentItems: RecentItem[];
   commandHistory: string[];
 };
@@ -53,6 +58,8 @@ type PersistedSettings = {
   experienceMode?: ExperienceMode;
   motionSpeed?: MotionSpeed;
   language?: Language;
+  palette?: ThemePalette;
+  background?: BackgroundPreset;
   recentItems?: RecentItem[];
   commandHistory?: string[];
 };
@@ -68,6 +75,8 @@ type LabOSApi = {
   setExperienceMode: (mode: ExperienceMode) => void;
   setMotionSpeed: (speed: MotionSpeed) => void;
   setLanguage: (language: Language) => void;
+  setPalette: (palette: ThemePalette) => void;
+  setBackground: (background: BackgroundPreset) => void;
   addRecentItem: (item: Omit<RecentItem, "id" | "timestamp">) => void;
   clearRecentItems: () => void;
   addCommandHistory: (label: string) => void;
@@ -98,7 +107,25 @@ const defaultSettings = {
   theme: "system" as ThemeSetting,
   experienceMode: "balanced" as ExperienceMode,
   motionSpeed: "normal" as MotionSpeed,
-  language: "en" as Language
+  language: "en" as Language,
+  palette: "aurora" as ThemePalette,
+  background: "aurora" as BackgroundPreset
+};
+
+const paletteLabels: Record<ThemePalette, string> = {
+  aurora: "Aurora",
+  graphite: "Graphite",
+  ubuntu: "Ubuntu",
+  mint: "Mint",
+  terminal: "Neon Terminal"
+};
+
+const backgroundLabels: Record<BackgroundPreset, string> = {
+  aurora: "Aurora Mist",
+  grid: "Desktop Grid",
+  terminal: "Terminal Glow",
+  paper: "Paper Light",
+  space: "Space Lab"
 };
 
 const labels = {
@@ -128,7 +155,9 @@ const labels = {
     "settings.storage": "Saved to localStorage",
     "settings.recent": "Recent Items",
     "settings.clearRecent": "Clear recent items",
-    "settings.shortcuts": "Keyboard Shortcuts"
+    "settings.shortcuts": "Keyboard Shortcuts",
+    "settings.palette": "Theme Palette",
+    "settings.background": "Background Preset"
   },
   zh: {
     "nav.home": "\u9996\u9875",
@@ -156,7 +185,9 @@ const labels = {
     "settings.storage": "\u5df2\u4fdd\u5b58\u5230 localStorage",
     "settings.recent": "\u6700\u8fd1\u8bbf\u95ee",
     "settings.clearRecent": "\u6e05\u7a7a\u6700\u8fd1\u8bb0\u5f55",
-    "settings.shortcuts": "\u952e\u76d8\u5feb\u6377\u952e"
+    "settings.shortcuts": "\u952e\u76d8\u5feb\u6377\u952e",
+    "settings.palette": "\u914d\u8272\u65b9\u6848",
+    "settings.background": "\u80cc\u666f\u9884\u8bbe"
   }
 } as const;
 
@@ -182,6 +213,10 @@ const isExperience = (value: unknown): value is ExperienceMode =>
   value === "performance" || value === "balanced" || value === "quality";
 const isMotionSpeed = (value: unknown): value is MotionSpeed => value === "slow" || value === "normal" || value === "fast";
 const isLanguage = (value: unknown): value is Language => value === "en" || value === "zh";
+const isPalette = (value: unknown): value is ThemePalette =>
+  value === "aurora" || value === "graphite" || value === "ubuntu" || value === "mint" || value === "terminal";
+const isBackground = (value: unknown): value is BackgroundPreset =>
+  value === "aurora" || value === "grid" || value === "terminal" || value === "paper" || value === "space";
 
 const normalizeRecentItems = (items: unknown): RecentItem[] => {
   if (!Array.isArray(items)) return [];
@@ -213,6 +248,8 @@ const createInitialState = (): LabOSState => {
     experienceMode: isExperience(experience) ? experience : defaultSettings.experienceMode,
     motionSpeed: isMotionSpeed(persisted.motionSpeed) ? persisted.motionSpeed : defaultSettings.motionSpeed,
     language: isLanguage(persisted.language) ? persisted.language : defaultSettings.language,
+    palette: isPalette(persisted.palette) ? persisted.palette : defaultSettings.palette,
+    background: isBackground(persisted.background) ? persisted.background : defaultSettings.background,
     recentItems: normalizeRecentItems(persisted.recentItems),
     commandHistory: normalizeHistory(persisted.commandHistory)
   };
@@ -238,6 +275,8 @@ const writePersistedSettings = () => {
     experienceMode: state.experienceMode,
     motionSpeed: state.motionSpeed,
     language: state.language,
+    palette: state.palette,
+    background: state.background,
     recentItems: state.recentItems,
     commandHistory: state.commandHistory
   };
@@ -294,6 +333,22 @@ const syncSettingsControls = () => {
 
   document.querySelectorAll("[data-setting-language]").forEach((node) => {
     if (node instanceof HTMLSelectElement) node.value = state.language;
+  });
+
+  document.querySelectorAll("[data-setting-palette]").forEach((node) => {
+    if (node instanceof HTMLSelectElement) node.value = state.palette;
+  });
+
+  document.querySelectorAll("[data-setting-background]").forEach((node) => {
+    if (node instanceof HTMLSelectElement) node.value = state.background;
+  });
+
+  document.querySelectorAll("[data-current-palette]").forEach((node) => {
+    node.textContent = paletteLabels[state.palette];
+  });
+
+  document.querySelectorAll("[data-current-background]").forEach((node) => {
+    node.textContent = backgroundLabels[state.background];
   });
 
   document.querySelectorAll("[data-exp-choice]").forEach((node) => {
@@ -360,6 +415,8 @@ const syncDocument = () => {
   html.dataset.themeSetting = state.theme;
   html.dataset.experience = state.experienceMode;
   html.dataset.motionSpeed = state.motionSpeed;
+  html.dataset.palette = state.palette;
+  html.dataset.background = state.background;
   html.dataset.currentApp = state.currentApp;
   html.dataset.layoutState = state.layoutState;
   html.lang = state.language === "zh" ? "zh-CN" : "en";
@@ -368,6 +425,8 @@ const syncDocument = () => {
   body.dataset.themeSetting = state.theme;
   body.dataset.experience = state.experienceMode;
   body.dataset.motionSpeed = state.motionSpeed;
+  body.dataset.palette = state.palette;
+  body.dataset.background = state.background;
   body.dataset.currentApp = state.currentApp;
   body.dataset.layoutState = state.layoutState;
   body.dataset.currentProject = state.currentProject;
@@ -409,13 +468,13 @@ const navigateTo = (href: string) => {
   const current = new URL(window.location.href);
 
   if (url.pathname === current.pathname) {
-    if (url.search !== current.search) {
+    if (url.search !== current.search || url.hash !== current.hash) {
       window.history.pushState({}, "", `${url.pathname}${url.search}${url.hash}`);
     }
     return;
   }
 
-  window.location.href = url.toString();
+  void navigate(url.toString());
 };
 
 const routeWithParam = (route: string, key: string, value: string) => {
@@ -534,6 +593,16 @@ const setMotionSpeed = (motionSpeed: MotionSpeed) => {
 
 const setLanguage = (language: Language) => {
   commit({ language }, "labos:settings-change", { setting: "language", value: language });
+  document.dispatchEvent(new CustomEvent("lab-os-settings-change", { detail: getStateSnapshot() }));
+};
+
+const setPalette = (palette: ThemePalette) => {
+  commit({ palette }, "labos:settings-change", { setting: "palette", value: palette });
+  document.dispatchEvent(new CustomEvent("lab-os-settings-change", { detail: getStateSnapshot() }));
+};
+
+const setBackground = (background: BackgroundPreset) => {
+  commit({ background }, "labos:settings-change", { setting: "background", value: background });
   document.dispatchEvent(new CustomEvent("lab-os-settings-change", { detail: getStateSnapshot() }));
 };
 
@@ -677,6 +746,9 @@ const openRecentItem = (type: RecentItemType, target: string) => {
 };
 
 const registerSettingEvents = () => {
+  if (document.documentElement.dataset.systemStateEvents === "ready") return;
+  document.documentElement.dataset.systemStateEvents = "ready";
+
   document.addEventListener("change", (event) => {
     const target = event.target;
     if (target instanceof HTMLSelectElement && target.matches("[data-setting-theme]") && isTheme(target.value)) {
@@ -687,6 +759,12 @@ const registerSettingEvents = () => {
     }
     if (target instanceof HTMLSelectElement && target.matches("[data-setting-motion-speed]") && isMotionSpeed(target.value)) {
       setMotionSpeed(target.value);
+    }
+    if (target instanceof HTMLSelectElement && target.matches("[data-setting-palette]") && isPalette(target.value)) {
+      setPalette(target.value);
+    }
+    if (target instanceof HTMLSelectElement && target.matches("[data-setting-background]") && isBackground(target.value)) {
+      setBackground(target.value);
     }
   });
 
@@ -772,6 +850,9 @@ const registerSettingEvents = () => {
 };
 
 const registerNavigationTransition = () => {
+  if (document.documentElement.dataset.navigationGuards === "ready") return;
+  document.documentElement.dataset.navigationGuards = "ready";
+
   document.addEventListener("click", (event) => {
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     const target = event.target;
@@ -780,18 +861,13 @@ const registerNavigationTransition = () => {
     const link = target.closest("a");
     if (!(link instanceof HTMLAnchorElement)) return;
     if (link.target || link.hasAttribute("download") || link.origin !== window.location.origin) return;
-    if (link.pathname === window.location.pathname && link.search === window.location.search) return;
+    if (link.pathname !== window.location.pathname || link.search !== window.location.search) return;
 
     event.preventDefault();
-    document.body.dataset.appLeaving = "true";
-
-    const duration = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      ? 0
-      : Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--app-duration")) || 120;
-
-    window.setTimeout(() => {
-      window.location.href = link.href;
-    }, Math.min(duration, 260));
+    const app = link.dataset.appLink;
+    if (app) {
+      commit({ currentApp: normalizeApp(app), layoutState: "idle" }, "labos:app-change", { app });
+    }
   });
 };
 
@@ -806,6 +882,8 @@ window.labOS = {
   setExperienceMode,
   setMotionSpeed,
   setLanguage,
+  setPalette,
+  setBackground,
   addRecentItem,
   clearRecentItems,
   addCommandHistory,
@@ -817,6 +895,20 @@ window.labOS = {
 syncDocument();
 registerSettingEvents();
 registerNavigationTransition();
+
+document.addEventListener("astro:before-preparation", () => {
+  document.body.dataset.appLeaving = "true";
+});
+
+document.addEventListener("astro:page-load", () => {
+  state = {
+    ...state,
+    currentApp: readCurrentApp()
+  };
+  document.body.dataset.appLeaving = "false";
+  syncDocument();
+  dispatch("labos:page-load", { app: state.currentApp });
+});
 
 window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
   syncDocument();
