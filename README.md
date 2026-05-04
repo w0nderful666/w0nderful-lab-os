@@ -14,7 +14,7 @@ This project is designed as a long-term personal brand hub, not a disposable dem
 
 - Clear `src / data / components / scripts` structure.
 - Centralized project, post, timeline, navigation, and site metadata.
-- Real local-first interactions with no fake buttons.
+- Real local-first interactions with no dead controls.
 - Complete README, release notes, license, contribution, and security files.
 - GitHub Pages Ready deployment workflow.
 - `self-test` and `preflight` release gates.

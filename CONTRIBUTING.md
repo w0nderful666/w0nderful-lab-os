@@ -6,7 +6,7 @@ Thanks for helping improve `w0nderful-lab-os`.
 
 - Keep the site Local First and No Backend.
 - Preserve the blog and project hub as the core product.
-- Avoid fake buttons, dead links, and placeholder-only UI.
+- Avoid dead controls, dead links, and placeholder-only UI.
 - Keep data centralized in `src/data`.
 - Keep interactions small, readable, and static-site friendly.
 
