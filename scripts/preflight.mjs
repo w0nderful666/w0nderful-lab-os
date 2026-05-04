@@ -76,10 +76,10 @@ async function readRootFile(filePath) {
 
 async function checkPackageVersion() {
   const packageJson = JSON.parse(await readRootFile("package.json"));
-  if (packageJson.version === "0.3.0") {
-    pass("package.json version is 0.3.0");
+  if (packageJson.version === "0.4.0") {
+    pass("package.json version is 0.4.0");
   } else {
-    fail(`package.json version is ${packageJson.version}, expected 0.3.0`);
+    fail(`package.json version is ${packageJson.version}, expected 0.4.0`);
   }
 }
 
@@ -90,6 +90,14 @@ async function checkReadme() {
     "GitHub Pages",
     "Local First",
     "No Backend",
+    "Control Layer",
+    "Command Palette",
+    "Terminal.app",
+    "System State",
+    "Ctrl/Cmd + K",
+    "Recent Items",
+    "Global Search",
+    "Project / Blog / Timeline Linking",
     "Motion Speed",
     "Master-Detail"
   ];
@@ -105,10 +113,73 @@ async function checkReadme() {
 
 async function checkReleaseNotes() {
   const releaseNotes = await readRootFile("RELEASE_NOTES.md");
-  if (releaseNotes.includes("v0.3.0")) {
-    pass("RELEASE_NOTES contains v0.3.0");
+  if (releaseNotes.includes("v0.4.0")) {
+    pass("RELEASE_NOTES contains v0.4.0");
   } else {
-    fail("RELEASE_NOTES contains v0.3.0");
+    fail("RELEASE_NOTES contains v0.4.0");
+  }
+}
+
+async function checkControlLayer() {
+  const required = [
+    "src/components/os/CommandPalette.astro",
+    "src/components/apps/TerminalApp.astro",
+    "src/pages/terminal/index.astro",
+    "src/data/commands.ts",
+    "src/scripts/system-state.ts",
+    "src/scripts/search-index.ts",
+    "src/scripts/command-palette.ts",
+    "src/scripts/terminal.ts",
+    "docs/COMMAND_SYSTEM.md",
+    "docs/SYSTEM_STATE.md",
+    "docs/TERMINAL_COMMANDS.md"
+  ];
+
+  for (const file of required) {
+    if (await exists(file)) {
+      pass(`${file} exists`);
+    } else {
+      fail(`${file} exists`);
+    }
+  }
+
+  const layout = await readRootFile("src/layouts/BaseLayout.astro");
+  if (layout.includes("CommandPalette") && layout.includes("system-state") && layout.includes("command-palette")) {
+    pass("BaseLayout wires Command Palette and System State");
+  } else {
+    fail("BaseLayout wires Command Palette and System State");
+  }
+
+  const navigation = await readRootFile("src/data/navigation.ts");
+  const dock = await readRootFile("src/components/os/Dock.astro");
+  if (navigation.includes("terminal") && dock.includes("data-app-link")) {
+    pass("Dock contains Terminal entry through navigation data");
+  } else {
+    fail("Dock contains Terminal entry through navigation data");
+  }
+
+  const settings = await readRootFile("src/components/apps/SettingsApp.astro");
+  if (settings.includes("Keyboard Shortcuts") && settings.includes("data-clear-recent-items")) {
+    pass("Settings contains Keyboard Shortcuts and Recent Items management");
+  } else {
+    fail("Settings contains Keyboard Shortcuts and Recent Items management");
+  }
+
+  const commands = await readRootFile("src/data/commands.ts");
+  const commandRequirements = [
+    "Open Terminal",
+    "Clear Recent Items",
+    "Reset Local Settings",
+    "Search projects",
+    "set-motion-speed"
+  ];
+
+  for (const value of commandRequirements) {
+    if (commands.includes(value)) {
+      pass(`commands.ts contains ${value}`);
+    } else {
+      fail(`commands.ts contains ${value}`);
+    }
   }
 }
 
@@ -218,6 +289,7 @@ await checkReadme();
 await checkReleaseNotes();
 await checkAstroConfig();
 await checkWorkflow();
+await checkControlLayer();
 await checkForbiddenContent();
 await checkPrivacyBoundary();
 await checkDist();

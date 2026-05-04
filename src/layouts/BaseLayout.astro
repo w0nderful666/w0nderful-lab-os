@@ -1,6 +1,7 @@
 ---
 import SystemBar from "../components/os/SystemBar.astro";
 import Dock from "../components/os/Dock.astro";
+import CommandPalette from "../components/os/CommandPalette.astro";
 import { site } from "../data/site";
 import type { ActiveApp } from "../data/navigation";
 import "../styles/tokens.css";
@@ -23,7 +24,7 @@ const pageTitle = title === site.title ? site.title : `${title} | ${site.name}`;
 ---
 
 <!doctype html>
-<html lang="en" data-theme="dark" data-experience="balanced" data-motion-speed="normal">
+<html lang="en" data-theme="dark" data-theme-setting="system" data-experience="balanced" data-motion-speed="normal" data-current-app={active}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -38,29 +39,31 @@ const pageTitle = title === site.title ? site.title : `${title} | ${site.name}`;
     <script is:inline>
       (() => {
         const key = "w0nderful-lab-os.settings";
-        const defaults = { theme: "dark", experience: "balanced", language: "en", motionSpeed: "normal" };
+        const defaults = { theme: "system", experience: "balanced", experienceMode: "balanced", language: "en", motionSpeed: "normal" };
         let settings = defaults;
         try {
           settings = { ...defaults, ...JSON.parse(localStorage.getItem(key) || "{}") };
         } catch {
           settings = defaults;
         }
+        const experience = settings.experienceMode || settings.experience || "balanced";
         const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
         const theme = settings.theme === "system" ? (systemDark ? "dark" : "light") : settings.theme;
         document.documentElement.dataset.theme = theme;
         document.documentElement.dataset.themeSetting = settings.theme;
-        document.documentElement.dataset.experience = settings.experience;
+        document.documentElement.dataset.experience = experience;
         document.documentElement.dataset.motionSpeed = settings.motionSpeed || "normal";
         document.documentElement.lang = settings.language === "zh" ? "zh-CN" : "en";
       })();
     </script>
   </head>
-  <body data-experience="balanced" data-motion-speed="normal">
+  <body data-current-app={active} data-experience="balanced" data-motion-speed="normal">
     <SystemBar active={active} />
     <main class="desktop-shell">
       <slot />
     </main>
     <Dock active={active} />
+    <CommandPalette />
     <footer class="site-footer">
       <span>{site.name}</span>
       <span>{site.displayVersion}</span>
@@ -76,188 +79,9 @@ const pageTitle = title === site.title ? site.title : `${title} | ${site.name}`;
         <strong data-current-motion-speed>Normal</strong>
       </span>
     </footer>
-    <script is:inline>
-      (() => {
-        const key = "w0nderful-lab-os.settings";
-        const defaults = { theme: "dark", experience: "balanced", language: "en", motionSpeed: "normal" };
-        const labels = {
-          en: {
-            "nav.home": "Home",
-            "nav.projects": "Projects",
-            "nav.blog": "Blog",
-            "nav.timeline": "Timeline",
-            "nav.about": "About",
-            "nav.settings": "Settings",
-            "settings.title": "System Settings",
-            "settings.theme": "Theme",
-            "settings.light": "Light",
-            "settings.dark": "Dark",
-            "settings.system": "System",
-            "settings.experience": "Experience Mode",
-            "settings.performance": "Performance",
-            "settings.balanced": "Balanced",
-            "settings.quality": "Quality",
-            "settings.motionSpeed": "Motion Speed",
-            "settings.slow": "Slow",
-            "settings.normal": "Normal",
-            "settings.fast": "Fast",
-            "settings.language": "Language",
-            "settings.reset": "Reset local settings",
-            "settings.storage": "Saved to localStorage"
-          },
-          zh: {
-            "nav.home": "\u9996\u9875",
-            "nav.projects": "\u9879\u76ee",
-            "nav.blog": "\u535a\u5ba2",
-            "nav.timeline": "\u65e5\u5fd7",
-            "nav.about": "\u5173\u4e8e",
-            "nav.settings": "\u8bbe\u7f6e",
-            "settings.title": "\u7cfb\u7edf\u8bbe\u7f6e",
-            "settings.theme": "\u4e3b\u9898",
-            "settings.light": "\u6d45\u8272",
-            "settings.dark": "\u6df1\u8272",
-            "settings.system": "\u8ddf\u968f\u7cfb\u7edf",
-            "settings.experience": "\u4f53\u9a8c\u6a21\u5f0f",
-            "settings.performance": "\u6027\u80fd",
-            "settings.balanced": "\u5e73\u8861",
-            "settings.quality": "\u9ad8\u8d28\u91cf",
-            "settings.motionSpeed": "\u52a8\u753b\u901f\u7387",
-            "settings.slow": "\u6162",
-            "settings.normal": "\u6b63\u5e38",
-            "settings.fast": "\u5feb",
-            "settings.language": "\u8bed\u8a00",
-            "settings.reset": "\u91cd\u7f6e\u672c\u5730\u8bbe\u7f6e",
-            "settings.storage": "\u5df2\u4fdd\u5b58\u5230 localStorage"
-          }
-        };
-
-        const safeRead = () => {
-          try {
-            return { ...defaults, ...JSON.parse(localStorage.getItem(key) || "{}") };
-          } catch {
-            return { ...defaults };
-          }
-        };
-
-        const safeWrite = (settings) => {
-          localStorage.setItem(key, JSON.stringify(settings));
-        };
-
-        const getAppliedTheme = (theme) => {
-          if (theme !== "system") return theme;
-          return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-        };
-
-        const applySettings = (settings) => {
-          const html = document.documentElement;
-          html.dataset.theme = getAppliedTheme(settings.theme);
-          html.dataset.themeSetting = settings.theme;
-          html.dataset.experience = settings.experience;
-          html.dataset.motionSpeed = settings.motionSpeed || "normal";
-          html.lang = settings.language === "zh" ? "zh-CN" : "en";
-          document.body.dataset.experience = settings.experience;
-          document.body.dataset.motionSpeed = settings.motionSpeed || "normal";
-
-          document.querySelectorAll("[data-i18n]").forEach((node) => {
-            const keyName = node.getAttribute("data-i18n");
-            const value = labels[settings.language]?.[keyName];
-            if (value) node.textContent = value;
-          });
-
-          document.querySelectorAll("[data-current-experience]").forEach((node) => {
-            const value = labels[settings.language]?.[`settings.${settings.experience}`] || settings.experience;
-            node.textContent = value;
-          });
-          document.querySelectorAll("[data-current-motion-speed]").forEach((node) => {
-            const speed = settings.motionSpeed || "normal";
-            const value = labels[settings.language]?.[`settings.${speed}`] || speed;
-            node.textContent = value;
-          });
-
-          document.querySelectorAll("[data-setting-theme]").forEach((node) => {
-            if (node instanceof HTMLSelectElement) node.value = settings.theme;
-          });
-          document.querySelectorAll("[data-setting-motion-speed]").forEach((node) => {
-            if (node instanceof HTMLSelectElement) node.value = settings.motionSpeed || "normal";
-          });
-          document.querySelectorAll("[data-setting-language]").forEach((node) => {
-            if (node instanceof HTMLSelectElement) node.value = settings.language;
-          });
-          document.querySelectorAll("[data-exp-choice]").forEach((node) => {
-            const active = node.getAttribute("data-exp-choice") === settings.experience;
-            node.toggleAttribute("aria-pressed", active);
-            node.classList.toggle("is-active", active);
-          });
-          document.querySelectorAll("[data-mode-note]").forEach((node) => {
-            node.hidden = node.getAttribute("data-mode-note") !== settings.experience;
-          });
-          document.dispatchEvent(new CustomEvent("lab-os-settings-change", { detail: settings }));
-        };
-
-        let settings = safeRead();
-        applySettings(settings);
-
-        document.addEventListener("change", (event) => {
-          const target = event.target;
-          if (target instanceof HTMLSelectElement && target.matches("[data-setting-theme]")) {
-            settings = { ...safeRead(), theme: target.value };
-            safeWrite(settings);
-            applySettings(settings);
-          }
-          if (target instanceof HTMLSelectElement && target.matches("[data-setting-language]")) {
-            settings = { ...safeRead(), language: target.value };
-            safeWrite(settings);
-            applySettings(settings);
-          }
-          if (target instanceof HTMLSelectElement && target.matches("[data-setting-motion-speed]")) {
-            settings = { ...safeRead(), motionSpeed: target.value };
-            safeWrite(settings);
-            applySettings(settings);
-          }
-        });
-
-        document.addEventListener("click", (event) => {
-          const target = event.target;
-          if (!(target instanceof Element)) return;
-          const modeButton = target.closest("[data-exp-choice]");
-          if (modeButton instanceof HTMLButtonElement) {
-            settings = { ...safeRead(), experience: modeButton.dataset.expChoice || "balanced" };
-            safeWrite(settings);
-            applySettings(settings);
-          }
-          const resetButton = target.closest("[data-reset-settings]");
-          if (resetButton instanceof HTMLButtonElement) {
-            localStorage.removeItem(key);
-            settings = { ...defaults };
-            applySettings(settings);
-          }
-        });
-
-        window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
-          applySettings(safeRead());
-        });
-
-        document.addEventListener("click", (event) => {
-          if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-          const target = event.target;
-          if (!(target instanceof Element)) return;
-          const link = target.closest("a");
-          if (!(link instanceof HTMLAnchorElement)) return;
-          if (link.target || link.hasAttribute("download") || link.origin !== window.location.origin) return;
-          if (link.pathname === window.location.pathname && link.search === window.location.search) return;
-
-          event.preventDefault();
-          document.body.dataset.appLeaving = "true";
-
-          const duration = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-            ? 0
-            : Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--app-duration")) || 120;
-
-          window.setTimeout(() => {
-            window.location.href = link.href;
-          }, Math.min(duration, 260));
-        });
-      })();
+    <script>
+      import "../scripts/system-state";
+      import "../scripts/command-palette";
     </script>
   </body>
 </html>

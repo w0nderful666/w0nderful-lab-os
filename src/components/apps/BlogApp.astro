@@ -3,11 +3,13 @@ import AppWindow from "../os/AppWindow.astro";
 import PostCard from "../common/PostCard.astro";
 import Badge from "../common/Badge.astro";
 import { postCategories, posts, postTags } from "../../data/posts";
+import { projects } from "../../data/projects";
 
 const initialPost = posts[0];
+const initialProject = projects.find((project) => project.slug === initialPost.relatedProject);
 ---
 
-<AppWindow title="Blog.app" subtitle="Reader workspace" wide>
+<AppWindow title="Blog.app" subtitle="Reader workspace" wide detailControls>
   <div class="blog-workbench" data-blog-workbench data-master-detail data-layout="idle">
     <div class="toolbar toolbar-stacked">
       <label class="search-field">
@@ -66,6 +68,22 @@ const initialPost = posts[0];
           </span>
         </div>
 
+        <section class="related-panel">
+          <h4>Related Project</h4>
+          <div class="related-list" data-post-related-project>
+            {
+              initialProject ? (
+                <button type="button" class="related-link" data-lab-open-project={initialProject.slug}>
+                  {initialProject.name}
+                  <span>{initialProject.type}</span>
+                </button>
+              ) : (
+                <p class="empty-state">No related project for this article.</p>
+              )
+            }
+          </div>
+        </section>
+
         <div class="badge-row" data-post-detail-tags>
           {initialPost.tags.map((tag) => <Badge label={tag} />)}
         </div>
@@ -104,6 +122,7 @@ const initialPost = posts[0];
   </div>
 
   <script is:inline type="application/json" id="posts-data" set:html={JSON.stringify(posts)} />
+  <script is:inline type="application/json" id="blog-projects-data" set:html={JSON.stringify(projects)} />
 </AppWindow>
 
 <script>
@@ -127,8 +146,16 @@ const initialPost = posts[0];
     roadmap: string[];
   };
 
+  type ProjectRecord = {
+    slug: string;
+    name: string;
+    type: string;
+  };
+
   const dataNode = document.getElementById("posts-data");
+  const projectDataNode = document.getElementById("blog-projects-data");
   const postData: PostRecord[] = dataNode?.textContent ? JSON.parse(dataNode.textContent) : [];
+  const projectData: ProjectRecord[] = projectDataNode?.textContent ? JSON.parse(projectDataNode.textContent) : [];
   const workbench = document.querySelector("[data-blog-workbench]");
   const layout = document.querySelector("[data-blog-layout]");
   const searchInput = document.querySelector("[data-post-search-input]");
@@ -207,10 +234,37 @@ const initialPost = posts[0];
       const button = document.createElement("button");
       button.type = "button";
       button.className = "related-link";
-      button.dataset.relatedPost = related.slug;
+      button.dataset.labOpenPost = related.slug;
       button.textContent = related.title;
+      const meta = document.createElement("span");
+      meta.textContent = related.category;
+      button.append(meta);
       wrap.append(button);
     });
+  };
+
+  const renderRelatedProject = (post: PostRecord) => {
+    const wrap = reader?.querySelector("[data-post-related-project]");
+    if (!wrap) return;
+    wrap.textContent = "";
+    const project = projectData.find((item) => item.slug === post.relatedProject);
+    if (!project) {
+      const empty = document.createElement("p");
+      empty.className = "empty-state";
+      empty.textContent = "No related project for this article.";
+      wrap.append(empty);
+      return;
+    }
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "related-link";
+    button.dataset.labOpenProject = project.slug;
+    button.textContent = project.name;
+    const meta = document.createElement("span");
+    meta.textContent = project.type;
+    button.append(meta);
+    wrap.append(button);
   };
 
   const updateProgress = () => {
@@ -223,12 +277,14 @@ const initialPost = posts[0];
   const openReader = () => {
     if (workbench instanceof HTMLElement) workbench.dataset.layout = "focused";
     if (layout instanceof HTMLElement) layout.dataset.layout = "focused";
+    window.labOS?.setState({ layoutState: "focused" });
     requestAnimationFrame(updateProgress);
   };
 
   const closeReader = () => {
     if (workbench instanceof HTMLElement) workbench.dataset.layout = "idle";
     if (layout instanceof HTMLElement) layout.dataset.layout = "idle";
+    window.labOS?.setState({ layoutState: "idle" });
   };
 
   const toggleExpanded = () => {
@@ -236,6 +292,7 @@ const initialPost = posts[0];
     const next = layout.dataset.layout === "expanded" ? "focused" : "expanded";
     layout.dataset.layout = next;
     workbench.dataset.layout = next;
+    window.labOS?.setState({ layoutState: next });
     document.querySelectorAll("[data-md-expand]").forEach((node) => {
       if (node instanceof HTMLButtonElement) {
         node.textContent = next === "expanded" ? "Focus detail" : "Expand list";
@@ -263,6 +320,7 @@ const initialPost = posts[0];
 
     renderBody(post);
     renderRelated(post);
+    renderRelatedProject(post);
 
     const roadmap = reader?.querySelector("[data-post-detail-roadmap]");
     if (roadmap) {
@@ -318,22 +376,25 @@ const initialPost = posts[0];
   }
 
   cards.forEach((card) => {
-    card.addEventListener("click", () => selectPost(card.getAttribute("data-post-slug") || ""));
+    card.addEventListener("click", () => {
+      const slug = card.getAttribute("data-post-slug") || "";
+      selectPost(slug);
+      window.labOS?.openPost(slug, { navigate: false });
+    });
     card.addEventListener("keydown", (event) => {
       if (event instanceof KeyboardEvent && (event.key === "Enter" || event.key === " ")) {
         event.preventDefault();
-        selectPost(card.getAttribute("data-post-slug") || "");
+        const slug = card.getAttribute("data-post-slug") || "";
+        selectPost(slug);
+        window.labOS?.openPost(slug, { navigate: false });
       }
     });
   });
 
-  reader?.addEventListener("click", (event) => {
-    const target = event.target;
-    if (!(target instanceof Element)) return;
-    const related = target.closest("[data-related-post]");
-    if (related instanceof HTMLButtonElement) {
-      selectPost(related.dataset.relatedPost || "");
-    }
+  document.addEventListener("labos:post-open", (event) => {
+    if (!(event instanceof CustomEvent)) return;
+    const slug = event.detail?.postSlug;
+    if (typeof slug === "string") selectPost(slug, true);
   });
 
   const backButton = document.querySelector("[data-reader-back]");

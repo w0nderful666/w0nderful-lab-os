@@ -1,0 +1,33 @@
+---
+import AppWindow from "../os/AppWindow.astro";
+---
+
+<AppWindow title="Terminal.app" subtitle="Control console" wide>
+  <div class="terminal-app" data-terminal-root>
+    <div class="terminal-toolbar">
+      <span>w0nderful-lab-os</span>
+      <span data-labos-status>System State online</span>
+    </div>
+
+    <div class="terminal-output" data-terminal-output aria-live="polite"></div>
+
+    <form class="terminal-form" data-terminal-form>
+      <label>
+        <span>w0nderful@lab-os %</span>
+        <input
+          type="text"
+          data-terminal-input
+          autocomplete="off"
+          autocapitalize="none"
+          spellcheck="false"
+          inputmode="text"
+          aria-label="Terminal command"
+        />
+      </label>
+    </form>
+  </div>
+</AppWindow>
+
+<script>
+  import "../../scripts/terminal";
+</script>

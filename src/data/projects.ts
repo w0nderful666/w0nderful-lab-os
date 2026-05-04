@@ -240,11 +240,11 @@ export const projects: Project[] = [
     category: "DevTools",
     summary: "OS-themed personal blog and open-source lab hub.",
     status: "Active",
-    version: "v0.3.0",
+    version: "v0.4.0",
     features: [
-      "OS-style navigation for blog, projects, timeline, about, and settings.",
-      "In-app blog reader with search, filters, progress, and related posts.",
-      "Project matrix with category/status filters and detail panels."
+      "OS-style navigation for blog, projects, timeline, about, settings, and terminal.",
+      "Global Command Palette and Terminal.app powered by the shared System State.",
+      "Project, post, and timeline content connected through local search and recent activity."
     ],
     tags: [...sharedTags, "Personal Lab", "Astro"],
     liveUrl: "https://w0nderful666.github.io/w0nderful-lab-os/",

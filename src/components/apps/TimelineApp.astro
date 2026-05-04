@@ -2,11 +2,17 @@
 import AppWindow from "../os/AppWindow.astro";
 import Badge from "../common/Badge.astro";
 import { timeline, timelineTypes } from "../../data/timeline";
+import { projects } from "../../data/projects";
 
 const initialEntry = timeline[0];
+const initialProject = projects.find(
+  (project) =>
+    project.slug.toLowerCase() === initialEntry.relatedProject.toLowerCase() ||
+    project.name.toLowerCase() === initialEntry.relatedProject.toLowerCase()
+);
 ---
 
-<AppWindow title="Timeline.app" subtitle="System Log" wide>
+<AppWindow title="Timeline.app" subtitle="System Log" wide detailControls>
   <div class="toolbar toolbar-compact">
     <div class="filter-group" aria-label="Timeline type filters">
       <button type="button" class="filter-button is-active" data-log-filter="all">All</button>
@@ -55,10 +61,26 @@ const initialEntry = timeline[0];
           <strong data-log-detail-project>{initialEntry.relatedProject}</strong>
         </span>
       </div>
+      <section class="related-panel">
+        <h4>Related Project</h4>
+        <div class="related-list" data-log-related-project>
+          {
+            initialProject ? (
+              <button type="button" class="related-link" data-lab-open-project={initialProject.slug}>
+                {initialProject.name}
+                <span>{initialProject.type}</span>
+              </button>
+            ) : (
+              <p class="empty-state">No related project matched in the local project matrix.</p>
+            )
+          }
+        </div>
+      </section>
     </aside>
   </div>
 
   <script is:inline type="application/json" id="timeline-data" set:html={JSON.stringify(timeline)} />
+  <script is:inline type="application/json" id="timeline-projects-data" set:html={JSON.stringify(projects)} />
 </AppWindow>
 
 <script>
@@ -71,8 +93,16 @@ const initialEntry = timeline[0];
     relatedProject: string;
   };
 
+  type ProjectRecord = {
+    slug: string;
+    name: string;
+    type: string;
+  };
+
   const dataNode = document.getElementById("timeline-data");
+  const projectDataNode = document.getElementById("timeline-projects-data");
   const logData: LogRecord[] = dataNode?.textContent ? JSON.parse(dataNode.textContent) : [];
+  const projectData: ProjectRecord[] = projectDataNode?.textContent ? JSON.parse(projectDataNode.textContent) : [];
   const filterButtons = Array.from(document.querySelectorAll("[data-log-filter]"));
   const cards = Array.from(document.querySelectorAll("[data-log-card]"));
   const detail = document.querySelector("[data-log-detail]");
@@ -87,11 +117,37 @@ const initialEntry = timeline[0];
 
   const setLayout = (value: "idle" | "focused" | "expanded") => {
     if (layout instanceof HTMLElement) layout.dataset.layout = value;
+    window.labOS?.setState({ layoutState: value });
     document.querySelectorAll("[data-log-expand]").forEach((node) => {
       if (node instanceof HTMLButtonElement) {
         node.textContent = value === "expanded" ? "Focus detail" : "Expand list";
       }
     });
+  };
+
+  const renderRelatedProject = (entry: LogRecord) => {
+    const wrap = detail?.querySelector("[data-log-related-project]");
+    if (!wrap) return;
+    wrap.textContent = "";
+    const related = entry.relatedProject.toLowerCase();
+    const project = projectData.find((item) => item.slug.toLowerCase() === related || item.name.toLowerCase() === related);
+    if (!project) {
+      const empty = document.createElement("p");
+      empty.className = "empty-state";
+      empty.textContent = "No related project matched in the local project matrix.";
+      wrap.append(empty);
+      return;
+    }
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "related-link";
+    button.dataset.labOpenProject = project.slug;
+    button.textContent = project.name;
+    const meta = document.createElement("span");
+    meta.textContent = project.type;
+    button.append(meta);
+    wrap.append(button);
   };
 
   const selectLog = (id: string, shouldFocus = true) => {
@@ -104,6 +160,7 @@ const initialEntry = timeline[0];
     setText("[data-log-detail-description]", entry.description);
     setText("[data-log-detail-date]", entry.date);
     setText("[data-log-detail-project]", entry.relatedProject);
+    renderRelatedProject(entry);
     if (shouldFocus) setLayout("focused");
   };
 
@@ -129,13 +186,25 @@ const initialEntry = timeline[0];
   });
 
   cards.forEach((card) => {
-    card.addEventListener("click", () => selectLog(card.getAttribute("data-log-id") || ""));
+    card.addEventListener("click", () => {
+      const id = card.getAttribute("data-log-id") || "";
+      selectLog(id);
+      window.labOS?.openTimeline(id, { navigate: false });
+    });
     card.addEventListener("keydown", (event) => {
       if (event instanceof KeyboardEvent && (event.key === "Enter" || event.key === " ")) {
         event.preventDefault();
-        selectLog(card.getAttribute("data-log-id") || "");
+        const id = card.getAttribute("data-log-id") || "";
+        selectLog(id);
+        window.labOS?.openTimeline(id, { navigate: false });
       }
     });
+  });
+
+  document.addEventListener("labos:timeline-open", (event) => {
+    if (!(event instanceof CustomEvent)) return;
+    const id = event.detail?.timelineId;
+    if (typeof id === "string") selectLog(id, true);
   });
 
   const closeButton = document.querySelector("[data-log-close]");

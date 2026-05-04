@@ -95,6 +95,8 @@ html[data-experience="performance"] .motion-enter,
 html[data-experience="performance"] .reader-panel,
 html[data-experience="performance"] .project-detail-panel,
 html[data-experience="performance"] .timeline-detail-panel,
+html[data-experience="performance"] .command-palette-overlay,
+html[data-experience="performance"] .command-palette-panel,
 html[data-experience="performance"] .reader-body section,
 html[data-experience="performance"] .desktop-stagger {
   animation: none;

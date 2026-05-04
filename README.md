@@ -2,13 +2,13 @@
 
 OS-themed personal blog, open-source lab, and project showcase hub for w0nderful666.
 
-Current version: `v0.3.0`
+Current version: `v0.4.0`
 
 Live demo: https://w0nderful666.github.io/w0nderful-lab-os/
 
 ## Positioning
 
-`w0nderful-lab-os` is an A-Level static site that presents a personal blog and project hub through a MacOS / Linux desktop metaphor. The blog remains the core product, while projects become Apps, posts become Docs, timeline entries become System Log records, and settings become System Settings.
+`w0nderful-lab-os` is an A-Level static site that presents a personal blog and project hub through a MacOS / Linux desktop metaphor. The v0.4.0 Control Layer turns the site into an operable personal lab: projects become Apps, posts become Docs, timeline entries become System Log records, settings become System Settings, and shared commands can control them.
 
 ## A-Level Standard
 
@@ -28,8 +28,32 @@ This project is designed as a long-term personal brand hub, not a disposable dem
 - Blog.app reader with category filtering, tag filtering, simple search, Master-Detail layout states, in-app article view, back-to-list flow, reading progress, paragraph reveal, related articles, and article roadmap.
 - Timeline.app with System Log entries, type filtering, and Master-Detail detail inspection.
 - About.app with version, author, positioning, project count, post count, and tech stack.
-- Settings.app with Theme, Experience Mode, Motion Speed, Language, and Reset local settings.
+- Settings.app with Theme, Experience Mode, Motion Speed, Language, Recent Items management, Reset local settings, and Keyboard Shortcuts.
+- Command Palette opened with Ctrl/Cmd + K for apps, projects, posts, timeline entries, settings, utility actions, and Global Search.
+- Terminal.app with real local commands for navigation, project opening, settings changes, search, status, version, and GitHub profile launch.
+- System State shared by Dock, System Bar, Command Palette, Terminal.app, Settings.app, and Master-Detail apps.
+- Recent Items for recently opened projects, posts, timeline entries, and important commands.
+- Project / Blog / Timeline Linking so related projects, articles, and log entries open through the same control layer.
 - Local First, No Backend, Privacy Friendly, GitHub Pages Ready.
+
+## Control Layer
+
+The v0.4.0 Control Layer is built from small vanilla TypeScript modules:
+
+- `src/scripts/system-state.ts` owns current app, selected project/post/timeline entry, layout state, theme, Experience Mode, Motion Speed, language, Recent Items, and command history.
+- `src/scripts/command-palette.ts` powers the global Command Palette and keyboard controls.
+- `src/scripts/terminal.ts` powers Terminal.app command input, output, and command history recall.
+- `src/scripts/search-index.ts` provides shared Global Search across projects, posts, timeline entries, and commands.
+- `src/data/commands.ts` keeps command data centralized so commands are discoverable and executable.
+
+State changes sync to `html` and `body` data attributes, persist lightweight preferences to `localStorage`, and dispatch `labos:*` custom events for app changes, settings changes, command execution, and content opening.
+
+## Keyboard Shortcuts
+
+- `Ctrl/Cmd + K`: open Command Palette.
+- `Esc`: close Command Palette.
+- `Enter`: execute the selected command or terminal input.
+- `ArrowUp` / `ArrowDown`: move through Command Palette results or Terminal.app history.
 
 ## OS Style
 
@@ -117,6 +141,7 @@ w0nderful-lab-os/
       common/
       os/
     data/
+      commands.ts
       site.ts
       projects.ts
       posts.ts
@@ -124,7 +149,17 @@ w0nderful-lab-os/
       navigation.ts
     layouts/
     pages/
+      terminal/
+    scripts/
+      command-palette.ts
+      search-index.ts
+      system-state.ts
+      terminal.ts
     styles/
+  docs/
+    COMMAND_SYSTEM.md
+    SYSTEM_STATE.md
+    TERMINAL_COMMANDS.md
   astro.config.mjs
   package.json
   README.md
@@ -144,14 +179,14 @@ npm run self-test
 npm run preflight
 ```
 
-`self-test` checks required files and the built homepage for key product strings. `preflight` checks version consistency, documentation requirements, GitHub Pages config, forbidden placeholders, privacy boundaries, and build output.
+`self-test` checks required files and the built homepage for key product strings. `preflight` checks version consistency, Control Layer files, documentation requirements, GitHub Pages config, forbidden placeholders, privacy boundaries, and build output.
 
 ## Roadmap
 
 - Move Blog.app body blocks into Astro content collections.
-- Add screenshots after the v0.3.0 GitHub Pages deployment.
+- Add screenshots after the v0.4.0 GitHub Pages deployment.
 - Add project detail pages when individual projects need deeper case studies.
-- Mirror deployment to Cloudflare Pages after the GitHub Pages release is stable.
+- Expand terminal command aliases only after the core command surface stays stable.
 
 ## License
 

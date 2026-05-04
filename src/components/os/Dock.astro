@@ -11,9 +11,10 @@ const dockInitials: Record<string, string> = {
   home: "H",
   projects: "P",
   blog: "B",
-  timeline: "T",
+  timeline: "L",
   about: "A",
-  settings: "S"
+  settings: "S",
+  terminal: "$"
 };
 ---
 
@@ -23,6 +24,7 @@ const dockInitials: Record<string, string> = {
       <a
         href={item.href}
         class:list={["dock-item", active === item.id && "is-active"]}
+        data-app-link={item.id}
         aria-current={active === item.id ? "page" : undefined}
       >
         <span class="dock-icon" aria-hidden="true">{dockInitials[item.id]}</span>

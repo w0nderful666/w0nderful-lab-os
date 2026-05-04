@@ -58,7 +58,7 @@ Local First / No Backend / GitHub Pages Ready</code></pre>
       <div class="compact-list">
         {
           featuredProjects.map((project) => (
-            <a class="compact-row" href={withBase(`projects/?project=${project.slug}`)}>
+            <a class="compact-row" href={withBase(`projects/?project=${project.slug}`)} data-lab-open-project={project.slug}>
               <span>{project.name}</span>
               <small>{project.type}</small>
             </a>
@@ -71,7 +71,7 @@ Local First / No Backend / GitHub Pages Ready</code></pre>
       <div class="compact-list">
         {
           latestPosts.map((post) => (
-            <a class="compact-row" href={withBase(`blog/?post=${post.slug}`)}>
+            <a class="compact-row" href={withBase(`blog/?post=${post.slug}`)} data-lab-open-post={post.slug}>
               <span>{post.title}</span>
               <small>{post.readingTime}</small>
             </a>
@@ -84,7 +84,7 @@ Local First / No Backend / GitHub Pages Ready</code></pre>
       <div class="compact-list">
         {
           latestLogs.map((entry) => (
-            <a class="compact-row" href={withBase(`timeline/?entry=${entry.id}`)}>
+            <a class="compact-row" href={withBase(`timeline/?entry=${entry.id}`)} data-lab-open-timeline={entry.id}>
               <span>{entry.title}</span>
               <small>{entry.type} / {entry.date}</small>
             </a>
@@ -93,18 +93,24 @@ Local First / No Backend / GitHub Pages Ready</code></pre>
       </div>
     </DesktopWidget>
 
-    <DesktopWidget title="Quick Actions" meta="Launch" stagger={5}>
+    <DesktopWidget title="Recent Activity" meta="System State" stagger={5}>
+      <div class="compact-list recent-list" data-recent-items-list></div>
+    </DesktopWidget>
+
+    <DesktopWidget title="Quick Actions" meta="Launch" stagger={6}>
       <div class="quick-actions">
+        <button type="button" class="button button-primary" data-command-palette-open>Command Palette</button>
         <a class="button button-primary" href={withBase("projects/")}>Open Projects</a>
         <a class="button button-secondary" href={withBase("blog/")}>Read Blog</a>
         <a class="button button-secondary" href={withBase("timeline/")}>View Timeline</a>
+        <a class="button button-secondary" href={withBase("terminal/")}>Open Terminal</a>
         <a class="button button-secondary" href={site.repositoryUrl} target="_blank" rel="noreferrer">
           Open GitHub
         </a>
       </div>
     </DesktopWidget>
 
-    <DesktopWidget title="Experience Mode" meta="Desktop profile" stagger={6}>
+    <DesktopWidget title="Experience Mode" meta="Desktop profile" stagger={7}>
       <ExperienceModeControl />
     </DesktopWidget>
   </div>

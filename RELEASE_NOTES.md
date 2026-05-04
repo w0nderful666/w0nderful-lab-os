@@ -1,5 +1,16 @@
 # Release Notes
 
+## v0.4.0
+
+- Added the Control Layer Release foundation with shared System State for current app, selected project/post/timeline item, layout state, preferences, Recent Items, and command history.
+- Added a global Command Palette with Ctrl/Cmd + K, keyboard navigation, executable app/project/post/timeline/settings/utility commands, and shared Global Search results.
+- Added Terminal.app with real local commands for help, clear, whoami, status, version, app navigation, project opening, settings changes, local search, history recall, and GitHub profile launch.
+- Added Global Search reused by Command Palette and Terminal.app across projects, posts, timeline entries, and commands.
+- Added Recent Items rendering on Home.app, Command Palette, and Settings.app, with clear/reset actions backed by System State.
+- Connected Project / Blog / Timeline related content through System State events instead of hard page-only jumps.
+- Upgraded Settings.app with Recent Items management, Keyboard Shortcuts, and System State-backed preferences.
+- Updated self-test and preflight coverage for Command Palette, Terminal.app, System State, Global Search, Recent Items, docs, and v0.4.0 release strings.
+
 ## v0.3.0
 
 - Added OS-style Master-Detail layout states for Projects.app, Blog.app, and Timeline.app with `idle`, `focused`, and `expanded` modes.

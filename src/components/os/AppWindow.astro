@@ -3,17 +3,29 @@ type Props = {
   title: string;
   subtitle?: string;
   wide?: boolean;
+  detailControls?: boolean;
 };
 
-const { title, subtitle, wide = false } = Astro.props;
+const { title, subtitle, wide = false, detailControls = false } = Astro.props;
+const windowId = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 ---
 
-<section class={`app-window motion-enter${wide ? " app-window-wide" : ""}`} aria-label={title}>
+<section class={`app-window motion-enter${wide ? " app-window-wide" : ""}`} aria-label={title} data-app-window={windowId}>
   <header class="window-header">
-    <div class="window-controls" aria-hidden="true">
-      <span class="control control-close"></span>
-      <span class="control control-minimize"></span>
-      <span class="control control-maximize"></span>
+    <div class="window-controls">
+      <button type="button" class="control control-close" data-window-close-app aria-label="Close app">
+        <span class="sr-only">Close app</span>
+      </button>
+      {
+        detailControls && (
+          <button type="button" class="control control-minimize" data-window-close-detail aria-label="Close detail panel">
+            <span class="sr-only">Close detail panel</span>
+          </button>
+        )
+      }
+      <button type="button" class="control control-maximize" data-window-maximize aria-label="Maximize window" aria-pressed="false">
+        <span class="sr-only">Maximize window</span>
+      </button>
     </div>
     <div>
       <h2>{title}</h2>

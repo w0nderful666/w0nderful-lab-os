@@ -1,12 +1,12 @@
 export const site = {
   name: "w0nderful Lab OS",
   packageName: "w0nderful-lab-os",
-  version: "0.3.0",
-  displayVersion: "v0.3.0",
+  version: "0.4.0",
+  displayVersion: "v0.4.0",
   author: "w0nderful666",
   title: "w0nderful Lab OS",
   description:
-    "An OS-themed personal blog, open-source lab, and project showcase hub.",
+    "An operable OS-themed personal lab with command, terminal, search, and project knowledge layers.",
   liveUrl: "https://w0nderful666.github.io/w0nderful-lab-os/",
   repositoryUrl: "https://github.com/w0nderful666/w0nderful-lab-os",
   storageKey: "w0nderful-lab-os.settings",

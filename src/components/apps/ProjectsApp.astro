@@ -19,7 +19,7 @@ const serializedPosts = posts.map((post) => ({
 }));
 ---
 
-<AppWindow title="Projects.app" subtitle="Open-source project matrix" wide>
+<AppWindow title="Projects.app" subtitle="Open-source project matrix" wide detailControls>
   <div class="toolbar toolbar-stacked">
     <label class="search-field">
       <span>Search</span>
@@ -109,7 +109,7 @@ const serializedPosts = posts.map((post) => ({
           {
             initialRelatedPosts.map((post) => (
               post && (
-                <a class="related-link" href={withBase(`blog/?post=${post.slug}`)}>
+                <a class="related-link" href={withBase(`blog/?post=${post.slug}`)} data-lab-open-post={post.slug}>
                   {post.title}
                   <span>{postCategories.includes(post.category) ? post.category : "Post"}</span>
                 </a>
@@ -212,6 +212,7 @@ const serializedPosts = posts.map((post) => ({
         const link = document.createElement("a");
         link.className = "related-link";
         link.href = withBasePath(`blog/?post=${post.slug}`);
+        link.dataset.labOpenPost = post.slug;
         link.textContent = post.title;
 
         const meta = document.createElement("span");
@@ -223,6 +224,7 @@ const serializedPosts = posts.map((post) => ({
 
   const setLayout = (value: "idle" | "focused" | "expanded") => {
     if (layout instanceof HTMLElement) layout.dataset.layout = value;
+    window.labOS?.setState({ layoutState: value });
     document.querySelectorAll("[data-project-expand]").forEach((node) => {
       if (node instanceof HTMLButtonElement) {
         node.textContent = value === "expanded" ? "Focus detail" : "Expand list";
@@ -308,14 +310,24 @@ const serializedPosts = posts.map((post) => ({
   cards.forEach((card) => {
     card.addEventListener("click", (event) => {
       if ((event.target as Element).closest("a")) return;
-      selectProject(card.getAttribute("data-project-slug") || "");
+      const slug = card.getAttribute("data-project-slug") || "";
+      selectProject(slug);
+      window.labOS?.openProject(slug, { navigate: false });
     });
     card.addEventListener("keydown", (event) => {
       if (event instanceof KeyboardEvent && (event.key === "Enter" || event.key === " ")) {
         event.preventDefault();
-        selectProject(card.getAttribute("data-project-slug") || "");
+        const slug = card.getAttribute("data-project-slug") || "";
+        selectProject(slug);
+        window.labOS?.openProject(slug, { navigate: false });
       }
     });
+  });
+
+  document.addEventListener("labos:project-open", (event) => {
+    if (!(event instanceof CustomEvent)) return;
+    const slug = event.detail?.projectSlug;
+    if (typeof slug === "string") selectProject(slug, true);
   });
 
   const closeButton = document.querySelector("[data-project-close]");

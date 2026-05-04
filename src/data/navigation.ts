@@ -6,7 +6,8 @@ export type ActiveApp =
   | "blog"
   | "timeline"
   | "about"
-  | "settings";
+  | "settings"
+  | "terminal";
 
 export const topNavigation = [
   { id: "home", label: "Home", i18nKey: "nav.home", href: withBase("") },
@@ -23,7 +24,13 @@ export const topNavigation = [
     i18nKey: "nav.timeline",
     href: withBase("timeline/")
   },
-  { id: "about", label: "About", i18nKey: "nav.about", href: withBase("about/") }
+  { id: "about", label: "About", i18nKey: "nav.about", href: withBase("about/") },
+  {
+    id: "terminal",
+    label: "Terminal",
+    i18nKey: "nav.terminal",
+    href: withBase("terminal/")
+  }
 ] as const;
 
 export const dockNavigation = [

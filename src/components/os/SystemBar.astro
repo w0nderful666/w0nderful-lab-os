@@ -18,7 +18,9 @@ const { active } = Astro.props;
           <a
             href={item.href}
             class:list={["system-nav-link", active === item.id && "is-active"]}
+            data-app-link={item.id}
             data-i18n={item.i18nKey}
+            aria-current={active === item.id ? "page" : undefined}
           >
             {item.label}
           </a>
@@ -27,6 +29,9 @@ const { active } = Astro.props;
     </nav>
   </div>
   <div class="system-bar-right">
+    <button type="button" class="system-command-button" data-command-palette-open aria-label="Open Command Palette">
+      Command
+    </button>
     <a href={site.repositoryUrl} target="_blank" rel="noreferrer">GitHub</a>
     <span>{site.displayVersion}</span>
     <span>Local First</span>

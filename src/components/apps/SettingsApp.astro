@@ -74,9 +74,46 @@ import ExperienceModeControl from "../os/ExperienceModeControl.astro";
         <p class="eyebrow" data-i18n="settings.storage">Saved to localStorage</p>
         <h3>Local Settings</h3>
       </div>
+      <p data-labos-status>System State preferences are synced to html/body data attributes.</p>
       <button type="button" class="button button-danger" data-reset-settings data-i18n="settings.reset">
         Reset local settings
       </button>
+    </section>
+
+    <section class="setting-panel">
+      <div>
+        <p class="eyebrow" data-i18n="settings.recent">Recent Items</p>
+        <h3>Recently Opened</h3>
+      </div>
+      <div class="compact-list recent-list" data-recent-items-list></div>
+      <button type="button" class="button button-secondary" data-clear-recent-items data-i18n="settings.clearRecent">
+        Clear recent items
+      </button>
+    </section>
+
+    <section class="setting-panel">
+      <div>
+        <p class="eyebrow" data-i18n="settings.shortcuts">Keyboard Shortcuts</p>
+        <h3>Command Controls</h3>
+      </div>
+      <dl class="shortcut-list">
+        <div>
+          <dt><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>K</kbd></dt>
+          <dd>Open Command Palette</dd>
+        </div>
+        <div>
+          <dt><kbd>Esc</kbd></dt>
+          <dd>Close panel</dd>
+        </div>
+        <div>
+          <dt><kbd>Enter</kbd></dt>
+          <dd>Execute command</dd>
+        </div>
+        <div>
+          <dt><kbd>ArrowUp</kbd> / <kbd>ArrowDown</kbd></dt>
+          <dd>Switch command results or terminal history</dd>
+        </div>
+      </dl>
     </section>
   </div>
 </AppWindow>
