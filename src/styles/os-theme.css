@@ -1964,6 +1964,7 @@ kbd {
 .draft-notice {
   display: flex;
   align-items: center;
+  align-self: start;
   justify-content: space-between;
   gap: 12px;
   padding: 10px 14px;
@@ -1996,6 +1997,7 @@ kbd {
 .save-status {
   display: inline-flex;
   align-items: center;
+  align-self: start;
   gap: 6px;
   padding: 3px 8px;
   margin-bottom: 8px;
