@@ -1,5 +1,14 @@
 # Release Notes
 
+## v0.6.3
+
+- Added article template at docs/ARTICLE_TEMPLATE.md with complete frontmatter fields, example content, and publishing instructions.
+- Enhanced README with Blog Publishing Quick Start, draft rules, publishing workflow, and template reference.
+- Enhanced preflight with article content validation: checks required frontmatter fields, valid articleStyle values, unique slugs, and minimum article count.
+- Added blog result count display showing number of matching articles when filtering.
+- Added ARTICLE_TEMPLATE.md to self-test required files.
+- Synced version to v0.6.3 across site.ts, package.json, projects.ts, timeline.ts, README, RELEASE_NOTES, self-test, and preflight.
+
 ## v0.6.2
 
 - Added unified OS Motion Language for detail panel content transitions across Projects, Blog, and Timeline.

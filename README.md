@@ -2,7 +2,7 @@
 
 OS-themed personal blog, open-source lab, and project showcase hub for w0nderful666.
 
-Current version: `v0.6.2`
+Current version: `v0.6.3`
 
 Live demo: https://w0nderful666.github.io/w0nderful-lab-os/
 
@@ -191,9 +191,17 @@ No backend, database, login system, or heavy client framework is required.
 
 ## Blog Publishing
 
+### Quick Start
+
+1. Copy the article template: `cp docs/ARTICLE_TEMPLATE.md src/content/blog/your-slug.md`
+2. Edit the frontmatter and content
+3. Run `npm run build` to verify
+4. Run `npm run self-test` and `npm run preflight`
+5. Push to GitHub: articles on `pt` branch auto-deploy
+
 ### Adding a New Article
 
-Create a new Markdown file in `src/content/blog/`:
+Create a new Markdown file in `src/content/blog/`. The filename becomes the URL slug if no `slug` field is specified.
 
 ```markdown
 ---
@@ -249,6 +257,27 @@ Users can override article styles globally via Settings.app or the style switche
 - **System / Paper / Terminal / Magazine / Notebook / Minimal**: Override all articles with chosen style
 
 Preference persists in localStorage under `lab-reader-style`.
+
+### Article Template
+
+A ready-to-use article template is available at `docs/ARTICLE_TEMPLATE.md`. It includes all frontmatter fields, example content with headings, lists, code blocks, quotes, and tables.
+
+### Draft Rules
+
+- `status: "draft"` articles are hidden in production builds
+- Missing `status` field defaults to `published`
+- Draft articles are visible in local dev for preview
+
+### Publishing Workflow
+
+This project does not require a backend, database, login system, or CMS. Articles are published as follows:
+
+1. Write a Markdown file in `src/content/blog/`
+2. Commit and push to the `pt` branch
+3. GitHub Actions runs `build` / `check` / `self-test` / `preflight`
+4. If all pass, the site deploys to GitHub Pages automatically
+
+No user data is uploaded. All content is static. The entire publishing flow is `git push`.
 
 ## System Health
 

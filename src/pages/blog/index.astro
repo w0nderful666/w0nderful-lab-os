@@ -77,6 +77,10 @@ for (const post of sortedPosts) {
 
       <div class="master-detail blog-reader-layout" data-blog-layout data-layout="idle">
         <section class="master-panel blog-list-panel" data-blog-list-panel aria-label="Article list">
+          <div class="search-result-count" data-post-count aria-live="polite">
+            <strong data-post-count-num>{postMeta.length}</strong>
+            <span>articles</span>
+          </div>
           <div class="post-list" data-post-list>
             {postMeta.map((post, i) => (
               <article
@@ -287,6 +291,8 @@ for (const post of sortedPosts) {
       if (visible) visibleCount++;
     });
     if (emptyState instanceof HTMLElement) emptyState.hidden = visibleCount > 0;
+    const countNum = document.querySelector("[data-post-count-num]");
+    if (countNum) countNum.textContent = String(visibleCount);
   };
 
   categoryButtons.forEach((btn) => btn.addEventListener("click", () => {

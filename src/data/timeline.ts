@@ -11,6 +11,15 @@ export type TimelineEntry = {
 
 export const timeline: TimelineEntry[] = [
   {
+    id: "lab-os-v063-publishing-polish",
+    date: "2026-05-05",
+    type: "Maintenance",
+    title: "w0nderful-lab-os v0.6.3 publishing workflow polish",
+    description:
+      "Article template, publishing workflow docs, article content validation, blog result count display, and version consistency.",
+    relatedProject: "w0nderful-lab-os"
+  },
+  {
     id: "lab-os-v062-motion-polish",
     date: "2026-05-05",
     type: "Release",

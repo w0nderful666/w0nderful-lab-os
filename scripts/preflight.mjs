@@ -76,10 +76,10 @@ async function readRootFile(filePath) {
 
 async function checkPackageVersion() {
   const packageJson = JSON.parse(await readRootFile("package.json"));
-  if (packageJson.version === "0.6.2") {
-    pass("package.json version is 0.6.2");
+  if (packageJson.version === "0.6.3") {
+    pass("package.json version is 0.6.3");
   } else {
-    fail(`package.json version is ${packageJson.version}, expected 0.6.2`);
+    fail(`package.json version is ${packageJson.version}, expected 0.6.3`);
   }
 }
 
@@ -117,7 +117,10 @@ async function checkReadme() {
     "System Health",
     "Keyboard Shortcuts",
     "Chinese Aliases",
-    "Toggle Theme"
+    "Toggle Theme",
+    "Blog Publishing",
+    "Article Template",
+    "articleStyle"
   ];
 
   for (const value of required) {
@@ -451,6 +454,59 @@ async function checkBlogContentSystem() {
     pass("article-styles.css exists");
   } else {
     fail("article-styles.css exists");
+  }
+
+  if (await exists("docs/ARTICLE_TEMPLATE.md")) {
+    pass("ARTICLE_TEMPLATE.md exists");
+  } else {
+    fail("ARTICLE_TEMPLATE.md exists");
+  }
+
+  const articleFiles = [
+    "src/content/blog/web-os-project-review.md",
+    "src/content/blog/local-first-no-backend.md",
+    "src/content/blog/github-pages-deployment-log.md",
+    "src/content/blog/lightweight-web-os.md"
+  ];
+  let articleCount = 0;
+  const validStyles = ["system", "paper", "terminal", "magazine", "notebook", "minimal"];
+  const slugs = [];
+
+  for (const file of articleFiles) {
+    if (await exists(file)) {
+      articleCount++;
+      const content = await readRootFile(file);
+      const hasTitle = content.includes("title:");
+      const hasDate = content.includes("date:");
+      const hasSummary = content.includes("summary:");
+      const hasTags = content.includes("tags:");
+      const hasStatus = content.includes("status:");
+      const hasStyle = content.includes("articleStyle:");
+      if (hasTitle && hasDate && hasSummary && hasTags && hasStatus && hasStyle) {
+        pass(`${file} has required frontmatter`);
+      } else {
+        fail(`${file} has required frontmatter`);
+      }
+      const slugMatch = content.match(/slug:\s*["']?([^"'\n]+)/);
+      if (slugMatch) slugs.push(slugMatch[1].trim());
+      const styleMatch = content.match(/articleStyle:\s*["']?([^"'\n]+)/);
+      if (styleMatch && !validStyles.includes(styleMatch[1].trim())) {
+        fail(`${file} has valid articleStyle`);
+      }
+    }
+  }
+
+  if (articleCount >= 4) {
+    pass(`At least 4 articles exist (${articleCount})`);
+  } else {
+    fail(`At least 4 articles exist (${articleCount})`);
+  }
+
+  const uniqueSlugs = new Set(slugs);
+  if (uniqueSlugs.size === slugs.length) {
+    pass("Article slugs are unique");
+  } else {
+    fail("Article slugs are unique");
   }
 
   const blogPage = await readRootFile("src/pages/blog/index.astro");
