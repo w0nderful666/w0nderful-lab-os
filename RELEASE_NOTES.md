@@ -1,5 +1,30 @@
 # Release Notes
 
+## v0.8.2
+
+Shell Interaction + Theme/i18n Polish — floating reader controls, sticky master list, Composer notice isolation, theme flash fix, new backgrounds, contrast and i18n polish.
+
+### Added
+
+- Floating reader controls: Back/Focus/Expand/Reader Style now appear as a right-side floating toolbar with minimize/expand toggle.
+- 4 new Background Presets: Frosted Mint, Glacier Glass, Sakura Haze, Graphite Mesh.
+- Expanded i18n dictionary: Master-Detail controls, Composer fields, Settings labels, filter/result labels — all with EN/ZH translations.
+- Master list sticky behavior: left panel follows scroll in focused/expanded states.
+
+### Improved
+
+- Theme flash fix: early boot script now sets both html and body data attributes, preventing dark flash on light mode switch.
+- Composer Draft Notice repositioned as absolute floating overlay, no longer disrupts grid layout.
+- Form element contrast: explicit color/background rules for select, option, input, textarea across all themes.
+- Floating controls have OS-style glass appearance with backdrop blur, border, and shadow.
+
+### Validation
+
+- self-test / preflight / build / check all pass.
+- All OS Motion preserved.
+- Composer functionality unchanged.
+- Blog/Projects/Timeline detail transition preserved.
+
 ## v0.8.1
 
 Motion & Reading Bugfix — restores detail transition animation, removes inner scrollbar, fixes Composer layout, and improves narrow card display.

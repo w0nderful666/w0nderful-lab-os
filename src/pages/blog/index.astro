@@ -76,11 +76,14 @@ for (const post of sortedPosts) {
       </div>
 
       <div class="master-detail blog-reader-layout" data-blog-layout data-layout="idle">
-        <div class="detail-actions md-reader-toolbar">
-          <button type="button" class="button button-secondary reader-back" data-reader-back data-md-close>Back to list</button>
-          <button type="button" class="button button-secondary" data-md-expand>Expand list</button>
-          <button type="button" class="detail-focus-toggle" data-detail-focus-toggle aria-label="Focus detail panel" aria-pressed="false">Focus</button>
-          <ArticleStyleSwitcher />
+        <div class="detail-actions md-reader-toolbar" data-reader-controls>
+          <button type="button" class="md-reader-toolbar-toggle" data-controls-toggle aria-label="Toggle controls" aria-expanded="true" title="Controls">&#9776;</button>
+          <div class="md-reader-toolbar-body">
+            <button type="button" class="button button-secondary reader-back" data-reader-back data-md-close data-i18n="detail.back">Back to list</button>
+            <button type="button" class="button button-secondary" data-md-expand data-i18n="detail.expand">Expand list</button>
+            <button type="button" class="detail-focus-toggle" data-detail-focus-toggle aria-label="Focus detail panel" aria-pressed="false" data-i18n="detail.focus">Focus</button>
+            <ArticleStyleSwitcher />
+          </div>
         </div>
         <section class="master-panel blog-list-panel" data-blog-list-panel aria-label="Article list">
           <div class="search-result-count" data-post-count aria-live="polite">

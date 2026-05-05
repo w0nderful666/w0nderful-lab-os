@@ -50,10 +50,13 @@ const serializedPosts = posts.map((post) => ({
   </div>
 
   <div class="master-detail project-matrix-layout" data-project-layout data-layout="idle">
-    <div class="detail-actions md-reader-toolbar">
-      <button type="button" class="button button-secondary" data-project-close>Close detail</button>
-      <button type="button" class="button button-secondary" data-project-expand>Expand list</button>
-      <button type="button" class="detail-focus-toggle" data-detail-focus-toggle aria-label="Focus detail panel" aria-pressed="false">Focus</button>
+    <div class="detail-actions md-reader-toolbar" data-reader-controls>
+      <button type="button" class="md-reader-toolbar-toggle" data-controls-toggle aria-label="Toggle controls" aria-expanded="true" title="Controls">&#9776;</button>
+      <div class="md-reader-toolbar-body">
+        <button type="button" class="button button-secondary" data-project-close data-i18n="detail.close">Close detail</button>
+        <button type="button" class="button button-secondary" data-project-expand data-i18n="detail.expand">Expand list</button>
+        <button type="button" class="detail-focus-toggle" data-detail-focus-toggle aria-label="Focus detail panel" aria-pressed="false" data-i18n="detail.focus">Focus</button>
+      </div>
     </div>
     <section class="master-panel project-list-panel" aria-label="Project matrix">
       <div class="project-grid" data-project-grid>
