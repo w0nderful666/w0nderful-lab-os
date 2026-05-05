@@ -45,6 +45,8 @@
   --dock-scale: 1.04;
   --app-enter-scale: 1;
   --app-exit-scale: 0.985;
+  --detail-duration: 180ms;
+  --detail-ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 html[data-theme="light"] {
@@ -106,6 +108,31 @@ html[data-experience="performance"] {
   --dock-scale: 1;
   --app-enter-scale: 1;
   --app-exit-scale: 1;
+  --detail-duration: 1ms;
+}
+
+html[data-motion-intensity="minimal"] {
+  --detail-duration: 80ms;
+  --motion-distance: 4px;
+  --card-lift: 0px;
+  --dock-lift: 0px;
+  --dock-scale: 1.01;
+}
+
+html[data-motion-intensity="balanced"] {
+  --detail-duration: 180ms;
+  --motion-distance: 8px;
+  --card-lift: -2px;
+  --dock-lift: -2px;
+  --dock-scale: 1.04;
+}
+
+html[data-motion-intensity="expressive"] {
+  --detail-duration: 260ms;
+  --motion-distance: 14px;
+  --card-lift: -3px;
+  --dock-lift: -3px;
+  --dock-scale: 1.06;
 }
 
 html[data-theme="light"][data-experience="performance"] {

@@ -64,6 +64,7 @@ const initialProject = projects.find(
         <button type="button" class="button button-secondary" data-log-expand>Expand list</button>
         <button type="button" class="detail-focus-toggle" data-detail-focus-toggle aria-label="Focus detail panel" aria-pressed="false">Focus</button>
       </div>
+      <div class="detail-swap-body">
       <p class="eyebrow" data-log-detail-type>{initialEntry.type}</p>
       <h3 data-log-detail-title>{initialEntry.title}</h3>
       <p data-log-detail-description>{initialEntry.description}</p>
@@ -92,6 +93,7 @@ const initialProject = projects.find(
           }
         </div>
       </section>
+      </div>
     </aside>
   </div>
 
@@ -174,14 +176,32 @@ const initialProject = projects.find(
   const selectLog = (id: string, shouldFocus = true) => {
     const entry = logData.find((item) => item.id === id) || logData[0];
     if (!entry) return;
+    if (entry.id === activeId && layout instanceof HTMLElement && layout.dataset.layout !== "idle") return;
     activeId = entry.id;
     cards.forEach((card) => card.setAttribute("data-selected", card.getAttribute("data-log-id") === activeId ? "true" : "false"));
-    setText("[data-log-detail-type]", entry.type);
-    setText("[data-log-detail-title]", entry.title);
-    setText("[data-log-detail-description]", entry.description);
-    setText("[data-log-detail-date]", entry.date);
-    setText("[data-log-detail-project]", entry.relatedProject);
-    renderRelatedProject(entry);
+
+    const doUpdate = () => {
+      setText("[data-log-detail-type]", entry.type);
+      setText("[data-log-detail-title]", entry.title);
+      setText("[data-log-detail-description]", entry.description);
+      setText("[data-log-detail-date]", entry.date);
+      setText("[data-log-detail-project]", entry.relatedProject);
+      renderRelatedProject(entry);
+    };
+
+    const transition = document.documentElement.dataset.detailTransition || "os";
+    if (transition === "off" || !(detail instanceof HTMLElement)) {
+      doUpdate();
+    } else {
+      const duration = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--detail-duration")) || 180;
+      detail.dataset.detailSwapping = "true";
+      setTimeout(() => {
+        doUpdate();
+        detail.dataset.detailSwapping = "done";
+        setTimeout(() => { delete detail.dataset.detailSwapping; }, duration);
+      }, duration);
+    }
+
     if (shouldFocus) {
       setLayout("focused");
       requestAnimationFrame(() => {

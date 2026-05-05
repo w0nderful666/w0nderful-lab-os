@@ -2,7 +2,7 @@
 
 OS-themed personal blog, open-source lab, and project showcase hub for w0nderful666.
 
-Current version: `v0.6.0`
+Current version: `v0.6.2`
 
 Live demo: https://w0nderful666.github.io/w0nderful-lab-os/
 
@@ -28,8 +28,9 @@ This project is designed as a long-term personal brand hub, not a disposable dem
 - Blog.app reader with Astro Content Collections, Markdown rendering, Article Style System (6 styles), Reader Style switcher, category filtering, tag filtering, search, Master-Detail layout, Copy Link, Table of Contents, and deep linking.
 - Timeline.app with System Log entries, type filtering, and Master-Detail detail inspection.
 - About.app with version, author, positioning, project count, post count, tech stack, and real-time System Health checks.
-- Settings.app with Theme, Experience Mode, Motion Speed, Language, Reader Style, Recent Items management, Reset local settings, and Keyboard Shortcuts.
+- Settings.app with Theme, Experience Mode, Motion Speed, Language, Reader Style, OS Motion (OS Effects, Motion Intensity, Detail Transition), Recent Items management, Reset local settings, and Keyboard Shortcuts.
 - Article Style System with 6 distinct styles: system (OS documentation), paper (long-form reading), terminal (deployment logs), magazine (showcase articles), notebook (learning notes), minimal (clean tech blog).
+- OS Motion Language with unified detail panel transitions (Off/Fade/Slide/OS Panel), Motion Intensity control (Minimal/Balanced/Expressive), and OS Effects toggle for disabling all custom animations.
 - Reader Style override allowing users to choose a global article display style or follow each article's author-chosen default.
 - Markdown blog publishing with frontmatter support for title, slug, date, summary, tags, category, status, articleStyle, readerDensity, toc, and relatedProject.
 - Settings Preview Card for live theme, palette, background, motion, button, and window depth feedback.

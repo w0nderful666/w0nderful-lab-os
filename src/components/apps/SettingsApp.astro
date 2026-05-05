@@ -134,6 +134,43 @@ import ExperienceModeControl from "../os/ExperienceModeControl.astro";
       </div>
     </section>
 
+    <section class="setting-panel">
+      <div>
+        <p class="eyebrow">OS Motion</p>
+        <h3>Motion Effects</h3>
+      </div>
+      <label class="select-field">
+        <span>OS Effects</span>
+        <select data-setting-os-effects aria-label="Toggle OS effects">
+          <option value="on">On</option>
+          <option value="off">Off</option>
+        </select>
+      </label>
+      <label class="select-field">
+        <span>Motion Intensity</span>
+        <select data-setting-motion-intensity aria-label="Select motion intensity">
+          <option value="minimal">Minimal</option>
+          <option value="balanced">Balanced</option>
+          <option value="expressive">Expressive</option>
+        </select>
+      </label>
+      <label class="select-field">
+        <span>Detail Transition</span>
+        <select data-setting-detail-transition aria-label="Select detail transition style">
+          <option value="off">Off</option>
+          <option value="fade">Fade</option>
+          <option value="slide">Slide</option>
+          <option value="os">OS Panel</option>
+        </select>
+      </label>
+      <div class="mode-notes">
+        <p>
+          <strong>OS Panel</strong>
+          <span>System-style panel transition with opacity, translate, and subtle blur. Respects reduced motion.</span>
+        </p>
+      </div>
+    </section>
+
     <section class="setting-panel settings-preview-panel" data-settings-preview>
       <div>
         <p class="eyebrow">Live Appearance</p>

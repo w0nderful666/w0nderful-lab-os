@@ -21,6 +21,9 @@ export type MotionSpeed = "slow" | "normal" | "fast";
 export type Language = "en" | "zh";
 export type ThemePalette = "aurora" | "graphite" | "ubuntu" | "mint" | "terminal";
 export type BackgroundPreset = "aurora" | "grid" | "terminal" | "paper" | "space";
+export type OsEffects = "on" | "off";
+export type MotionIntensity = "minimal" | "balanced" | "expressive";
+export type DetailTransition = "off" | "fade" | "slide" | "os";
 export type RecentItemType = "app" | "project" | "post" | "timeline" | "command";
 
 export type RecentItem = {
@@ -46,6 +49,9 @@ export type LabOSState = {
   background: BackgroundPreset;
   recentItems: RecentItem[];
   commandHistory: string[];
+  osEffects: OsEffects;
+  motionIntensity: MotionIntensity;
+  detailTransition: DetailTransition;
 };
 
 type OpenOptions = {
@@ -62,6 +68,9 @@ type PersistedSettings = {
   background?: BackgroundPreset;
   recentItems?: RecentItem[];
   commandHistory?: string[];
+  osEffects?: OsEffects;
+  motionIntensity?: MotionIntensity;
+  detailTransition?: DetailTransition;
 };
 
 type LabOSApi = {
@@ -77,6 +86,9 @@ type LabOSApi = {
   setLanguage: (language: Language) => void;
   setPalette: (palette: ThemePalette) => void;
   setBackground: (background: BackgroundPreset) => void;
+  setOsEffects: (effects: OsEffects) => void;
+  setMotionIntensity: (intensity: MotionIntensity) => void;
+  setDetailTransition: (transition: DetailTransition) => void;
   addRecentItem: (item: Omit<RecentItem, "id" | "timestamp">) => void;
   clearRecentItems: () => void;
   addCommandHistory: (label: string) => void;
@@ -110,7 +122,10 @@ const defaultSettings = {
   motionSpeed: "normal" as MotionSpeed,
   language: "en" as Language,
   palette: "aurora" as ThemePalette,
-  background: "aurora" as BackgroundPreset
+  background: "aurora" as BackgroundPreset,
+  osEffects: "on" as OsEffects,
+  motionIntensity: "balanced" as MotionIntensity,
+  detailTransition: "os" as DetailTransition
 };
 
 const paletteLabels: Record<ThemePalette, string> = {
@@ -218,6 +233,11 @@ const isPalette = (value: unknown): value is ThemePalette =>
   value === "aurora" || value === "graphite" || value === "ubuntu" || value === "mint" || value === "terminal";
 const isBackground = (value: unknown): value is BackgroundPreset =>
   value === "aurora" || value === "grid" || value === "terminal" || value === "paper" || value === "space";
+const isOsEffects = (value: unknown): value is OsEffects => value === "on" || value === "off";
+const isMotionIntensity = (value: unknown): value is MotionIntensity =>
+  value === "minimal" || value === "balanced" || value === "expressive";
+const isDetailTransition = (value: unknown): value is DetailTransition =>
+  value === "off" || value === "fade" || value === "slide" || value === "os";
 
 const normalizeRecentItems = (items: unknown): RecentItem[] => {
   if (!Array.isArray(items)) return [];
@@ -252,7 +272,10 @@ const createInitialState = (): LabOSState => {
     palette: isPalette(persisted.palette) ? persisted.palette : defaultSettings.palette,
     background: isBackground(persisted.background) ? persisted.background : defaultSettings.background,
     recentItems: normalizeRecentItems(persisted.recentItems),
-    commandHistory: normalizeHistory(persisted.commandHistory)
+    commandHistory: normalizeHistory(persisted.commandHistory),
+    osEffects: isOsEffects(persisted.osEffects) ? persisted.osEffects : defaultSettings.osEffects,
+    motionIntensity: isMotionIntensity(persisted.motionIntensity) ? persisted.motionIntensity : defaultSettings.motionIntensity,
+    detailTransition: isDetailTransition(persisted.detailTransition) ? persisted.detailTransition : defaultSettings.detailTransition
   };
 };
 
@@ -280,7 +303,10 @@ const writePersistedSettings = () => {
     palette: state.palette,
     background: state.background,
     recentItems: state.recentItems,
-    commandHistory: state.commandHistory
+    commandHistory: state.commandHistory,
+    osEffects: state.osEffects,
+    motionIntensity: state.motionIntensity,
+    detailTransition: state.detailTransition
   };
 
   try {
@@ -472,6 +498,8 @@ const syncDocument = () => {
   html.dataset.background = state.background;
   html.dataset.currentApp = state.currentApp;
   html.dataset.layoutState = state.layoutState;
+  html.dataset.osEffects = state.osEffects;
+  html.dataset.motionIntensity = state.motionIntensity;
   html.lang = state.language === "zh" ? "zh-CN" : "en";
 
   body.dataset.theme = getAppliedTheme(state.theme);
@@ -492,6 +520,7 @@ const syncDocument = () => {
   renderRecentItems();
   syncWelcomeToast();
   syncDetailMode();
+  syncMotionSettings();
 };
 
 const syncDetailMode = () => {
@@ -510,6 +539,24 @@ const syncDetailMode = () => {
     const isFocus = savedMode === "focus";
     node.setAttribute("aria-pressed", String(isFocus));
     node.textContent = isFocus ? "Restore" : "Focus";
+  });
+};
+
+const syncMotionSettings = () => {
+  document.querySelectorAll("[data-setting-os-effects]").forEach((node) => {
+    if (node instanceof HTMLSelectElement) node.value = state.osEffects;
+  });
+  document.querySelectorAll("[data-setting-motion-intensity]").forEach((node) => {
+    if (node instanceof HTMLSelectElement) node.value = state.motionIntensity;
+  });
+  document.querySelectorAll("[data-setting-detail-transition]").forEach((node) => {
+    if (node instanceof HTMLSelectElement) node.value = state.detailTransition;
+  });
+
+  document.querySelectorAll(".master-detail").forEach((node) => {
+    if (!(node instanceof HTMLElement)) return;
+    node.dataset.detailTransition = state.detailTransition;
+    node.dataset.motionIntensity = state.motionIntensity;
   });
 };
 
@@ -677,6 +724,21 @@ const setPalette = (palette: ThemePalette) => {
 
 const setBackground = (background: BackgroundPreset) => {
   commit({ background }, "labos:settings-change", { setting: "background", value: background });
+  document.dispatchEvent(new CustomEvent("lab-os-settings-change", { detail: getStateSnapshot() }));
+};
+
+const setOsEffects = (osEffects: OsEffects) => {
+  commit({ osEffects }, "labos:settings-change", { setting: "osEffects", value: osEffects });
+  document.dispatchEvent(new CustomEvent("lab-os-settings-change", { detail: getStateSnapshot() }));
+};
+
+const setMotionIntensity = (motionIntensity: MotionIntensity) => {
+  commit({ motionIntensity }, "labos:settings-change", { setting: "motionIntensity", value: motionIntensity });
+  document.dispatchEvent(new CustomEvent("lab-os-settings-change", { detail: getStateSnapshot() }));
+};
+
+const setDetailTransition = (detailTransition: DetailTransition) => {
+  commit({ detailTransition }, "labos:settings-change", { setting: "detailTransition", value: detailTransition });
   document.dispatchEvent(new CustomEvent("lab-os-settings-change", { detail: getStateSnapshot() }));
 };
 
@@ -854,6 +916,15 @@ const registerSettingEvents = () => {
       } catch {}
       document.dispatchEvent(new CustomEvent("labos:reader-style-change", { detail: { style: value } }));
     }
+    if (target instanceof HTMLSelectElement && target.matches("[data-setting-os-effects]") && isOsEffects(target.value)) {
+      setOsEffects(target.value);
+    }
+    if (target instanceof HTMLSelectElement && target.matches("[data-setting-motion-intensity]") && isMotionIntensity(target.value)) {
+      setMotionIntensity(target.value);
+    }
+    if (target instanceof HTMLSelectElement && target.matches("[data-setting-detail-transition]") && isDetailTransition(target.value)) {
+      setDetailTransition(target.value);
+    }
   });
 
   document.addEventListener("click", (event) => {
@@ -994,6 +1065,9 @@ window.labOS = {
   setLanguage,
   setPalette,
   setBackground,
+  setOsEffects,
+  setMotionIntensity,
+  setDetailTransition,
   addRecentItem,
   clearRecentItems,
   addCommandHistory,

@@ -11,6 +11,15 @@ export type TimelineEntry = {
 
 export const timeline: TimelineEntry[] = [
   {
+    id: "lab-os-v062-motion-polish",
+    date: "2026-05-05",
+    type: "Release",
+    title: "w0nderful-lab-os v0.6.2 OS Motion Polish release",
+    description:
+      "Unified OS motion language with detail panel transitions, OS Effects toggle, Motion Intensity control, and Detail Transition modes (Off/Fade/Slide/OS Panel).",
+    relatedProject: "w0nderful-lab-os"
+  },
+  {
     id: "lab-os-v060-blog-publishing",
     date: "2026-05-05",
     type: "Release",

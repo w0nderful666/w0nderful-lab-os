@@ -240,18 +240,36 @@ for (const post of sortedPosts) {
   const selectPost = (slug: string, shouldOpen = true) => {
     const post = postData.find((p) => p.slug === slug) || postData[0];
     if (!post) return;
+    if (post.slug === activeSlug && layout instanceof HTMLElement && layout.dataset.layout !== "idle") return;
     activeSlug = post.slug;
     cards.forEach((c) => c.setAttribute("data-selected", c.getAttribute("data-post-slug") === activeSlug ? "true" : "false"));
+
     const container = document.querySelector("[data-article-rendered]");
-    if (container) {
-      const tpl = document.querySelector(`[data-article-template="${slug}"]`);
-      if (tpl instanceof HTMLTemplateElement) {
-        container.innerHTML = "";
-        container.appendChild(tpl.content.cloneNode(true));
-        container.setAttribute("data-article-slug", slug);
-        applyReaderStyle();
+    const doUpdate = () => {
+      if (container) {
+        const tpl = document.querySelector(`[data-article-template="${slug}"]`);
+        if (tpl instanceof HTMLTemplateElement) {
+          container.innerHTML = "";
+          container.appendChild(tpl.content.cloneNode(true));
+          container.setAttribute("data-article-slug", slug);
+          applyReaderStyle();
+        }
       }
+    };
+
+    const transition = document.documentElement.dataset.detailTransition || "os";
+    if (transition === "off" || !(container instanceof HTMLElement)) {
+      doUpdate();
+    } else {
+      const duration = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--detail-duration")) || 180;
+      container.dataset.detailSwapping = "true";
+      setTimeout(() => {
+        doUpdate();
+        container.dataset.detailSwapping = "done";
+        setTimeout(() => { delete container.dataset.detailSwapping; }, duration);
+      }, duration);
     }
+
     if (shouldOpen) openReader();
   };
 

@@ -240,7 +240,7 @@ export const projects: Project[] = [
     category: "DevTools",
     summary: "OS-themed personal blog and open-source lab hub.",
     status: "Active",
-    version: "v0.6.1",
+    version: "v0.6.2",
     features: [
       "OS-style navigation for blog, projects, timeline, about, settings, and terminal.",
       "Global Command Palette and Terminal.app powered by the shared System State.",

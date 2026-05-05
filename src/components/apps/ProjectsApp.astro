@@ -68,6 +68,7 @@ const serializedPosts = posts.map((post) => ({
         <button type="button" class="button button-secondary" data-project-expand>Expand list</button>
         <button type="button" class="detail-focus-toggle" data-detail-focus-toggle aria-label="Focus detail panel" aria-pressed="false">Focus</button>
       </div>
+      <div class="detail-swap-body">
       <p class="eyebrow" data-project-detail-type>{initialProject.type}</p>
       <h3 data-project-detail-name>{initialProject.name}</h3>
       <p data-project-detail-summary>{initialProject.summary}</p>
@@ -133,6 +134,7 @@ const serializedPosts = posts.map((post) => ({
           {initialProject.roadmap.map((item) => <li>{item}</li>)}
         </ul>
       </section>
+      </div>
     </aside>
   </div>
 
@@ -246,30 +248,42 @@ const serializedPosts = posts.map((post) => ({
   const selectProject = (slug: string, shouldFocus = true) => {
     const project = projectData.find((item) => item.slug === slug) || projectData[0];
     if (!project) return;
+    if (project.slug === activeSlug && layout instanceof HTMLElement && layout.dataset.layout !== "idle") return;
     activeSlug = project.slug;
     cards.forEach((card) => card.setAttribute("data-selected", card.getAttribute("data-project-slug") === activeSlug ? "true" : "false"));
-    setText("[data-project-detail-type]", project.type);
-    setText("[data-project-detail-name]", project.name);
-    setText("[data-project-detail-summary]", project.summary);
-    setText("[data-project-detail-category]", project.category);
-    setText("[data-project-detail-status]", project.status);
-    setText("[data-project-detail-version]", project.version);
-    setText("[data-project-detail-repo]", project.githubUrl.replace("https://github.com/", ""));
 
-    renderList("[data-project-detail-features]", project.features);
-    renderList("[data-project-detail-roadmap]", project.roadmap);
-    renderRelatedPosts(project);
+    const doUpdate = () => {
+      setText("[data-project-detail-type]", project.type);
+      setText("[data-project-detail-name]", project.name);
+      setText("[data-project-detail-summary]", project.summary);
+      setText("[data-project-detail-category]", project.category);
+      setText("[data-project-detail-status]", project.status);
+      setText("[data-project-detail-version]", project.version);
+      setText("[data-project-detail-repo]", project.githubUrl.replace("https://github.com/", ""));
+      renderList("[data-project-detail-features]", project.features);
+      renderList("[data-project-detail-roadmap]", project.roadmap);
+      renderRelatedPosts(project);
+      const live = detail?.querySelector("[data-project-detail-live]");
+      const github = detail?.querySelector("[data-project-detail-github]");
+      if (live instanceof HTMLAnchorElement) live.href = project.liveUrl;
+      if (github instanceof HTMLAnchorElement) github.href = project.githubUrl;
+      const tagWrap = detail?.querySelector("[data-project-detail-tags]");
+      if (tagWrap) { tagWrap.textContent = ""; project.tags.forEach((tag) => tagWrap.append(createBadge(tag))); }
+    };
 
-    const live = detail?.querySelector("[data-project-detail-live]");
-    const github = detail?.querySelector("[data-project-detail-github]");
-    if (live instanceof HTMLAnchorElement) live.href = project.liveUrl;
-    if (github instanceof HTMLAnchorElement) github.href = project.githubUrl;
-
-    const tagWrap = detail?.querySelector("[data-project-detail-tags]");
-    if (tagWrap) {
-      tagWrap.textContent = "";
-      project.tags.forEach((tag) => tagWrap.append(createBadge(tag)));
+    const transition = document.documentElement.dataset.detailTransition || "os";
+    if (transition === "off" || !(detail instanceof HTMLElement)) {
+      doUpdate();
+    } else {
+      const duration = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--detail-duration")) || 180;
+      detail.dataset.detailSwapping = "true";
+      setTimeout(() => {
+        doUpdate();
+        detail.dataset.detailSwapping = "done";
+        setTimeout(() => { delete detail.dataset.detailSwapping; }, duration);
+      }, duration);
     }
+
     if (shouldFocus) {
       setLayout("focused");
       requestAnimationFrame(() => {
