@@ -722,7 +722,6 @@ html[data-experience="performance"] .setting-panel {
 }
 
 .master-detail > .detail-panel {
-  overflow: hidden;
   opacity: 0;
   pointer-events: none;
   min-width: 0;
@@ -736,7 +735,6 @@ html[data-experience="performance"] .setting-panel {
   box-shadow: none;
   width: 0;
   min-width: 0;
-  overflow: hidden;
   visibility: hidden;
 }
 
@@ -750,8 +748,6 @@ html[data-experience="performance"] .setting-panel {
 
 .master-detail[data-layout="focused"] > .detail-panel {
   grid-column: 2;
-  overflow-y: auto;
-  overflow-x: hidden;
   opacity: 1;
   pointer-events: auto;
   visibility: visible;
@@ -763,8 +759,6 @@ html[data-experience="performance"] .setting-panel {
 }
 
 .master-detail[data-layout="expanded"] > .detail-panel {
-  overflow-y: auto;
-  overflow-x: hidden;
   opacity: 1;
   pointer-events: auto;
   visibility: visible;
@@ -888,6 +882,7 @@ html[data-experience="performance"] .md-reader-toolbar {
   min-height: auto;
   gap: 8px;
   padding: 12px;
+  overflow: hidden;
 }
 
 .master-detail[data-layout="focused"] .project-card p:not(.eyebrow),
@@ -897,6 +892,15 @@ html[data-experience="performance"] .md-reader-toolbar {
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+}
+
+.master-detail[data-layout="focused"] .project-card h3,
+.master-detail[data-layout="focused"] .post-card h3,
+.master-detail[data-layout="focused"] .timeline-entry h3 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
 }
 
 .master-detail[data-layout="focused"] .master-panel .badge-row {
@@ -909,6 +913,37 @@ html[data-experience="performance"] .md-reader-toolbar {
 
 .master-detail[data-layout="focused"] .master-panel .card-actions,
 .master-detail[data-layout="focused"] .master-panel .card-meta span:nth-child(n + 2) {
+  display: none;
+}
+
+.master-detail[data-layout="focused"] .master-panel .meta-pill {
+  display: none;
+}
+
+.master-detail[data-detail-mode="focus"][data-layout="focused"] .project-card,
+.master-detail[data-detail-mode="focus"][data-layout="focused"] .post-card,
+.master-detail[data-detail-mode="focus"][data-layout="focused"] .timeline-entry {
+  padding: 8px;
+  gap: 4px;
+}
+
+.master-detail[data-detail-mode="focus"][data-layout="focused"] .project-card .eyebrow,
+.master-detail[data-detail-mode="focus"][data-layout="focused"] .post-card .eyebrow,
+.master-detail[data-detail-mode="focus"][data-layout="focused"] .timeline-entry .eyebrow {
+  font-size: 0.68rem;
+}
+
+.master-detail[data-detail-mode="focus"][data-layout="focused"] .project-card h3,
+.master-detail[data-detail-mode="focus"][data-layout="focused"] .post-card h3,
+.master-detail[data-detail-mode="focus"][data-layout="focused"] .timeline-entry h3 {
+  font-size: 0.85rem;
+}
+
+.master-detail[data-detail-mode="focus"][data-layout="focused"] .master-panel .badge-row {
+  display: none;
+}
+
+.master-detail[data-detail-mode="focus"][data-layout="focused"] .master-panel .card-meta {
   display: none;
 }
 
@@ -983,14 +1018,10 @@ html[data-experience="performance"] .md-reader-toolbar {
 }
 
 .detail-panel {
-  position: sticky;
-  top: var(--system-bar-offset);
   display: grid;
   gap: 12px;
   padding: 16px;
   min-width: 0;
-  max-height: var(--detail-panel-max-height);
-  overflow: auto;
 }
 
 .detail-panel h3 {
@@ -1814,6 +1845,26 @@ kbd {
   gap: 18px;
   min-width: 0;
   overflow: hidden;
+  position: relative;
+}
+
+.save-status {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  pointer-events: none;
+  opacity: 0.9;
 }
 
 .composer-form-panel {

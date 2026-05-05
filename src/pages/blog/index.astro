@@ -331,6 +331,7 @@ for (const post of sortedPosts) {
     if (layout instanceof HTMLElement) layout.dataset.layout = next;
     if (workbench instanceof HTMLElement) workbench.dataset.layout = next;
     expandBtn.textContent = next === "expanded" ? "Focus detail" : "Expand list";
+    window.labOS?.setState({ layoutState: next });
   });
   const clearBtn = document.querySelector("[data-post-clear-filters]");
   if (clearBtn instanceof HTMLButtonElement) clearBtn.addEventListener("click", () => {

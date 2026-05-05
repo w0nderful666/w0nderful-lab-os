@@ -240,7 +240,7 @@ import AppWindow from "../../components/os/AppWindow.astro";
       checkDraft();
 
       const previewCardEl = document.querySelector("[data-composer-preview-card]");
-      const previewWidthBtns = document.querySelectorAll("[data-preview-width]");
+      const previewWidthBtns = document.querySelectorAll(".preview-width-controls [data-preview-width]");
       const applyPreviewWidth = (width: string) => {
         if (!previewCardEl) return;
         previewCardEl.setAttribute("data-preview-width", width);

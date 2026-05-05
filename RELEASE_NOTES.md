@@ -1,5 +1,25 @@
 # Release Notes
 
+## v0.8.1
+
+Motion & Reading Bugfix — restores detail transition animation, removes inner scrollbar, fixes Composer layout, and improves narrow card display.
+
+### Fixed
+
+- Detail transition animation restored: motion.css selectors now use descendant combinator so `data-detail-swapping` on detail-panel correctly triggers animations defined by `data-detail-transition` on parent `.master-detail`.
+- Inner vertical scrollbar removed: detail-panel no longer has `overflow: auto` or `max-height`, enabling true single-scroll reading where page handles all vertical scrolling.
+- Composer "Saved locally" repositioned as absolute overlay in top-right corner, no longer participates in grid layout or creates empty space.
+- Composer Preview Width buttons now scoped to `.preview-width-controls [data-preview-width]`, no longer accidentally toggle the preview card's own `data-preview-width` attribute.
+- Narrow card text overflow: added `overflow: hidden`, `text-overflow: ellipsis`, `white-space: nowrap` for card headings in focused/expanded states. Hidden secondary meta, badges, and actions in narrow mode.
+- Focus mode (15%/85%) further compresses cards with smaller font, hidden badges, and hidden meta.
+
+### Validation
+
+- self-test / preflight / build / check all pass.
+- Detail transition works with OS, Fade, Slide, Off modes.
+- OS Effects Off and Performance mode correctly disable animations.
+- Single-scroll reading confirmed for Blog, Projects, Timeline.
+
 ## v0.8.0
 
 Stable OS Baseline — deep style unification, Master-Detail grid layout, Composer stabilization, single-scroll reading, and comprehensive test gates.

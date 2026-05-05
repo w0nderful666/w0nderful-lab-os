@@ -11,12 +11,12 @@ export type TimelineEntry = {
 
 export const timeline: TimelineEntry[] = [
   {
-    id: "lab-os-v080-stable-os-baseline",
+    id: "lab-os-v081-motion-reading-bugfix",
     date: "2026-05-05",
     type: "Release",
-    title: "w0nderful-lab-os v0.8.0 Stable OS Baseline",
+    title: "w0nderful-lab-os v0.8.1 Motion & Reading Bugfix",
     description:
-      "Deep OS style unification, Master-Detail grid layout with unified toolbar, Composer layout stabilization, single-scroll reading, scroll progress tracking, CSS cleanup, and comprehensive test gates.",
+      "Restored detail transition animation, removed inner vertical scrollbar, fixed Composer save-status layout, fixed Preview Width button scoping, added compact list mode for narrow cards.",
     relatedProject: "w0nderful-lab-os"
   },
   {
