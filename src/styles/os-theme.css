@@ -725,7 +725,7 @@ html[data-experience="performance"] .setting-panel {
 .master-detail[data-layout="expanded"] > .master-panel {
   position: sticky;
   top: var(--system-bar-offset);
-  max-height: calc(100vh - var(--system-bar-offset) - 28px);
+  max-height: var(--detail-panel-max-height);
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: none;
