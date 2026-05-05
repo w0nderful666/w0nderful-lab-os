@@ -1,5 +1,16 @@
 # Release Notes
 
+## v0.7.2.1
+
+- Fixed Composer preview width isolation: preview width controls now only affect the preview card, not the outer layout grid.
+- Fixed Composer left-side blank space caused by preview width affecting the composer workspace grid.
+- Added Composer i18n binding: Composer Dock entry now properly follows the language system (English/Chinese).
+- Unified Master-Detail reader toolbar across Blog, Projects, and Timeline with consistent visual language.
+- Fixed detail panel initial visibility: detail panel is now completely hidden in idle state using visibility:hidden.
+- Fixed single-scroll reading: removed nested scroll from reader-body, detail panel now serves as the single scroll container.
+- Added sticky toolbar behavior for reader toolbar within the detail panel scroll context.
+- Mobile-friendly toolbar with static positioning on small screens.
+
 ## v0.7.2
 
 - Added Composer letter icon "C" to Dock, unified with other app icons.

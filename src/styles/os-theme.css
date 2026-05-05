@@ -717,13 +717,13 @@ html[data-experience="performance"] .setting-panel {
 
 .master-detail > .detail-panel {
   flex: 0 1 0%;
-  max-height: calc(100vh - 112px);
   overflow: hidden;
   opacity: 0;
   pointer-events: none;
   transform: translateX(20px);
   min-width: 0;
   width: 0;
+  visibility: hidden;
 }
 
 .master-detail[data-layout="idle"] > .detail-panel {
@@ -733,6 +733,7 @@ html[data-experience="performance"] .setting-panel {
   width: 0;
   min-width: 0;
   overflow: hidden;
+  visibility: hidden;
 }
 
 .master-detail[data-layout="focused"] > .master-panel {
@@ -741,10 +742,12 @@ html[data-experience="performance"] .setting-panel {
 
 .master-detail[data-layout="focused"] > .detail-panel {
   flex-basis: 73%;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   opacity: 1;
   pointer-events: auto;
   transform: translateX(0);
+  visibility: visible;
 }
 
 .master-detail[data-layout="expanded"] > .master-panel,
@@ -753,10 +756,12 @@ html[data-experience="performance"] .setting-panel {
 }
 
 .master-detail[data-layout="expanded"] > .detail-panel {
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   opacity: 1;
   pointer-events: auto;
   transform: translateX(0);
+  visibility: visible;
 }
 
 .master-detail[data-detail-mode="focus"][data-layout="focused"] > .master-panel {
@@ -765,6 +770,8 @@ html[data-experience="performance"] .setting-panel {
 
 .master-detail[data-detail-mode="focus"][data-layout="focused"] > .detail-panel {
   flex-basis: 85%;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .master-detail[data-detail-mode="focus"][data-layout="expanded"] > .master-panel {
@@ -773,6 +780,8 @@ html[data-experience="performance"] .setting-panel {
 
 .master-detail[data-detail-mode="focus"][data-layout="expanded"] > .detail-panel {
   flex-basis: 85%;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .detail-focus-toggle {
@@ -837,8 +846,12 @@ html[data-experience="performance"] .setting-panel {
 
 .md-reader-toolbar {
   position: sticky;
-  top: 0;
+  top: -1px;
   z-index: 10;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
   padding: 10px 16px;
   margin: -16px -16px 12px;
   border-bottom: 1px solid var(--border);
@@ -1043,21 +1056,6 @@ html[data-experience="performance"] .md-reader-toolbar {
 
 .reader-panel {
   align-content: start;
-  max-height: none !important;
-  overflow: visible !important;
-}
-
-.master-detail > .reader-panel,
-.master-detail[data-layout="focused"] > .reader-panel,
-.master-detail[data-layout="expanded"] > .reader-panel,
-.master-detail[data-detail-mode="focus"] > .reader-panel {
-  max-height: none !important;
-  overflow: visible !important;
-}
-
-.detail-reading-surface {
-  overflow: visible !important;
-  max-height: none !important;
 }
 
 .reader-topline {
@@ -1094,11 +1092,7 @@ html[data-experience="performance"] .md-reader-toolbar {
 
 .reader-body {
   display: grid;
-  max-height: min(52vh, 560px);
   gap: 16px;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  padding-right: 8px;
 }
 
 .reader-body section {
@@ -1822,9 +1816,10 @@ kbd {
 
 .composer-workspace {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 18px;
   min-width: 0;
+  overflow: hidden;
 }
 
 .composer-form-panel {
@@ -1837,7 +1832,9 @@ kbd {
   position: sticky;
   top: var(--system-bar-offset);
   max-height: var(--detail-panel-max-height);
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-width: 0;
 }
 
 .preview-header {
@@ -1907,6 +1904,30 @@ kbd {
 }
 
 .settings-preview-card[data-preview-width="full"] {
+  max-width: 100%;
+}
+
+[data-composer-preview-card] {
+  max-width: none;
+  margin: 0;
+}
+
+[data-composer-preview-card][data-preview-width="narrow"] {
+  max-width: 48ch;
+  margin: 0 auto;
+}
+
+[data-composer-preview-card][data-preview-width="article"] {
+  max-width: 72ch;
+  margin: 0 auto;
+}
+
+[data-composer-preview-card][data-preview-width="wide"] {
+  max-width: 90ch;
+  margin: 0 auto;
+}
+
+[data-composer-preview-card][data-preview-width="full"] {
   max-width: 100%;
 }
 
@@ -2351,10 +2372,17 @@ kbd {
     opacity: 1;
     pointer-events: auto;
     transform: translateX(0);
+    visibility: visible;
   }
 
   .detail-focus-toggle {
     display: none;
+  }
+
+  .md-reader-toolbar {
+    position: static;
+    margin: 0 0 12px;
+    padding: 10px 12px;
   }
 
   .reader-topline,
@@ -2369,7 +2397,6 @@ kbd {
   }
 
   .reader-body {
-    max-height: 58vh;
   }
 
   .window-controls {

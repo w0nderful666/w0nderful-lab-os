@@ -11,6 +11,15 @@ export type TimelineEntry = {
 
 export const timeline: TimelineEntry[] = [
   {
+    id: "lab-os-v0721-bugfix-polish",
+    date: "2026-05-05",
+    type: "Release",
+    title: "w0nderful-lab-os v0.7.2.1 Bugfix Polish",
+    description:
+      "Fixed Composer preview width isolation, unified Master-Detail reader toolbar, resolved detail panel initial visibility, fixed single-scroll reading, and added Composer i18n binding.",
+    relatedProject: "w0nderful-lab-os"
+  },
+  {
     id: "lab-os-v072-toolbar-layout-polish",
     date: "2026-05-05",
     type: "Release",

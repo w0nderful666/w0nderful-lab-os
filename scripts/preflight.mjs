@@ -76,10 +76,10 @@ async function readRootFile(filePath) {
 
 async function checkPackageVersion() {
   const packageJson = JSON.parse(await readRootFile("package.json"));
-  if (packageJson.version === "0.7.2") {
-    pass("package.json version is 0.7.2");
+  if (packageJson.version === "0.7.2.1") {
+    pass("package.json version is 0.7.2.1");
   } else {
-    fail(`package.json version is ${packageJson.version}, expected 0.7.2`);
+    fail(`package.json version is ${packageJson.version}, expected 0.7.2.1`);
   }
 }
 
@@ -514,6 +514,44 @@ async function checkInteractionPolish() {
     pass("Projects / Blog / Timeline include toolbar clear filters");
   } else {
     fail("Projects / Blog / Timeline include toolbar clear filters");
+  }
+
+  if (projectsApp.includes("md-reader-toolbar") && blogPage.includes("md-reader-toolbar") && timelineApp.includes("md-reader-toolbar")) {
+    pass("Projects / Blog / Timeline include unified md-reader-toolbar class");
+  } else {
+    fail("Projects / Blog / Timeline include unified md-reader-toolbar class");
+  }
+
+  const osThemeCss = await readRootFile("src/styles/os-theme.css");
+  if (osThemeCss.includes("visibility: hidden") && osThemeCss.includes("data-layout=\"idle\"] > .detail-panel")) {
+    pass("Detail panel has visibility:hidden in idle state");
+  } else {
+    fail("Detail panel has visibility:hidden in idle state");
+  }
+
+  if (!osThemeCss.includes("max-height: min(52vh, 560px)") || osThemeCss.includes(".reader-body {") && !osThemeCss.includes("overflow-y: auto")) {
+    pass("reader-body no longer has nested scroll");
+  } else {
+    fail("reader-body no longer has nested scroll");
+  }
+
+  const composerPageFile = await readRootFile("src/pages/composer/index.astro");
+  if (composerPageFile.includes("data-composer-preview-card") && composerPageFile.includes("data-preview-width")) {
+    pass("Composer has preview width controls on preview card");
+  } else {
+    fail("Composer has preview width controls on preview card");
+  }
+
+  if (osThemeCss.includes("[data-composer-preview-card][data-preview-width=")) {
+    pass("Composer preview width styles target preview card only");
+  } else {
+    fail("Composer preview width styles target preview card only");
+  }
+
+  if (systemStateFile.includes("nav.composer")) {
+    pass("system-state contains Composer i18n label");
+  } else {
+    fail("system-state contains Composer i18n label");
   }
 }
 
