@@ -76,10 +76,10 @@ async function readRootFile(filePath) {
 
 async function checkPackageVersion() {
   const packageJson = JSON.parse(await readRootFile("package.json"));
-  if (packageJson.version === "0.6.1") {
-    pass("package.json version is 0.6.1");
+  if (packageJson.version === "0.6.2") {
+    pass("package.json version is 0.6.2");
   } else {
-    fail(`package.json version is ${packageJson.version}, expected 0.6.1`);
+    fail(`package.json version is ${packageJson.version}, expected 0.6.2`);
   }
 }
 
@@ -306,6 +306,19 @@ async function checkInteractionPolish() {
     fail("Detail focus mode CSS exists");
   }
 
+  const motionCss = await readRootFile("src/styles/motion.css");
+  if (motionCss.includes("detail-content-out") && motionCss.includes("detail-content-in") && motionCss.includes("detail-os-out")) {
+    pass("Detail transition keyframes exist in motion.css");
+  } else {
+    fail("Detail transition keyframes exist in motion.css");
+  }
+
+  if (motionCss.includes("data-detail-swapping") && motionCss.includes("data-detail-transition")) {
+    pass("Detail transition CSS selectors exist");
+  } else {
+    fail("Detail transition CSS selectors exist");
+  }
+
   const home = await readRootFile("src/components/apps/HomeApp.astro");
   if (home.includes("desktop-shortcut") && home.includes("shortcut-grid")) {
     pass("HomeApp contains desktop shortcuts");
@@ -335,11 +348,24 @@ async function checkInteractionPolish() {
 
   const projectsApp = await readRootFile("src/components/apps/ProjectsApp.astro");
   const blogApp = await readRootFile("src/components/apps/BlogApp.astro");
+  const blogPage = await readRootFile("src/pages/blog/index.astro");
   const timelineApp = await readRootFile("src/components/apps/TimelineApp.astro");
   if (projectsApp.includes("data-detail-focus-toggle") && blogApp.includes("data-detail-focus-toggle") && timelineApp.includes("data-detail-focus-toggle")) {
     pass("Projects / Blog / Timeline include detail focus toggle");
   } else {
     fail("Projects / Blog / Timeline include detail focus toggle");
+  }
+
+  if (projectsApp.includes("detail-swap-body") && timelineApp.includes("detail-swap-body")) {
+    pass("Projects / Timeline include detail swap body wrapper");
+  } else {
+    fail("Projects / Timeline include detail swap body wrapper");
+  }
+
+  if ((projectsApp.includes("data-detail-swapping") || projectsApp.includes("detailSwapping")) && (blogPage.includes("data-detail-swapping") || blogPage.includes("detailSwapping")) && (timelineApp.includes("data-detail-swapping") || timelineApp.includes("detailSwapping"))) {
+    pass("Projects / Blog / Timeline include detail transition hooks");
+  } else {
+    fail("Projects / Blog / Timeline include detail transition hooks");
   }
 
   if (projectsApp.includes("scrollIntoView") && blogApp.includes("scrollIntoView") && timelineApp.includes("scrollIntoView")) {
@@ -353,6 +379,18 @@ async function checkInteractionPolish() {
     pass("system-state handles detail mode persistence");
   } else {
     fail("system-state handles detail mode persistence");
+  }
+
+  if (systemStateFile.includes("setOsEffects") && systemStateFile.includes("setMotionIntensity") && systemStateFile.includes("setDetailTransition")) {
+    pass("system-state handles OS motion settings");
+  } else {
+    fail("system-state handles OS motion settings");
+  }
+
+  if (systemStateFile.includes("syncMotionSettings")) {
+    pass("system-state syncs motion settings");
+  } else {
+    fail("system-state syncs motion settings");
   }
 
   const commands = await readRootFile("src/data/commands.ts");
@@ -446,6 +484,12 @@ async function checkBlogContentSystem() {
     pass("Settings includes Reader Style setting");
   } else {
     fail("Settings includes Reader Style setting");
+  }
+
+  if (settings.includes("data-setting-os-effects") && settings.includes("data-setting-motion-intensity") && settings.includes("data-setting-detail-transition")) {
+    pass("Settings includes OS Motion controls");
+  } else {
+    fail("Settings includes OS Motion controls");
   }
 
   const systemState = await readRootFile("src/scripts/system-state.ts");

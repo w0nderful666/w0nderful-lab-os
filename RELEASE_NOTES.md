@@ -1,5 +1,20 @@
 # Release Notes
 
+## v0.6.2
+
+- Added unified OS Motion Language for detail panel content transitions across Projects, Blog, and Timeline.
+- Added Detail Transition modes: Off (instant), Fade (opacity), Slide (horizontal), OS Panel (opacity + translate + blur).
+- Added OS Effects toggle (On/Off) to disable all custom animations globally.
+- Added Motion Intensity control (Minimal/Balanced/Expressive) that adjusts transition duration, distance, and card lift.
+- Added motion tokens: --detail-duration, --detail-ease, --motion-distance overrides per intensity level.
+- Added data-detail-swapping and data-detail-transition CSS selectors for JS-driven content transitions.
+- Added detail-swap-body wrapper in Projects and Timeline detail panels for consistent transition targeting.
+- Added syncMotionSettings function to system-state.ts for persisting and applying motion preferences.
+- Added motion intensity CSS overrides in tokens.css for minimal, balanced, and expressive profiles.
+- Added preflight checks for OS motion settings, detail transition CSS, and detail swap body wrappers.
+- Improved detail panel content switching to use exit/enter animation pattern instead of hard swap.
+- Improved Settings.app with OS Motion section including OS Effects, Motion Intensity, and Detail Transition controls.
+
 ## v0.6.1
 
 - Unified version numbers across site.ts, package.json, projects.ts, README, and RELEASE_NOTES.
