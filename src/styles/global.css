@@ -119,7 +119,7 @@ p {
 pre {
   margin: 0;
   overflow: auto;
-  color: #bdf6d9;
+  color: var(--accent);
   font-family: var(--font-mono);
   font-size: 0.95rem;
   line-height: 1.7;
@@ -155,7 +155,7 @@ pre {
 
 .button-primary {
   border-color: transparent;
-  color: #07120f;
+  color: var(--accent-text);
   background: var(--accent);
 }
 

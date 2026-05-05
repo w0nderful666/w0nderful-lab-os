@@ -1,5 +1,63 @@
 # Release Notes
 
+## v0.8.7
+
+Token Unification — replaced all hardcoded colors, shadows, borders, and backdrop-filter values with OS tokens. Consolidated duplicate CSS. No new features; style governance only.
+
+### Fixed
+
+- New `--accent-text` token replaces all hardcoded `#07120f` for text on accent backgrounds.
+- Terminal component colors (`#a8c8bd`, `#bdf6d9`, `#eef5f0`, `#7ea192`) replaced with `--text-muted`, `--accent`, `--text`.
+- `pre` and `.article-body pre code` hardcoded `#bdf6d9` replaced with `--accent`.
+- Terminal article style `#020706` / `#37ffbe` replaced with `--code` / `--accent`.
+- Hardcoded `rgba` border values in terminal/hero components replaced with `--border` / `--border-strong`.
+- Hardcoded `rgba` shadow values in desktop-shortcut, command-option, preview-window replaced with `--shadow` / `--shadow-soft`.
+- `.shortcut-icon` box-shadow replaced with `var(--shadow-soft)`.
+- `.project-detail-panel .button-primary` box-shadow uses `var(--border-strong)`.
+- `.md-reader-toolbar` backdrop-filter uses `var(--glass-blur)`.
+- `.draft-notice` backdrop-filter uses `var(--glass-blur)`.
+- `.filter-group` background uses `var(--bg-soft)`.
+- Consolidated two duplicate `.save-status` definitions into one.
+- `.article-body code` border-radius uses `var(--radius-sm)`.
+
+### Preserved
+
+- All motion, layout, theme, i18n behavior unchanged.
+- Single-scroll reading preserved.
+- Composer preview width isolation preserved.
+- Floating reader controls pattern preserved.
+- Detail transition mechanism preserved.
+- Theme flash fix preserved.
+- Light/dark theme contrast preserved.
+
+## v0.8.6
+
+OS Design System Audit — established mandatory design system contracts for tokens, motion, and layout. No UI logic changed; documentation and test gates only.
+
+### Added
+
+- `docs/OS_DESIGN_SYSTEM.md`: mandatory token/class contract for all UI components.
+- `docs/OS_MOTION_CONTRACT.md`: mandatory motion token contract, animation rules, Settings integration.
+- `docs/OS_LAYOUT_CONTRACT.md`: mandatory Master-Detail, floating controls, Composer preview width, single-scroll reading, and mobile degradation contracts.
+- README section: "OS Design System Contracts".
+- self-test and preflight now check for the 3 contract docs and their required keywords.
+
+### Audit Findings
+
+- Terminal components use hardcoded colors (`#a8c8bd`, `#bdf6d9`, `#eef5f0`, `#7ea192`) instead of OS tokens.
+- `global.css` `pre` and `article-styles.css` `.article-body pre code` use hardcoded `#bdf6d9`.
+- Several accent-on-dark surfaces use hardcoded `#07120f` instead of a token.
+- Composer preview width has two separate style blocks (settings-preview-card and composer-preview-card) that should be unified.
+- Master-Detail JS logic is duplicated across Projects, Blog, and Timeline pages.
+- Floating reader controls pattern is repeated in 3 apps without a shared component.
+- `@media` breakpoints are scattered (680px, 760px, 1020px) without a centralized responsive contract.
+
+### Preserved
+
+- No UI logic changed.
+- No animations removed.
+- No features added or modified.
+
 ## v0.8.5
 
 OS Motion System Rewrite — proper right-slide detail transition, expanded motion speeds, CSS syntax fix.

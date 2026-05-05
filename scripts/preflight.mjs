@@ -76,10 +76,10 @@ async function readRootFile(filePath) {
 
 async function checkPackageVersion() {
   const packageJson = JSON.parse(await readRootFile("package.json"));
-  if (packageJson.version === "0.8.5") {
-    pass("package.json version is 0.8.5");
+  if (packageJson.version === "0.8.7") {
+    pass("package.json version is 0.8.7");
   } else {
-    fail(`package.json version is ${packageJson.version}, expected 0.8.5`);
+    fail(`package.json version is ${packageJson.version}, expected 0.8.7`);
   }
 }
 
@@ -230,6 +230,73 @@ async function checkControlLayer() {
     } else {
       fail(`commands.ts contains ${value}`);
     }
+  }
+}
+
+async function checkDesignSystemContracts() {
+  const required = [
+    "docs/OS_DESIGN_SYSTEM.md",
+    "docs/OS_MOTION_CONTRACT.md",
+    "docs/OS_LAYOUT_CONTRACT.md"
+  ];
+
+  for (const file of required) {
+    if (await exists(file)) {
+      pass(`${file} exists`);
+    } else {
+      fail(`${file} exists`);
+    }
+  }
+
+  const readme = await readRootFile("README.md");
+  if (readme.includes("OS Design System Contracts")) {
+    pass("README contains OS Design System Contracts section");
+  } else {
+    fail("README contains OS Design System Contracts section");
+  }
+
+  const designSystem = await readRootFile("docs/OS_DESIGN_SYSTEM.md");
+  const designKeywords = ["No Backend", "No Token", "reduced-motion", "accent-text"];
+  for (const kw of designKeywords) {
+    if (designSystem.includes(kw)) {
+      pass(`OS_DESIGN_SYSTEM.md contains ${kw}`);
+    } else {
+      fail(`OS_DESIGN_SYSTEM.md contains ${kw}`);
+    }
+  }
+
+  const motionContract = await readRootFile("docs/OS_MOTION_CONTRACT.md");
+  const motionKeywords = ["Motion Contract", "Motion Speed", "reduced-motion", "Motion Intensity", "OS Effects", "Master\u2013Detail"];
+  for (const kw of motionKeywords) {
+    if (motionContract.includes(kw)) {
+      pass(`OS_MOTION_CONTRACT.md contains ${kw}`);
+    } else {
+      fail(`OS_MOTION_CONTRACT.md contains ${kw}`);
+    }
+  }
+
+  const layoutContract = await readRootFile("docs/OS_LAYOUT_CONTRACT.md");
+  const layoutKeywords = ["Layout Contract", "Master\u2013Detail", "Composer Preview Width", "reduced-motion", "Motion Speed"];
+  for (const kw of layoutKeywords) {
+    if (layoutContract.includes(kw)) {
+      pass(`OS_LAYOUT_CONTRACT.md contains ${kw}`);
+    } else {
+      fail(`OS_LAYOUT_CONTRACT.md contains ${kw}`);
+    }
+  }
+
+  const tokens = await readRootFile("src/styles/tokens.css");
+  if (tokens.includes("--accent-text")) {
+    pass("tokens.css contains --accent-text token");
+  } else {
+    fail("tokens.css contains --accent-text token");
+  }
+
+  const osTheme = await readRootFile("src/styles/os-theme.css");
+  if (!osTheme.includes("#07120f") && !osTheme.includes("#a8c8bd") && !osTheme.includes("#bdf6d9") && !osTheme.includes("#eef5f0")) {
+    pass("os-theme.css has no hardcoded terminal/accent colors");
+  } else {
+    fail("os-theme.css has no hardcoded terminal/accent colors");
   }
 }
 
@@ -809,6 +876,7 @@ await checkReleaseNotes();
 await checkAstroConfig();
 await checkWorkflow();
 await checkControlLayer();
+await checkDesignSystemContracts();
 await checkInteractionPolish();
 await checkBlogContentSystem();
 await checkForbiddenContent();

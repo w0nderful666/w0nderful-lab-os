@@ -11,6 +11,24 @@ export type TimelineEntry = {
 
 export const timeline: TimelineEntry[] = [
   {
+    id: "lab-os-v087-token-unification",
+    date: "2026-05-05",
+    type: "Release",
+    title: "w0nderful-lab-os v0.8.7 Token Unification",
+    description:
+      "Unified hardcoded colors, shadows, borders, and backdrop-filter values to OS tokens. Consolidated duplicate CSS. All components now follow OS Design System Contract.",
+    relatedProject: "w0nderful-lab-os"
+  },
+  {
+    id: "lab-os-v086-design-system-audit",
+    date: "2026-05-05",
+    type: "Release",
+    title: "w0nderful-lab-os v0.8.6 OS Design System Audit",
+    description:
+      "Established mandatory design system contracts (OS_DESIGN_SYSTEM, OS_MOTION_CONTRACT, OS_LAYOUT_CONTRACT). Added self-test/preflight gates for contract docs and keywords. No UI logic changed.",
+    relatedProject: "w0nderful-lab-os"
+  },
+  {
     id: "lab-os-v085-motion-system-rewrite",
     date: "2026-05-05",
     type: "Release",

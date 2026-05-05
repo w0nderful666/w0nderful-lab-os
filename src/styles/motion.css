@@ -255,6 +255,40 @@ html[data-os-effects="off"] [data-detail-transition] [data-article-rendered] {
   animation: detail-enter var(--panel-duration) ease both;
 }
 
+/* ============================================
+   Panel Entrance: whole panel slides in as one unit
+   (like switching apps on a phone).
+   When panel enters (idle→focused/expanded) without
+   an active content swap, animate the whole panel.
+   Content swap animations are handled by the
+   Detail Transition Selectors above.
+   ============================================ */
+
+/* Remove default detail-enter from panels inside master-detail */
+.master-detail > .detail-panel {
+  animation: none;
+}
+
+/* Panel entrance: slide in from right as one unit */
+.master-detail[data-layout="focused"]:not([data-detail-swapping]) > .detail-panel,
+.master-detail[data-layout="expanded"]:not([data-detail-swapping]) > .detail-panel {
+  animation: detail-slide-enter var(--detail-duration) ease both;
+}
+
+/* When panel is entering AND content is swapping simultaneously,
+   suppress the inner content animation so panel+content move as one unit */
+.master-detail[data-layout="focused"][data-detail-swapping] > .detail-panel > .detail-swap-body,
+.master-detail[data-layout="focused"][data-detail-swapping] > .detail-panel[data-article-rendered],
+.master-detail[data-layout="expanded"][data-detail-swapping] > .detail-panel > .detail-swap-body,
+.master-detail[data-layout="expanded"][data-detail-swapping] > .detail-panel[data-article-rendered] {
+  animation: none !important;
+}
+
+/* Performance mode: no panel animation */
+html[data-experience="performance"] .master-detail > .detail-panel {
+  animation: none !important;
+}
+
 .reader-body section {
   animation: content-fade-up var(--panel-duration) ease both;
   animation-delay: calc(var(--stagger-index, 0) * 35ms);

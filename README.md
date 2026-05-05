@@ -2,7 +2,7 @@
 
 OS-themed personal blog, open-source lab, and project showcase hub for w0nderful666.
 
-Current version: `v0.8.5`
+Current version: `v0.8.7`
 
 Live demo: https://w0nderful666.github.io/w0nderful-lab-os/
 
@@ -178,6 +178,16 @@ The backgrounds use gradients and lightweight patterns only. There are no upload
 ## Toolbar / Filter UX
 
 Projects.app, Blog.app, and Timeline.app use OS-style toolbars for search and filters. Search gets priority width on desktop, filter chips wrap cleanly, and each app has a real Clear Filters action. On mobile the toolbar stacks into readable rows instead of squeezing controls together.
+
+## OS Design System Contracts
+
+All UI components, animations, and layouts MUST follow the OS Design System contracts:
+
+- **OS Design System** (`docs/OS_DESIGN_SYSTEM.md`): Token usage, approved CSS classes, prohibited hardcoded values.
+- **OS Motion Contract** (`docs/OS_MOTION_CONTRACT.md`): Motion tokens, animation rules, Settings integration, reduced-motion handling.
+- **OS Layout Contract** (`docs/OS_LAYOUT_CONTRACT.md`): Master-Detail structure, floating controls, sticky panels, Composer preview width, single-scroll reading, mobile degradation.
+
+No new feature may introduce independent style systems, uncontrolled animations, or layout patterns that deviate from these contracts.
 
 ## Tech Stack
 

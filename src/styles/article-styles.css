@@ -176,7 +176,7 @@
 .article-body code {
   padding: 2px 6px;
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   background: var(--bg-soft);
   color: var(--accent);
   font-family: var(--font-mono);
@@ -196,7 +196,7 @@
   padding: 0;
   border: 0;
   background: transparent;
-  color: #bdf6d9;
+  color: var(--accent);
   font-size: 0.88rem;
   line-height: 1.7;
 }
@@ -250,7 +250,7 @@
 }
 
 .article-shell[data-article-style="system"] .article-body pre {
-  border-color: rgba(114, 215, 183, 0.24);
+  border-color: var(--border-strong);
 }
 
 /* Article Style: paper */
@@ -278,7 +278,7 @@
 }
 
 .article-shell[data-article-style="terminal"] .article-header {
-  border-bottom-color: rgba(114, 215, 183, 0.24);
+  border-bottom-color: var(--border-strong);
 }
 
 .article-shell[data-article-style="terminal"] .article-title {
@@ -286,13 +286,13 @@
 }
 
 .article-shell[data-article-style="terminal"] .article-body pre {
-  background: #020706;
-  border-color: rgba(114, 215, 183, 0.24);
+  background: var(--code);
+  border-color: var(--border-strong);
 }
 
 .article-shell[data-article-style="terminal"] .article-body code {
-  color: #37ffbe;
-  border-color: rgba(55, 255, 190, 0.2);
+  color: var(--accent);
+  border-color: var(--border);
 }
 
 /* Article Style: magazine */
