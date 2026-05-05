@@ -18,10 +18,10 @@ export type LabOSApp =
 export type LayoutState = "idle" | "focused" | "expanded";
 export type ThemeSetting = "light" | "dark" | "system";
 export type ExperienceMode = "performance" | "balanced" | "quality";
-export type MotionSpeed = "slow" | "normal" | "fast";
+export type MotionSpeed = "slow" | "slower" | "cinematic" | "normal" | "fast";
 export type Language = "en" | "zh";
 export type ThemePalette = "aurora" | "graphite" | "ubuntu" | "mint" | "terminal";
-export type BackgroundPreset = "aurora" | "grid" | "terminal" | "paper" | "space";
+export type BackgroundPreset = "aurora" | "frosted" | "glacier" | "sakura" | "mesh" | "grid" | "terminal" | "paper" | "space";
 export type OsEffects = "on" | "off";
 export type MotionIntensity = "minimal" | "balanced" | "expressive";
 export type DetailTransition = "off" | "fade" | "slide" | "os";
@@ -140,6 +140,10 @@ const paletteLabels: Record<ThemePalette, string> = {
 
 const backgroundLabels: Record<BackgroundPreset, string> = {
   aurora: "Aurora Mist",
+  frosted: "Frosted Mint",
+  glacier: "Glacier Glass",
+  sakura: "Sakura Haze",
+  mesh: "Graphite Mesh",
   grid: "Desktop Grid",
   terminal: "Terminal Glow",
   paper: "Paper Light",
@@ -155,6 +159,7 @@ const labels = {
     "nav.about": "About",
     "nav.settings": "Settings",
     "nav.terminal": "Terminal",
+    "nav.composer": "Composer",
     "settings.title": "System Settings",
     "settings.theme": "Theme",
     "settings.light": "Light",
@@ -166,6 +171,8 @@ const labels = {
     "settings.quality": "Quality",
     "settings.motionSpeed": "Motion Speed",
     "settings.slow": "Slow",
+    "settings.slower": "Slower",
+    "settings.cinematic": "Cinematic",
     "settings.normal": "Normal",
     "settings.fast": "Fast",
     "settings.language": "Language",
@@ -175,7 +182,53 @@ const labels = {
     "settings.clearRecent": "Clear recent items",
     "settings.shortcuts": "Keyboard Shortcuts",
     "settings.palette": "Theme Palette",
-    "settings.background": "Background Preset"
+    "settings.background": "Background Preset",
+    "settings.osEffects": "OS Effects",
+    "settings.motionIntensity": "Motion Intensity",
+    "settings.detailTransition": "Detail Transition",
+    "settings.readerStyle": "Reader Style",
+    "detail.back": "Back to list",
+    "detail.close": "Close detail",
+    "detail.focus": "Focus detail",
+    "detail.expand": "Expand list",
+    "detail.restore": "Restore",
+    "detail.controls": "Controls",
+    "composer.metadata": "Article Metadata",
+    "composer.frontmatter": "Frontmatter",
+    "composer.title": "Title",
+    "composer.slug": "Slug",
+    "composer.date": "Date",
+    "composer.updated": "Updated",
+    "composer.summary": "Summary",
+    "composer.tags": "Tags",
+    "composer.category": "Category",
+    "composer.status": "Status",
+    "composer.style": "Article Style",
+    "composer.density": "Density",
+    "composer.toc": "Show Table of Contents",
+    "composer.body": "Markdown Body",
+    "composer.content": "Article Content",
+    "composer.preview": "Live Preview",
+    "composer.copy": "Copy Markdown",
+    "composer.download": "Download .md",
+    "composer.import": "Import .md",
+    "composer.github": "Open GitHub Folder",
+    "composer.saveDraft": "Save Draft",
+    "composer.clearDraft": "Clear Draft",
+    "composer.saved": "Saved locally",
+    "composer.unsaved": "Unsaved changes",
+    "composer.saving": "Saving...",
+    "composer.draftRestored": "Draft restored",
+    "composer.narrow": "Narrow",
+    "composer.article": "Article",
+    "composer.wide": "Wide",
+    "composer.full": "Full",
+    "search.placeholder": "Search...",
+    "filter.all": "All",
+    "filter.clear": "Clear Filters",
+    "result.articles": "articles",
+    "result.projects": "projects",
+    "result.logs": "logs"
   },
   zh: {
     "nav.home": "\u9996\u9875",
@@ -185,6 +238,7 @@ const labels = {
     "nav.about": "\u5173\u4e8e",
     "nav.settings": "\u8bbe\u7f6e",
     "nav.terminal": "\u7ec8\u7aef",
+    "nav.composer": "\u521b\u4f5c",
     "settings.title": "\u7cfb\u7edf\u8bbe\u7f6e",
     "settings.theme": "\u4e3b\u9898",
     "settings.light": "\u6d45\u8272",
@@ -196,6 +250,8 @@ const labels = {
     "settings.quality": "\u9ad8\u8d28\u91cf",
     "settings.motionSpeed": "\u52a8\u753b\u901f\u7387",
     "settings.slow": "\u6162",
+    "settings.slower": "\u66f4\u6162",
+    "settings.cinematic": "\u7535\u5f71\u611f",
     "settings.normal": "\u6b63\u5e38",
     "settings.fast": "\u5feb",
     "settings.language": "\u8bed\u8a00",
@@ -205,7 +261,53 @@ const labels = {
     "settings.clearRecent": "\u6e05\u7a7a\u6700\u8fd1\u8bb0\u5f55",
     "settings.shortcuts": "\u952e\u76d8\u5feb\u6377\u952e",
     "settings.palette": "\u914d\u8272\u65b9\u6848",
-    "settings.background": "\u80cc\u666f\u9884\u8bbe"
+    "settings.background": "\u80cc\u666f\u9884\u8bbe",
+    "settings.osEffects": "OS \u7279\u6548",
+    "settings.motionIntensity": "\u52a8\u753b\u5f3a\u5ea6",
+    "settings.detailTransition": "\u8be6\u60c5\u8fc7\u6e21",
+    "settings.readerStyle": "\u9605\u8bfb\u98ce\u683c",
+    "detail.back": "\u8fd4\u56de\u5217\u8868",
+    "detail.close": "\u5173\u95ed\u8be6\u60c5",
+    "detail.focus": "\u805a\u7126\u8be6\u60c5",
+    "detail.expand": "\u5c55\u5f00\u5217\u8868",
+    "detail.restore": "\u6062\u590d\u9ed8\u8ba4",
+    "detail.controls": "\u5de5\u5177",
+    "composer.metadata": "\u6587\u7ae0\u5143\u6570\u636e",
+    "composer.frontmatter": "\u524d\u7f6e\u4fe1\u606f",
+    "composer.title": "\u6807\u9898",
+    "composer.slug": "Slug",
+    "composer.date": "\u65e5\u671f",
+    "composer.updated": "\u66f4\u65b0\u65e5\u671f",
+    "composer.summary": "\u6458\u8981",
+    "composer.tags": "\u6807\u7b7e",
+    "composer.category": "\u5206\u7c7b",
+    "composer.status": "\u72b6\u6001",
+    "composer.style": "\u6587\u7ae0\u98ce\u683c",
+    "composer.density": "\u5bc6\u5ea6",
+    "composer.toc": "\u663e\u793a\u76ee\u5f55",
+    "composer.body": "Markdown \u5185\u5bb9",
+    "composer.content": "\u6587\u7ae0\u5185\u5bb9",
+    "composer.preview": "\u5b9e\u65f6\u9884\u89c8",
+    "composer.copy": "\u590d\u5236 Markdown",
+    "composer.download": "\u4e0b\u8f7d .md",
+    "composer.import": "\u5bfc\u5165 .md",
+    "composer.github": "\u6253\u5f00 GitHub \u6587\u4ef6\u5939",
+    "composer.saveDraft": "\u4fdd\u5b58\u8349\u7a3f",
+    "composer.clearDraft": "\u6e05\u9664\u8349\u7a3f",
+    "composer.saved": "\u5df2\u4fdd\u5b58\u672c\u5730",
+    "composer.unsaved": "\u672a\u4fdd\u5b58\u66f4\u6539",
+    "composer.saving": "\u4fdd\u5b58\u4e2d...",
+    "composer.draftRestored": "\u8349\u7a3f\u5df2\u6062\u590d",
+    "composer.narrow": "\u7a84",
+    "composer.article": "\u6587",
+    "composer.wide": "\u5bbd",
+    "composer.full": "\u5168",
+    "search.placeholder": "\u641c\u7d22...",
+    "filter.all": "\u5168\u90e8",
+    "filter.clear": "\u6e05\u9664\u7b5b\u9009",
+    "result.articles": "\u7bc7\u6587\u7ae0",
+    "result.projects": "\u4e2a\u9879\u76ee",
+    "result.logs": "\u6761\u65e5\u5fd7"
   }
 } as const;
 
@@ -229,12 +331,13 @@ const readPersistedSettings = (): PersistedSettings => {
 const isTheme = (value: unknown): value is ThemeSetting => value === "light" || value === "dark" || value === "system";
 const isExperience = (value: unknown): value is ExperienceMode =>
   value === "performance" || value === "balanced" || value === "quality";
-const isMotionSpeed = (value: unknown): value is MotionSpeed => value === "slow" || value === "normal" || value === "fast";
+const isMotionSpeed = (value: unknown): value is MotionSpeed =>
+  value === "slow" || value === "slower" || value === "cinematic" || value === "normal" || value === "fast";
 const isLanguage = (value: unknown): value is Language => value === "en" || value === "zh";
 const isPalette = (value: unknown): value is ThemePalette =>
   value === "aurora" || value === "graphite" || value === "ubuntu" || value === "mint" || value === "terminal";
 const isBackground = (value: unknown): value is BackgroundPreset =>
-  value === "aurora" || value === "grid" || value === "terminal" || value === "paper" || value === "space";
+  value === "aurora" || value === "frosted" || value === "glacier" || value === "sakura" || value === "mesh" || value === "grid" || value === "terminal" || value === "paper" || value === "space";
 const isOsEffects = (value: unknown): value is OsEffects => value === "on" || value === "off";
 const isMotionIntensity = (value: unknown): value is MotionIntensity =>
   value === "minimal" || value === "balanced" || value === "expressive";
@@ -1026,6 +1129,17 @@ const registerSettingEvents = () => {
         try {
           localStorage.setItem("w0nderful-lab-os.detail-mode", next);
         } catch {}
+      }
+      return;
+    }
+
+    const controlsToggle = target.closest("[data-controls-toggle]");
+    if (controlsToggle instanceof HTMLButtonElement) {
+      const toolbar = controlsToggle.closest("[data-reader-controls]");
+      if (toolbar instanceof HTMLElement) {
+        const collapsed = toolbar.classList.toggle("is-collapsed");
+        controlsToggle.setAttribute("aria-expanded", String(!collapsed));
+        controlsToggle.textContent = collapsed ? "+" : "\u2630";
       }
       return;
     }

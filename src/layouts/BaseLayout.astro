@@ -59,7 +59,10 @@ const pageTitle = title === site.title ? site.title : `${title} | ${site.name}`;
           language: "en",
           motionSpeed: "normal",
           palette: "aurora",
-          background: "aurora"
+          background: "aurora",
+          osEffects: "on",
+          motionIntensity: "balanced",
+          detailTransition: "os"
         };
         let settings = defaults;
         try {
@@ -70,22 +73,28 @@ const pageTitle = title === site.title ? site.title : `${title} | ${site.name}`;
         const experience = settings.experienceMode || settings.experience || "balanced";
         const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
         const theme = settings.theme === "system" ? (systemDark ? "dark" : "light") : settings.theme;
-        document.documentElement.dataset.theme = theme;
-        document.documentElement.dataset.themeSetting = settings.theme;
-        document.documentElement.dataset.experience = experience;
-        document.documentElement.dataset.motionSpeed = settings.motionSpeed || "normal";
-        document.documentElement.dataset.palette = settings.palette || "aurora";
-        document.documentElement.dataset.background = settings.background || "aurora";
-        document.documentElement.lang = settings.language === "zh" ? "zh-CN" : "en";
+        const attrs = {
+          "data-theme": theme,
+          "data-theme-setting": settings.theme,
+          "data-experience": experience,
+          "data-motion-speed": settings.motionSpeed || "normal",
+          "data-palette": settings.palette || "aurora",
+          "data-background": settings.background || "aurora",
+          "data-os-effects": settings.osEffects || "on",
+          "data-motion-intensity": settings.motionIntensity || "balanced"
+        };
+        const html = document.documentElement;
+        const body = document.body;
+        for (const [k, v] of Object.entries(attrs)) {
+          html.setAttribute(k, v);
+          if (body) body.setAttribute(k, v);
+        }
+        html.lang = settings.language === "zh" ? "zh-CN" : "en";
       })();
     </script>
   </head>
   <body
     data-current-app={active}
-    data-experience="balanced"
-    data-motion-speed="normal"
-    data-palette="aurora"
-    data-background="aurora"
   >
     <SystemBar active={active} />
     <main class="desktop-shell" transition:name="lab-main" transition:animate="fade">

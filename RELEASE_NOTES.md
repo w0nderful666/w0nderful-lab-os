@@ -1,5 +1,241 @@
 # Release Notes
 
+## v0.8.7
+
+Token Unification — replaced all hardcoded colors, shadows, borders, and backdrop-filter values with OS tokens. Consolidated duplicate CSS. No new features; style governance only.
+
+### Fixed
+
+- New `--accent-text` token replaces all hardcoded `#07120f` for text on accent backgrounds.
+- Terminal component colors (`#a8c8bd`, `#bdf6d9`, `#eef5f0`, `#7ea192`) replaced with `--text-muted`, `--accent`, `--text`.
+- `pre` and `.article-body pre code` hardcoded `#bdf6d9` replaced with `--accent`.
+- Terminal article style `#020706` / `#37ffbe` replaced with `--code` / `--accent`.
+- Hardcoded `rgba` border values in terminal/hero components replaced with `--border` / `--border-strong`.
+- Hardcoded `rgba` shadow values in desktop-shortcut, command-option, preview-window replaced with `--shadow` / `--shadow-soft`.
+- `.shortcut-icon` box-shadow replaced with `var(--shadow-soft)`.
+- `.project-detail-panel .button-primary` box-shadow uses `var(--border-strong)`.
+- `.md-reader-toolbar` backdrop-filter uses `var(--glass-blur)`.
+- `.draft-notice` backdrop-filter uses `var(--glass-blur)`.
+- `.filter-group` background uses `var(--bg-soft)`.
+- Consolidated two duplicate `.save-status` definitions into one.
+- `.article-body code` border-radius uses `var(--radius-sm)`.
+
+### Preserved
+
+- All motion, layout, theme, i18n behavior unchanged.
+- Single-scroll reading preserved.
+- Composer preview width isolation preserved.
+- Floating reader controls pattern preserved.
+- Detail transition mechanism preserved.
+- Theme flash fix preserved.
+- Light/dark theme contrast preserved.
+
+## v0.8.6
+
+OS Design System Audit — established mandatory design system contracts for tokens, motion, and layout. No UI logic changed; documentation and test gates only.
+
+### Added
+
+- `docs/OS_DESIGN_SYSTEM.md`: mandatory token/class contract for all UI components.
+- `docs/OS_MOTION_CONTRACT.md`: mandatory motion token contract, animation rules, Settings integration.
+- `docs/OS_LAYOUT_CONTRACT.md`: mandatory Master-Detail, floating controls, Composer preview width, single-scroll reading, and mobile degradation contracts.
+- README section: "OS Design System Contracts".
+- self-test and preflight now check for the 3 contract docs and their required keywords.
+
+### Audit Findings
+
+- Terminal components use hardcoded colors (`#a8c8bd`, `#bdf6d9`, `#eef5f0`, `#7ea192`) instead of OS tokens.
+- `global.css` `pre` and `article-styles.css` `.article-body pre code` use hardcoded `#bdf6d9`.
+- Several accent-on-dark surfaces use hardcoded `#07120f` instead of a token.
+- Composer preview width has two separate style blocks (settings-preview-card and composer-preview-card) that should be unified.
+- Master-Detail JS logic is duplicated across Projects, Blog, and Timeline pages.
+- Floating reader controls pattern is repeated in 3 apps without a shared component.
+- `@media` breakpoints are scattered (680px, 760px, 1020px) without a centralized responsive contract.
+
+### Preserved
+
+- No UI logic changed.
+- No animations removed.
+- No features added or modified.
+
+## v0.8.5
+
+OS Motion System Rewrite — proper right-slide detail transition, expanded motion speeds, CSS syntax fix.
+
+### Added
+
+- Two new Motion Speed options: **Slower** (600ms) and **Cinematic** (820ms).
+- `--detail-duration` now responds to Motion Speed setting (was previously fixed at 180ms).
+- Speed duration mapping: Fast=120ms, Normal=220ms, Slow=360ms, Slower=520ms, Cinematic=720ms.
+
+### Fixed
+
+- Rewrote motion.css: fixed CSS syntax error (dangling `to {}` block from duplicate `detail-slide-out` keyframe).
+- New detail transition keyframes:
+  - **OS Panel**: exit=`translateX(-10px) scale(0.995) blur(1px)`, enter=`translateX(24px) scale(0.985) blur(2px)`
+  - **Slide**: exit=`translateX(-8px)`, enter=`translateX(16px)`
+  - **Fade**: opacity only
+  - **Off**: no animation
+- All 4 Detail Transition modes (Off/Fade/Slide/OS Panel) now have distinct, visible animations.
+- CSS `transition: none !important` on `.detail-panel` during swap prevents transition/animation conflict.
+
+### Preserved
+
+- All existing theme, background, i18n, Composer, floating controls, single-scroll fixes preserved.
+- OS Effects Off / Performance mode / reduced-motion still disable animations.
+
+## v0.8.4
+
+Detail Transition Motion Recovery — fixed CSS transition conflict that prevented detail-swapping animation from running.
+
+### Fixed
+
+- Detail transition animation now works: added `!important` and `transition: none` to detail-swapping animation selectors to override the `.detail-panel` CSS `transition` on `opacity` and `transform`.
+- Added `.detail-panel:has([data-detail-swapping])` and `.detail-panel[data-detail-swapping]` rules to disable CSS transition during swap, preventing the CSS transition from fighting the animation.
+
+### Technical
+
+- Root cause: `.detail-panel` has `transition: opacity ...` in motion.css (line 190), which conflicts with the detail-swapping animation that also changes `opacity`. The CSS transition was overriding the animation, making it invisible.
+- Fix: Animation selectors now use `!important` to take precedence, and `transition: none !important` is applied during swap to prevent conflict.
+
+## v0.8.3
+
+Reader Controls + Detail Transition Polish — right-docked floating controls, hidden scrollbar, Composer floating preview, restored slide-in animation.
+
+### Improved
+
+- Floating reader controls now right-docked at `right: 12px; top: 35vh`, collapsed by default with `+` toggle.
+- Left master list uses `scrollbar-width: none` and `::-webkit-scrollbar { width: 0 }` to hide visible scrollbar while preserving scroll functionality.
+- Composer preview width controls converted to floating control pattern, collapsed by default with `W` toggle.
+- Detail slide-in animation strengthened: `translateX(24px)` entry, `translateX(-16px)` exit for more visible right-slide effect.
+- Preview width values updated: narrow=360px, article=640px, wide=820px, full=100% (from ch-based to px-based for more predictable sizing).
+
+### Validation
+
+- All OS Motion preserved.
+- Theme flash fix preserved.
+- i18n coverage preserved.
+- Composer functionality unchanged.
+
+## v0.8.2
+
+Shell Interaction + Theme/i18n Polish — floating reader controls, sticky master list, Composer notice isolation, theme flash fix, new backgrounds, contrast and i18n polish.
+
+### Added
+
+- Floating reader controls: Back/Focus/Expand/Reader Style now appear as a right-side floating toolbar with minimize/expand toggle.
+- 4 new Background Presets: Frosted Mint, Glacier Glass, Sakura Haze, Graphite Mesh.
+- Expanded i18n dictionary: Master-Detail controls, Composer fields, Settings labels, filter/result labels — all with EN/ZH translations.
+- Master list sticky behavior: left panel follows scroll in focused/expanded states.
+
+### Improved
+
+- Theme flash fix: early boot script now sets both html and body data attributes, preventing dark flash on light mode switch.
+- Composer Draft Notice repositioned as absolute floating overlay, no longer disrupts grid layout.
+- Form element contrast: explicit color/background rules for select, option, input, textarea across all themes.
+- Floating controls have OS-style glass appearance with backdrop blur, border, and shadow.
+
+### Validation
+
+- self-test / preflight / build / check all pass.
+- All OS Motion preserved.
+- Composer functionality unchanged.
+- Blog/Projects/Timeline detail transition preserved.
+
+## v0.8.1
+
+Motion & Reading Bugfix — restores detail transition animation, removes inner scrollbar, fixes Composer layout, and improves narrow card display.
+
+### Fixed
+
+- Detail transition animation restored: motion.css selectors now use descendant combinator so `data-detail-swapping` on detail-panel correctly triggers animations defined by `data-detail-transition` on parent `.master-detail`.
+- Inner vertical scrollbar removed: detail-panel no longer has `overflow: auto` or `max-height`, enabling true single-scroll reading where page handles all vertical scrolling.
+- Composer "Saved locally" repositioned as absolute overlay in top-right corner, no longer participates in grid layout or creates empty space.
+- Composer Preview Width buttons now scoped to `.preview-width-controls [data-preview-width]`, no longer accidentally toggle the preview card's own `data-preview-width` attribute.
+- Narrow card text overflow: added `overflow: hidden`, `text-overflow: ellipsis`, `white-space: nowrap` for card headings in focused/expanded states. Hidden secondary meta, badges, and actions in narrow mode.
+- Focus mode (15%/85%) further compresses cards with smaller font, hidden badges, and hidden meta.
+
+### Validation
+
+- self-test / preflight / build / check all pass.
+- Detail transition works with OS, Fade, Slide, Off modes.
+- OS Effects Off and Performance mode correctly disable animations.
+- Single-scroll reading confirmed for Blog, Projects, Timeline.
+
+## v0.8.0
+
+Stable OS Baseline — deep style unification, Master-Detail grid layout, Composer stabilization, single-scroll reading, and comprehensive test gates.
+
+### Added
+
+- Blog reading progress bar now tracks detail-panel scroll position for single-scroll reading.
+- Timeline entry for v0.8.0 Stable OS Baseline release.
+
+### Improved
+
+- Master-Detail uses CSS Grid layout with toolbar as a full-width grid row across Blog, Projects, and Timeline.
+- Detail panel uses `visibility: hidden` in idle state for complete initial hiding.
+- Single-scroll reading: reader-body no longer has nested max-height/overflow.
+- Composer save-status and draft-notice use `align-self: start` to prevent grid stretching.
+- Composer preview width isolated to `[data-composer-preview-card]` selectors only.
+- Composer i18n binding for Dock entry (EN: Composer, ZH: 创作).
+- Unified `.md-reader-toolbar` styling with sticky positioning inside detail-panel scroll context.
+
+### Fixed
+
+- CSS: removed duplicate `.master-detail { display: block }` rule in mobile section.
+- CSS: removed empty `.reader-body {}` rule in mobile section.
+- Blog scroll progress bar now correctly tracks reading position.
+
+### Validation
+
+- self-test: 58+ checks covering file existence, page strings, and product capabilities.
+- preflight: 120+ checks covering version consistency, control layer, interaction polish, blog content, forbidden content, and privacy boundaries.
+- build / check / self-test / preflight all pass.
+
+### Known Issues
+
+- `projectData` declared but never read hint in blog/index.astro (unused variable, no runtime impact).
+- `document.execCommand` deprecated warning in system-state.ts (fallback clipboard copy, no runtime impact).
+
+## v0.7.2.1
+
+- Fixed Composer preview width isolation: preview width controls now only affect the preview card, not the outer layout grid.
+- Fixed Composer left-side blank space caused by preview width affecting the composer workspace grid.
+- Added Composer i18n binding: Composer Dock entry now properly follows the language system (English/Chinese).
+- Unified Master-Detail reader toolbar across Blog, Projects, and Timeline with consistent visual language.
+- Fixed detail panel initial visibility: detail panel is now completely hidden in idle state using visibility:hidden.
+- Fixed single-scroll reading: removed nested scroll from reader-body, detail panel now serves as the single scroll container.
+- Added sticky toolbar behavior for reader toolbar within the detail panel scroll context.
+- Mobile-friendly toolbar with static positioning on small screens.
+
+## v0.7.2
+
+- Added Composer letter icon "C" to Dock, unified with other app icons.
+- Unified Master-Detail reader toolbar across Blog, Projects, and Timeline using shared .md-reader-toolbar class.
+- Added sticky reader toolbar that stays visible while scrolling through long articles.
+- Fixed detail panel single-scroll reading: overrode master-detail overflow with !important rules.
+- Fixed detail panel initial hiding: added width: 0 and explicit overflow: hidden for idle state.
+- Added Composer Preview Width controls with 4 presets: Narrow (48ch), Article (72ch), Wide (90ch), Full.
+- Preview Width uses data-preview-width attribute on preview card only, not on outer layout grid.
+- Preview Width persists in localStorage (lab-composer-preview-width) across page reloads.
+- Made save-status more compact with width: fit-content and smaller padding.
+- Added backdrop-filter fallback for performance mode.
+- Mobile-friendly toolbar with flex-wrap.
+
+## v0.7.1
+
+- Added Draft Notice with OS-style banner showing local draft detection with timestamp, Continue Draft and Clear Draft buttons, and confirmation before clearing.
+- Added auto-save status indicator showing "Saved locally", "Saving...", "Unsaved changes", and "Draft cleared" with 500ms debounce.
+- Enhanced field validation with clear error messages for title, slug, slug format (lowercase letters, numbers, hyphens), summary, tags, articleStyle, status, and body content.
+- Improved Copy Markdown button feedback: button text changes to "Copied!" for 1.5s after success.
+- Improved Download .md button feedback: button text changes to "Downloaded!" for 1.5s after success, with slug validation before download.
+- Added validation error display panel above export buttons showing all current validation issues.
+- Added "Generated .md file needs manual upload to src/content/blog/ and commit to GitHub." hint below export buttons.
+- Removed Load Draft button (replaced by automatic draft detection and restore on page load).
+- Draft data now includes _savedAt timestamp for display in draft notice.
+- All draft operations persist to localStorage only, never uploaded to any server.
+
 ## v0.7.0
 
 - Added Article Composer (Composer.app) for local Markdown article creation with frontmatter form, Markdown textarea, and live preview.

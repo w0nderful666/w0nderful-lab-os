@@ -76,10 +76,10 @@ async function readRootFile(filePath) {
 
 async function checkPackageVersion() {
   const packageJson = JSON.parse(await readRootFile("package.json"));
-  if (packageJson.version === "0.7.0") {
-    pass("package.json version is 0.7.0");
+  if (packageJson.version === "0.8.7") {
+    pass("package.json version is 0.8.7");
   } else {
-    fail(`package.json version is ${packageJson.version}, expected 0.7.0`);
+    fail(`package.json version is ${packageJson.version}, expected 0.8.7`);
   }
 }
 
@@ -233,6 +233,73 @@ async function checkControlLayer() {
   }
 }
 
+async function checkDesignSystemContracts() {
+  const required = [
+    "docs/OS_DESIGN_SYSTEM.md",
+    "docs/OS_MOTION_CONTRACT.md",
+    "docs/OS_LAYOUT_CONTRACT.md"
+  ];
+
+  for (const file of required) {
+    if (await exists(file)) {
+      pass(`${file} exists`);
+    } else {
+      fail(`${file} exists`);
+    }
+  }
+
+  const readme = await readRootFile("README.md");
+  if (readme.includes("OS Design System Contracts")) {
+    pass("README contains OS Design System Contracts section");
+  } else {
+    fail("README contains OS Design System Contracts section");
+  }
+
+  const designSystem = await readRootFile("docs/OS_DESIGN_SYSTEM.md");
+  const designKeywords = ["No Backend", "No Token", "reduced-motion", "accent-text"];
+  for (const kw of designKeywords) {
+    if (designSystem.includes(kw)) {
+      pass(`OS_DESIGN_SYSTEM.md contains ${kw}`);
+    } else {
+      fail(`OS_DESIGN_SYSTEM.md contains ${kw}`);
+    }
+  }
+
+  const motionContract = await readRootFile("docs/OS_MOTION_CONTRACT.md");
+  const motionKeywords = ["Motion Contract", "Motion Speed", "reduced-motion", "Motion Intensity", "OS Effects", "Master\u2013Detail"];
+  for (const kw of motionKeywords) {
+    if (motionContract.includes(kw)) {
+      pass(`OS_MOTION_CONTRACT.md contains ${kw}`);
+    } else {
+      fail(`OS_MOTION_CONTRACT.md contains ${kw}`);
+    }
+  }
+
+  const layoutContract = await readRootFile("docs/OS_LAYOUT_CONTRACT.md");
+  const layoutKeywords = ["Layout Contract", "Master\u2013Detail", "Composer Preview Width", "reduced-motion", "Motion Speed"];
+  for (const kw of layoutKeywords) {
+    if (layoutContract.includes(kw)) {
+      pass(`OS_LAYOUT_CONTRACT.md contains ${kw}`);
+    } else {
+      fail(`OS_LAYOUT_CONTRACT.md contains ${kw}`);
+    }
+  }
+
+  const tokens = await readRootFile("src/styles/tokens.css");
+  if (tokens.includes("--accent-text")) {
+    pass("tokens.css contains --accent-text token");
+  } else {
+    fail("tokens.css contains --accent-text token");
+  }
+
+  const osTheme = await readRootFile("src/styles/os-theme.css");
+  if (!osTheme.includes("#07120f") && !osTheme.includes("#a8c8bd") && !osTheme.includes("#bdf6d9") && !osTheme.includes("#eef5f0")) {
+    pass("os-theme.css has no hardcoded terminal/accent colors");
+  } else {
+    fail("os-theme.css has no hardcoded terminal/accent colors");
+  }
+}
+
 async function checkInteractionPolish() {
   const layout = await readRootFile("src/layouts/BaseLayout.astro");
   if (layout.includes("ClientRouter") && layout.includes("astro:transitions")) {
@@ -280,7 +347,7 @@ async function checkInteractionPolish() {
   }
 
   const osTheme = await readRootFile("src/styles/os-theme.css");
-  if (osTheme.includes("flex-basis: 27%") && osTheme.includes("flex-basis: 73%")) {
+  if (osTheme.includes("grid-template-columns: 27% 73%") && osTheme.includes("grid-template-columns: 15% 85%")) {
     pass("focused Master-Detail ratio is optimized");
   } else {
     fail("focused Master-Detail ratio is optimized");
@@ -311,7 +378,7 @@ async function checkInteractionPolish() {
   }
 
   const motionCss = await readRootFile("src/styles/motion.css");
-  if (motionCss.includes("detail-content-out") && motionCss.includes("detail-content-in") && motionCss.includes("detail-os-out")) {
+  if (motionCss.includes("detail-os-exit") && motionCss.includes("detail-os-enter") && motionCss.includes("detail-slide-exit") && motionCss.includes("detail-fade-exit")) {
     pass("Detail transition keyframes exist in motion.css");
   } else {
     fail("Detail transition keyframes exist in motion.css");
@@ -372,6 +439,55 @@ async function checkInteractionPolish() {
     pass("Composer contains no GitHub Token / auto push logic");
   } else {
     fail("Composer contains no GitHub Token / auto push logic");
+  }
+
+  if (composerPage.includes("draft-notice")) {
+    pass("Composer includes Draft Notice UI");
+  } else {
+    fail("Composer includes Draft Notice UI");
+  }
+
+  if (composerPage.includes("save-status")) {
+    pass("Composer includes Save Status indicator");
+  } else {
+    fail("Composer includes Save Status indicator");
+  }
+
+  if (composerPage.includes("validation-errors")) {
+    pass("Composer includes Validation Errors display");
+  } else {
+    fail("Composer includes Validation Errors display");
+  }
+
+  if (composerPage.includes("draft-continue") || composerPage.includes("Continue Draft")) {
+    pass("Composer includes Continue Draft functionality");
+  } else {
+    fail("Composer includes Continue Draft functionality");
+  }
+
+  if (composerPage.includes("manual upload to src/content/blog") || composerPage.includes("manual commit to GitHub")) {
+    pass("Composer includes manual publish instructions");
+  } else {
+    fail("Composer includes manual publish instructions");
+  }
+
+  if (composerPage.includes("Slug must use lowercase") || composerPage.includes("hyphens")) {
+    pass("Composer includes slug format validation");
+  } else {
+    fail("Composer includes slug format validation");
+  }
+
+  const readme = await readRootFile("README.md");
+  if (readme.includes("lab-composer-draft") && readme.includes("localStorage")) {
+    pass("README documents Composer draft localStorage");
+  } else {
+    fail("README documents Composer draft localStorage");
+  }
+
+  if (readme.includes("manual") && readme.includes("GitHub")) {
+    pass("README documents manual GitHub publish");
+  } else {
+    fail("README documents manual GitHub publish");
   }
 
   const home = await readRootFile("src/components/apps/HomeApp.astro");
@@ -465,6 +581,44 @@ async function checkInteractionPolish() {
     pass("Projects / Blog / Timeline include toolbar clear filters");
   } else {
     fail("Projects / Blog / Timeline include toolbar clear filters");
+  }
+
+  if (projectsApp.includes("md-reader-toolbar") && blogPage.includes("md-reader-toolbar") && timelineApp.includes("md-reader-toolbar")) {
+    pass("Projects / Blog / Timeline include unified md-reader-toolbar class");
+  } else {
+    fail("Projects / Blog / Timeline include unified md-reader-toolbar class");
+  }
+
+  const osThemeCss = await readRootFile("src/styles/os-theme.css");
+  if (osThemeCss.includes("visibility: hidden") && osThemeCss.includes("data-layout=\"idle\"] > .detail-panel")) {
+    pass("Detail panel has visibility:hidden in idle state");
+  } else {
+    fail("Detail panel has visibility:hidden in idle state");
+  }
+
+  if (!osThemeCss.includes("max-height: min(52vh, 560px)") || osThemeCss.includes(".reader-body {") && !osThemeCss.includes("overflow-y: auto")) {
+    pass("reader-body no longer has nested scroll");
+  } else {
+    fail("reader-body no longer has nested scroll");
+  }
+
+  const composerPageFile = await readRootFile("src/pages/composer/index.astro");
+  if (composerPageFile.includes("data-composer-preview-card") && composerPageFile.includes("data-preview-width")) {
+    pass("Composer has preview width controls on preview card");
+  } else {
+    fail("Composer has preview width controls on preview card");
+  }
+
+  if (osThemeCss.includes("[data-composer-preview-card][data-preview-width=")) {
+    pass("Composer preview width styles target preview card only");
+  } else {
+    fail("Composer preview width styles target preview card only");
+  }
+
+  if (systemStateFile.includes("nav.composer")) {
+    pass("system-state contains Composer i18n label");
+  } else {
+    fail("system-state contains Composer i18n label");
   }
 }
 
@@ -722,6 +876,7 @@ await checkReleaseNotes();
 await checkAstroConfig();
 await checkWorkflow();
 await checkControlLayer();
+await checkDesignSystemContracts();
 await checkInteractionPolish();
 await checkBlogContentSystem();
 await checkForbiddenContent();

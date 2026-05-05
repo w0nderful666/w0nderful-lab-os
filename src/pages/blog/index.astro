@@ -76,6 +76,15 @@ for (const post of sortedPosts) {
       </div>
 
       <div class="master-detail blog-reader-layout" data-blog-layout data-layout="idle">
+        <div class="detail-actions md-reader-toolbar is-collapsed" data-reader-controls>
+          <button type="button" class="md-reader-toolbar-toggle" data-controls-toggle aria-label="Toggle controls" aria-expanded="false" title="Controls">+</button>
+          <div class="md-reader-toolbar-body">
+            <button type="button" class="button button-secondary reader-back" data-reader-back data-md-close data-i18n="detail.back">Back to list</button>
+            <button type="button" class="button button-secondary" data-md-expand data-i18n="detail.expand">Expand list</button>
+            <button type="button" class="detail-focus-toggle" data-detail-focus-toggle aria-label="Focus detail panel" aria-pressed="false" data-i18n="detail.focus">Focus</button>
+            <ArticleStyleSwitcher />
+          </div>
+        </div>
         <section class="master-panel blog-list-panel" data-blog-list-panel aria-label="Article list">
           <div class="search-result-count" data-post-count aria-live="polite">
             <strong data-post-count-num>{postMeta.length}</strong>
@@ -111,12 +120,6 @@ for (const post of sortedPosts) {
         </section>
 
         <article class="detail-panel reader-panel" data-post-reader aria-live="polite">
-          <div class="detail-actions reader-topline">
-            <button type="button" class="button button-secondary reader-back" data-reader-back data-md-close>Back to list</button>
-            <button type="button" class="button button-secondary" data-md-expand>Expand list</button>
-            <button type="button" class="detail-focus-toggle" data-detail-focus-toggle aria-label="Focus detail panel" aria-pressed="false">Focus</button>
-            <ArticleStyleSwitcher />
-          </div>
           <div class="reader-progress" aria-label="Reading progress"><span data-reader-progress></span></div>
           <div data-article-rendered data-article-slug={initialPost?.id || ""}>
             {initialMeta && (
@@ -205,6 +208,7 @@ for (const post of sortedPosts) {
   const tagButtons = Array.from(document.querySelectorAll("[data-post-tag-filter]"));
   const cards = Array.from(document.querySelectorAll("[data-post-card]"));
   const reader = document.querySelector("[data-post-reader]");
+  const progress = document.querySelector("[data-reader-progress]");
   const emptyState = document.querySelector("[data-post-empty]");
   if (!(workbench instanceof HTMLElement) || workbench.dataset.controllerReady === "true") return;
   workbench.dataset.controllerReady = "true";
@@ -222,11 +226,19 @@ for (const post of sortedPosts) {
     });
   };
 
+  const updateProgress = () => {
+    if (!(reader instanceof HTMLElement) || !(progress instanceof HTMLElement)) return;
+    const max = reader.scrollHeight - reader.clientHeight;
+    const value = max <= 0 ? 100 : Math.min(100, Math.max(0, (reader.scrollTop / max) * 100));
+    progress.style.width = `${value}%`;
+  };
+
   const openReader = () => {
     if (workbench instanceof HTMLElement) workbench.dataset.layout = "focused";
     if (layout instanceof HTMLElement) layout.dataset.layout = "focused";
     window.labOS?.setState({ layoutState: "focused" });
     requestAnimationFrame(() => {
+      updateProgress();
       if (reader instanceof HTMLElement) {
         const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         const behavior = prefersReduced || document.documentElement.dataset.experience === "performance" ? "instant" : "smooth";
@@ -275,6 +287,7 @@ for (const post of sortedPosts) {
     }
 
     if (shouldOpen) openReader();
+    else updateProgress();
   };
 
   const applyPostFilters = () => {
@@ -321,6 +334,7 @@ for (const post of sortedPosts) {
     if (layout instanceof HTMLElement) layout.dataset.layout = next;
     if (workbench instanceof HTMLElement) workbench.dataset.layout = next;
     expandBtn.textContent = next === "expanded" ? "Focus detail" : "Expand list";
+    window.labOS?.setState({ layoutState: next });
   });
   const clearBtn = document.querySelector("[data-post-clear-filters]");
   if (clearBtn instanceof HTMLButtonElement) clearBtn.addEventListener("click", () => {
@@ -330,6 +344,8 @@ for (const post of sortedPosts) {
     tagButtons.forEach((b) => b.classList.toggle("is-active", b.getAttribute("data-post-tag-filter") === "all"));
     applyPostFilters();
   });
+  if (reader instanceof HTMLElement) reader.addEventListener("scroll", updateProgress);
+  window.addEventListener("resize", updateProgress);
   selectPost(activeSlug, new URLSearchParams(window.location.search).has("post"));
   applyPostFilters();
   };

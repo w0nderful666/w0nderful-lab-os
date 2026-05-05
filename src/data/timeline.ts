@@ -11,6 +11,51 @@ export type TimelineEntry = {
 
 export const timeline: TimelineEntry[] = [
   {
+    id: "lab-os-v087-token-unification",
+    date: "2026-05-05",
+    type: "Release",
+    title: "w0nderful-lab-os v0.8.7 Token Unification",
+    description:
+      "Unified hardcoded colors, shadows, borders, and backdrop-filter values to OS tokens. Consolidated duplicate CSS. All components now follow OS Design System Contract.",
+    relatedProject: "w0nderful-lab-os"
+  },
+  {
+    id: "lab-os-v086-design-system-audit",
+    date: "2026-05-05",
+    type: "Release",
+    title: "w0nderful-lab-os v0.8.6 OS Design System Audit",
+    description:
+      "Established mandatory design system contracts (OS_DESIGN_SYSTEM, OS_MOTION_CONTRACT, OS_LAYOUT_CONTRACT). Added self-test/preflight gates for contract docs and keywords. No UI logic changed.",
+    relatedProject: "w0nderful-lab-os"
+  },
+  {
+    id: "lab-os-v085-motion-system-rewrite",
+    date: "2026-05-05",
+    type: "Release",
+    title: "w0nderful-lab-os v0.8.5 OS Motion System Rewrite",
+    description:
+      "Rewrote detail transition animation system with proper keyframes, fixed CSS syntax error, added Slower/Cinematic motion speeds, --detail-duration now responds to Motion Speed setting.",
+    relatedProject: "w0nderful-lab-os"
+  },
+  {
+    id: "lab-os-v072-toolbar-layout-polish",
+    date: "2026-05-05",
+    type: "Release",
+    title: "w0nderful-lab-os v0.7.2 Master-Detail Toolbar + Composer Layout Final Polish",
+    description:
+      "Unified Master-Detail reader toolbar across Blog/Projects/Timeline, fixed Composer preview width isolation, resolved single-scroll reading, improved detail panel initial hiding.",
+    relatedProject: "w0nderful-lab-os"
+  },
+  {
+    id: "lab-os-v071-composer-polish",
+    date: "2026-05-05",
+    type: "Release",
+    title: "w0nderful-lab-os v0.7.1 Composer Usability Polish",
+    description:
+      "Draft notice with continue/clear buttons, auto-save status indicator, enhanced field validation UI, improved Copy/Download feedback, and clearer GitHub manual publish instructions.",
+    relatedProject: "w0nderful-lab-os"
+  },
+  {
     id: "lab-os-v070-composer",
     date: "2026-05-05",
     type: "Release",

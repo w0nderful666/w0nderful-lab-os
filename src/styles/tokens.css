@@ -17,6 +17,7 @@
   --danger: #ef7a72;
   --success: #87d37c;
   --code: #0c1110;
+  --accent-text: #07120f;
   --body-background:
     linear-gradient(135deg, rgba(21, 54, 47, 0.88), rgba(47, 42, 30, 0.72) 48%, rgba(18, 23, 27, 0.92));
   --body-pattern:
@@ -66,6 +67,7 @@ html[data-theme="light"] {
   --danger: #b54840;
   --success: #397d34;
   --code: #eff5f1;
+  --accent-text: #07120f;
   --body-background:
     linear-gradient(135deg, rgba(222, 242, 235, 0.96), rgba(239, 231, 211, 0.9) 52%, rgba(228, 236, 241, 0.96));
   --body-pattern:
@@ -76,19 +78,34 @@ html[data-theme="light"] {
   --shadow-soft: 0 10px 28px rgba(26, 43, 38, 0.1);
 }
 
-html[data-motion-speed="slow"] {
-  --app-duration: var(--motion-slow);
-  --panel-duration: var(--motion-slow);
+html[data-motion-speed="fast"] {
+  --app-duration: var(--motion-fast);
+  --panel-duration: var(--motion-fast);
+  --detail-duration: 120ms;
 }
 
 html[data-motion-speed="normal"] {
   --app-duration: var(--motion-normal);
   --panel-duration: var(--motion-normal);
+  --detail-duration: 220ms;
 }
 
-html[data-motion-speed="fast"] {
-  --app-duration: var(--motion-fast);
-  --panel-duration: var(--motion-fast);
+html[data-motion-speed="slow"] {
+  --app-duration: var(--motion-slow);
+  --panel-duration: var(--motion-slow);
+  --detail-duration: 360ms;
+}
+
+html[data-motion-speed="slower"] {
+  --app-duration: 600ms;
+  --panel-duration: 600ms;
+  --detail-duration: 520ms;
+}
+
+html[data-motion-speed="cinematic"] {
+  --app-duration: 820ms;
+  --panel-duration: 820ms;
+  --detail-duration: 720ms;
 }
 
 html[data-experience="performance"] {
@@ -263,6 +280,7 @@ html[data-palette="terminal"] {
   --accent-soft: rgba(55, 255, 190, 0.14);
   --active-glow: rgba(55, 255, 190, 0.36);
   --code: #020706;
+  --accent-text: #020706;
 }
 
 html[data-theme="light"][data-palette="terminal"] {
@@ -277,6 +295,7 @@ html[data-theme="light"][data-palette="terminal"] {
   --accent-soft: rgba(0, 123, 93, 0.13);
   --active-glow: rgba(0, 123, 93, 0.2);
   --code: #09201a;
+  --accent-text: #07120f;
 }
 
 html[data-background="aurora"] {
@@ -334,4 +353,66 @@ html[data-theme="light"][data-background="terminal"] {
   --body-background:
     radial-gradient(circle at 50% 8%, rgba(0, 123, 93, 0.11), transparent 32%),
     linear-gradient(180deg, rgba(233, 248, 242, 0.98), rgba(245, 251, 247, 0.96));
+}
+
+html[data-background="frosted"] {
+  --body-background:
+    radial-gradient(circle at 30% 20%, rgba(140, 231, 198, 0.18), transparent 35%),
+    radial-gradient(circle at 70% 80%, rgba(114, 215, 183, 0.12), transparent 30%),
+    linear-gradient(160deg, rgba(15, 30, 28, 0.95), rgba(20, 40, 36, 0.9));
+}
+
+html[data-theme="light"][data-background="frosted"] {
+  --body-background:
+    radial-gradient(circle at 30% 20%, rgba(140, 231, 198, 0.22), transparent 35%),
+    radial-gradient(circle at 70% 80%, rgba(114, 215, 183, 0.15), transparent 30%),
+    linear-gradient(160deg, rgba(235, 250, 245, 0.98), rgba(240, 248, 244, 0.96));
+}
+
+html[data-background="glacier"] {
+  --body-background:
+    radial-gradient(circle at 25% 30%, rgba(150, 180, 255, 0.16), transparent 30%),
+    radial-gradient(circle at 75% 20%, rgba(180, 200, 255, 0.1), transparent 25%),
+    linear-gradient(140deg, rgba(12, 16, 28, 0.96), rgba(18, 24, 40, 0.92));
+}
+
+html[data-theme="light"][data-background="glacier"] {
+  --body-background:
+    radial-gradient(circle at 25% 30%, rgba(100, 140, 220, 0.14), transparent 30%),
+    radial-gradient(circle at 75% 20%, rgba(140, 160, 220, 0.1), transparent 25%),
+    linear-gradient(140deg, rgba(230, 238, 250, 0.98), rgba(238, 242, 252, 0.96));
+}
+
+html[data-background="sakura"] {
+  --body-background:
+    radial-gradient(circle at 40% 25%, rgba(255, 180, 200, 0.14), transparent 30%),
+    radial-gradient(circle at 80% 70%, rgba(255, 200, 210, 0.08), transparent 25%),
+    linear-gradient(150deg, rgba(20, 14, 18, 0.96), rgba(28, 20, 24, 0.92));
+}
+
+html[data-theme="light"][data-background="sakura"] {
+  --body-background:
+    radial-gradient(circle at 40% 25%, rgba(220, 100, 140, 0.12), transparent 30%),
+    radial-gradient(circle at 80% 70%, rgba(220, 140, 160, 0.08), transparent 25%),
+    linear-gradient(150deg, rgba(252, 240, 245, 0.98), rgba(250, 244, 248, 0.96));
+}
+
+html[data-background="mesh"] {
+  --body-background:
+    linear-gradient(135deg, rgba(16, 20, 22, 0.95), rgba(22, 28, 30, 0.9)),
+    var(--bg);
+  --body-pattern:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  --body-pattern-size: 24px 24px;
+}
+
+html[data-theme="light"][data-background="mesh"] {
+  --body-background:
+    linear-gradient(135deg, rgba(232, 236, 238, 0.98), rgba(240, 244, 246, 0.96)),
+    var(--bg);
+  --body-pattern:
+    linear-gradient(rgba(20, 40, 35, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20, 40, 35, 0.03) 1px, transparent 1px);
+  --body-pattern-size: 24px 24px;
 }
