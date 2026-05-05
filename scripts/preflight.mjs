@@ -76,10 +76,10 @@ async function readRootFile(filePath) {
 
 async function checkPackageVersion() {
   const packageJson = JSON.parse(await readRootFile("package.json"));
-  if (packageJson.version === "0.7.0") {
-    pass("package.json version is 0.7.0");
+  if (packageJson.version === "0.7.1") {
+    pass("package.json version is 0.7.1");
   } else {
-    fail(`package.json version is ${packageJson.version}, expected 0.7.0`);
+    fail(`package.json version is ${packageJson.version}, expected 0.7.1`);
   }
 }
 
@@ -372,6 +372,55 @@ async function checkInteractionPolish() {
     pass("Composer contains no GitHub Token / auto push logic");
   } else {
     fail("Composer contains no GitHub Token / auto push logic");
+  }
+
+  if (composerPage.includes("draft-notice")) {
+    pass("Composer includes Draft Notice UI");
+  } else {
+    fail("Composer includes Draft Notice UI");
+  }
+
+  if (composerPage.includes("save-status")) {
+    pass("Composer includes Save Status indicator");
+  } else {
+    fail("Composer includes Save Status indicator");
+  }
+
+  if (composerPage.includes("validation-errors")) {
+    pass("Composer includes Validation Errors display");
+  } else {
+    fail("Composer includes Validation Errors display");
+  }
+
+  if (composerPage.includes("draft-continue") || composerPage.includes("Continue Draft")) {
+    pass("Composer includes Continue Draft functionality");
+  } else {
+    fail("Composer includes Continue Draft functionality");
+  }
+
+  if (composerPage.includes("manual upload to src/content/blog") || composerPage.includes("manual commit to GitHub")) {
+    pass("Composer includes manual publish instructions");
+  } else {
+    fail("Composer includes manual publish instructions");
+  }
+
+  if (composerPage.includes("Slug must use lowercase") || composerPage.includes("hyphens")) {
+    pass("Composer includes slug format validation");
+  } else {
+    fail("Composer includes slug format validation");
+  }
+
+  const readme = await readRootFile("README.md");
+  if (readme.includes("lab-composer-draft") && readme.includes("localStorage")) {
+    pass("README documents Composer draft localStorage");
+  } else {
+    fail("README documents Composer draft localStorage");
+  }
+
+  if (readme.includes("manual") && readme.includes("GitHub")) {
+    pass("README documents manual GitHub publish");
+  } else {
+    fail("README documents manual GitHub publish");
   }
 
   const home = await readRootFile("src/components/apps/HomeApp.astro");

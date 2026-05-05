@@ -1,5 +1,18 @@
 # Release Notes
 
+## v0.7.1
+
+- Added Draft Notice with OS-style banner showing local draft detection with timestamp, Continue Draft and Clear Draft buttons, and confirmation before clearing.
+- Added auto-save status indicator showing "Saved locally", "Saving...", "Unsaved changes", and "Draft cleared" with 500ms debounce.
+- Enhanced field validation with clear error messages for title, slug, slug format (lowercase letters, numbers, hyphens), summary, tags, articleStyle, status, and body content.
+- Improved Copy Markdown button feedback: button text changes to "Copied!" for 1.5s after success.
+- Improved Download .md button feedback: button text changes to "Downloaded!" for 1.5s after success, with slug validation before download.
+- Added validation error display panel above export buttons showing all current validation issues.
+- Added "Generated .md file needs manual upload to src/content/blog/ and commit to GitHub." hint below export buttons.
+- Removed Load Draft button (replaced by automatic draft detection and restore on page load).
+- Draft data now includes _savedAt timestamp for display in draft notice.
+- All draft operations persist to localStorage only, never uploaded to any server.
+
 ## v0.7.0
 
 - Added Article Composer (Composer.app) for local Markdown article creation with frontmatter form, Markdown textarea, and live preview.
