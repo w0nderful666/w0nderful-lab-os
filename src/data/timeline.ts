@@ -11,12 +11,12 @@ export type TimelineEntry = {
 
 export const timeline: TimelineEntry[] = [
   {
-    id: "lab-os-v083-reader-controls-polish",
+    id: "lab-os-v084-motion-recovery",
     date: "2026-05-05",
     type: "Release",
-    title: "w0nderful-lab-os v0.8.3 Reader Controls + Detail Transition Polish",
+    title: "w0nderful-lab-os v0.8.4 Detail Transition Motion Recovery",
     description:
-      "Right-docked floating reader controls, hidden sidebar scrollbar, Composer floating preview controls, restored right-slide detail transition, stronger slide-in animation.",
+      "Fixed detail transition animation by disabling CSS transition conflict during swap, added !important to animation selectors to override opacity transition on detail-panel.",
     relatedProject: "w0nderful-lab-os"
   },
   {

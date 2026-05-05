@@ -72,37 +72,43 @@
 
 [data-detail-transition="fade"] [data-detail-swapping="true"] > .detail-swap-body,
 [data-detail-transition="fade"] [data-detail-swapping="true"][data-article-rendered] {
-  animation: detail-content-out var(--detail-duration) ease forwards;
+  animation: detail-content-out var(--detail-duration) ease forwards !important;
+  transition: none !important;
 }
 
 [data-detail-transition="fade"] [data-detail-swapping="done"] > .detail-swap-body,
 [data-detail-transition="fade"] [data-detail-swapping="done"][data-article-rendered] {
-  animation: detail-content-in var(--detail-duration) ease both;
+  animation: detail-content-in var(--detail-duration) ease both !important;
+  transition: none !important;
 }
 
 [data-detail-transition="slide"] [data-detail-swapping="true"] > .detail-swap-body,
 [data-detail-transition="slide"] [data-detail-swapping="true"][data-article-rendered] {
-  animation: detail-slide-out var(--detail-duration) ease forwards;
+  animation: detail-slide-out var(--detail-duration) ease forwards !important;
+  transition: none !important;
 }
 
 [data-detail-transition="slide"] [data-detail-swapping="done"] > .detail-swap-body,
 [data-detail-transition="slide"] [data-detail-swapping="done"][data-article-rendered] {
-  animation: detail-slide-in var(--detail-duration) ease both;
+  animation: detail-slide-in var(--detail-duration) ease both !important;
+  transition: none !important;
 }
 
 [data-detail-transition="os"] [data-detail-swapping="true"] > .detail-swap-body,
 [data-detail-transition="os"] [data-detail-swapping="true"][data-article-rendered] {
-  animation: detail-os-out var(--detail-duration) ease forwards;
+  animation: detail-os-out var(--detail-duration) ease forwards !important;
+  transition: none !important;
 }
 
 [data-detail-transition="os"] [data-detail-swapping="done"] > .detail-swap-body,
 [data-detail-transition="os"] [data-detail-swapping="done"][data-article-rendered] {
-  animation: detail-os-in var(--detail-duration) ease both;
+  animation: detail-os-in var(--detail-duration) ease both !important;
+  transition: none !important;
 }
 
 [data-detail-transition="off"] .detail-swap-body,
 [data-detail-transition="off"][data-article-rendered] {
-  animation: none;
+  animation: none !important;
 }
 
 html[data-experience="performance"] [data-detail-transition] .detail-swap-body,
@@ -211,6 +217,11 @@ html[data-os-effects="off"] [data-detail-transition] [data-article-rendered] {
     box-shadow var(--panel-duration) ease,
     background var(--panel-duration) ease,
     opacity var(--panel-duration) ease;
+}
+
+.detail-panel:has([data-detail-swapping]),
+.detail-panel[data-detail-swapping] {
+  transition: none !important;
 }
 
 .interactive-card:hover {

@@ -1,5 +1,19 @@
 # Release Notes
 
+## v0.8.4
+
+Detail Transition Motion Recovery — fixed CSS transition conflict that prevented detail-swapping animation from running.
+
+### Fixed
+
+- Detail transition animation now works: added `!important` and `transition: none` to detail-swapping animation selectors to override the `.detail-panel` CSS `transition` on `opacity` and `transform`.
+- Added `.detail-panel:has([data-detail-swapping])` and `.detail-panel[data-detail-swapping]` rules to disable CSS transition during swap, preventing the CSS transition from fighting the animation.
+
+### Technical
+
+- Root cause: `.detail-panel` has `transition: opacity ...` in motion.css (line 190), which conflicts with the detail-swapping animation that also changes `opacity`. The CSS transition was overriding the animation, making it invisible.
+- Fix: Animation selectors now use `!important` to take precedence, and `transition: none !important` is applied during swap to prevent conflict.
+
 ## v0.8.3
 
 Reader Controls + Detail Transition Polish — right-docked floating controls, hidden scrollbar, Composer floating preview, restored slide-in animation.
