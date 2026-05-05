@@ -186,7 +186,7 @@ npm run preflight
 - slug 是否重复；
 - articleStyle 是否合法；
 - 是否存在错误账号名；
-- 是否存在 `href="#"`；
+- 是否存在空链接占位符；
 - 是否误提交 `dist` 或 `node_modules`。
 
 ## 为什么需要 self-test 和 preflight
