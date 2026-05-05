@@ -76,10 +76,10 @@ async function readRootFile(filePath) {
 
 async function checkPackageVersion() {
   const packageJson = JSON.parse(await readRootFile("package.json"));
-  if (packageJson.version === "0.6.3") {
-    pass("package.json version is 0.6.3");
+  if (packageJson.version === "0.7.0") {
+    pass("package.json version is 0.7.0");
   } else {
-    fail(`package.json version is ${packageJson.version}, expected 0.6.3`);
+    fail(`package.json version is ${packageJson.version}, expected 0.7.0`);
   }
 }
 
@@ -120,7 +120,8 @@ async function checkReadme() {
     "Toggle Theme",
     "Blog Publishing",
     "Article Template",
-    "articleStyle"
+    "articleStyle",
+    "Article Composer"
   ];
 
   for (const value of required) {
@@ -320,6 +321,57 @@ async function checkInteractionPolish() {
     pass("Detail transition CSS selectors exist");
   } else {
     fail("Detail transition CSS selectors exist");
+  }
+
+  if (await exists("src/pages/composer/index.astro")) {
+    pass("Composer page exists");
+  } else {
+    fail("Composer page exists");
+  }
+
+  const composerPage = await readRootFile("src/pages/composer/index.astro");
+  if (composerPage.includes("data-composer-title") && composerPage.includes("data-composer-slug") && composerPage.includes("data-composer-summary")) {
+    pass("Composer includes frontmatter fields");
+  } else {
+    fail("Composer includes frontmatter fields");
+  }
+
+  if (composerPage.includes("data-composer-body")) {
+    pass("Composer includes Markdown textarea");
+  } else {
+    fail("Composer includes Markdown textarea");
+  }
+
+  if (composerPage.includes("data-composer-preview")) {
+    pass("Composer includes preview area");
+  } else {
+    fail("Composer includes preview area");
+  }
+
+  if (composerPage.includes("data-composer-copy") && composerPage.includes("data-composer-download")) {
+    pass("Composer includes Copy and Download buttons");
+  } else {
+    fail("Composer includes Copy and Download buttons");
+  }
+
+  if (composerPage.includes("lab-composer-draft")) {
+    pass("Composer uses localStorage draft key");
+  } else {
+    fail("Composer uses localStorage draft key");
+  }
+
+  if (composerPage.includes("data-composer-import")) {
+    pass("Composer includes Import .md");
+  } else {
+    fail("Composer includes Import .md");
+  }
+
+  const forbiddenInComposer = ["github-token", "ghp_", "auto-commit", "auto-push"];
+  const composerHasForbidden = forbiddenInComposer.some((f) => composerPage.toLowerCase().includes(f));
+  if (!composerHasForbidden) {
+    pass("Composer contains no GitHub Token / auto push logic");
+  } else {
+    fail("Composer contains no GitHub Token / auto push logic");
   }
 
   const home = await readRootFile("src/components/apps/HomeApp.astro");

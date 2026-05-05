@@ -1,0 +1,363 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import AppWindow from "../../components/os/AppWindow.astro";
+---
+
+<BaseLayout active="composer" title="Composer.app" description="Local Markdown article composer for w0nderful Lab OS.">
+  <AppWindow title="Composer.app" subtitle="Article Writer" wide>
+    <div class="composer-workspace" data-composer-workspace>
+      <div class="composer-form-panel" data-composer-form>
+        <section class="setting-panel">
+          <p class="eyebrow">Article Metadata</p>
+          <h3>Frontmatter</h3>
+          <div class="composer-field">
+            <label class="select-field"><span>Title *</span><input type="text" data-composer-title placeholder="Article title" required /></label>
+          </div>
+          <div class="composer-field">
+            <label class="select-field"><span>Slug</span><input type="text" data-composer-slug placeholder="auto-generated-from-title" /></label>
+          </div>
+          <div class="composer-row">
+            <label class="select-field"><span>Date</span><input type="date" data-composer-date /></label>
+            <label class="select-field"><span>Updated</span><input type="date" data-composer-updated /></label>
+          </div>
+          <div class="composer-field">
+            <label class="select-field"><span>Summary *</span><textarea data-composer-summary rows="2" placeholder="Brief article summary"></textarea></label>
+          </div>
+          <div class="composer-field">
+            <label class="select-field"><span>Tags (comma separated)</span><input type="text" data-composer-tags placeholder="Web OS, Astro, GitHub Pages" /></label>
+          </div>
+          <div class="composer-row">
+            <label class="select-field"><span>Category</span><input type="text" data-composer-category placeholder="Project Notes" /></label>
+            <label class="select-field"><span>Status</span>
+              <select data-composer-status><option value="draft">Draft</option><option value="published">Published</option></select>
+            </label>
+          </div>
+          <div class="composer-row">
+            <label class="select-field"><span>Article Style</span>
+              <select data-composer-style>
+                <option value="system">System</option>
+                <option value="paper">Paper</option>
+                <option value="terminal">Terminal</option>
+                <option value="magazine">Magazine</option>
+                <option value="notebook">Notebook</option>
+                <option value="minimal">Minimal</option>
+              </select>
+            </label>
+            <label class="select-field"><span>Density</span>
+              <select data-composer-density>
+                <option value="comfortable">Comfortable</option>
+                <option value="compact">Compact</option>
+                <option value="wide">Wide</option>
+              </select>
+            </label>
+          </div>
+          <div class="composer-field">
+            <label class="composer-checkbox"><input type="checkbox" data-composer-toc checked /> Show Table of Contents</label>
+          </div>
+        </section>
+
+        <section class="setting-panel">
+          <p class="eyebrow">Content</p>
+          <h3>Markdown Body</h3>
+          <label class="select-field">
+            <span>Article Content</span>
+            <textarea data-composer-body rows="12" placeholder="Write your Markdown content here..."></textarea>
+          </label>
+          <div class="composer-actions">
+            <button type="button" class="button button-secondary" data-composer-load-sample>Load Sample</button>
+            <button type="button" class="button button-secondary" data-composer-import>Import .md</button>
+            <input type="file" accept=".md,.markdown,.txt" data-composer-file-input hidden />
+          </div>
+        </section>
+
+        <section class="setting-panel">
+          <p class="eyebrow">Draft</p>
+          <h3>Local Storage</h3>
+          <div class="composer-actions">
+            <button type="button" class="button button-secondary" data-composer-save-draft>Save Draft</button>
+            <button type="button" class="button button-secondary" data-composer-load-draft>Load Draft</button>
+            <button type="button" class="button button-danger" data-composer-clear-draft>Clear Draft</button>
+          </div>
+        </section>
+
+        <section class="setting-panel">
+          <p class="eyebrow">Export</p>
+          <h3>Publish</h3>
+          <p class="composer-notice">Composer generates the Markdown file. Publishing requires manual commit/push on GitHub.</p>
+          <div class="composer-actions">
+            <button type="button" class="button button-primary" data-composer-copy>Copy Markdown</button>
+            <button type="button" class="button button-primary" data-composer-download>Download .md</button>
+            <a class="button button-secondary" href="https://github.com/w0nderful666/w0nderful-lab-os/tree/pt/src/content/blog" target="_blank" rel="noreferrer">Open GitHub Folder</a>
+          </div>
+        </section>
+      </div>
+
+      <div class="composer-preview-panel" data-composer-preview-panel>
+        <div class="setting-panel">
+          <p class="eyebrow">Live Preview</p>
+          <h3>Article Preview</h3>
+          <div class="settings-preview-card" data-composer-preview data-composer-preview-card>
+            <div class="composer-preview-inner" data-composer-preview-inner></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </AppWindow>
+
+  <script>
+    const initComposer = () => {
+      const LS_KEY = "lab-composer-draft";
+      const titleInput = document.querySelector("[data-composer-title]") as HTMLInputElement | null;
+      const slugInput = document.querySelector("[data-composer-slug]") as HTMLInputElement | null;
+      const dateInput = document.querySelector("[data-composer-date]") as HTMLInputElement | null;
+      const updatedInput = document.querySelector("[data-composer-updated]") as HTMLInputElement | null;
+      const summaryInput = document.querySelector("[data-composer-summary]") as HTMLTextAreaElement | null;
+      const tagsInput = document.querySelector("[data-composer-tags]") as HTMLInputElement | null;
+      const categoryInput = document.querySelector("[data-composer-category]") as HTMLInputElement | null;
+      const statusSelect = document.querySelector("[data-composer-status]") as HTMLSelectElement | null;
+      const styleSelect = document.querySelector("[data-composer-style]") as HTMLSelectElement | null;
+      const densitySelect = document.querySelector("[data-composer-density]") as HTMLSelectElement | null;
+      const tocCheckbox = document.querySelector("[data-composer-toc]") as HTMLInputElement | null;
+      const bodyTextarea = document.querySelector("[data-composer-body]") as HTMLTextAreaElement | null;
+      const previewInner = document.querySelector("[data-composer-preview-inner]");
+      const previewCard = document.querySelector("[data-composer-preview-card]");
+      if (!titleInput || !bodyTextarea || !previewInner) return;
+      if (document.documentElement.dataset.composerReady === "true") return;
+      document.documentElement.dataset.composerReady = "true";
+
+      const today = new Date().toISOString().split("T")[0];
+      if (dateInput && !dateInput.value) dateInput.value = today;
+
+      const autoSlug = (title: string) =>
+        title.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 60);
+
+      titleInput.addEventListener("input", () => {
+        if (slugInput && !slugInput.dataset.manual) slugInput.value = autoSlug(titleInput.value);
+        updatePreview();
+      });
+      slugInput?.addEventListener("input", () => { slugInput.dataset.manual = "true"; });
+      [dateInput, updatedInput, summaryInput, tagsInput, categoryInput].forEach((el) => {
+        el?.addEventListener("input", updatePreview);
+      });
+      [statusSelect, styleSelect, densitySelect].forEach((el) => {
+        el?.addEventListener("change", updatePreview);
+      });
+      tocCheckbox?.addEventListener("change", updatePreview);
+      bodyTextarea.addEventListener("input", updatePreview);
+
+      const getFormData = () => ({
+        title: titleInput.value,
+        slug: slugInput?.value || autoSlug(titleInput.value),
+        date: dateInput?.value || today,
+        updated: updatedInput?.value || "",
+        summary: summaryInput?.value || "",
+        tags: (tagsInput?.value || "").split(",").map((t: string) => t.trim()).filter(Boolean),
+        category: categoryInput?.value || "General",
+        status: statusSelect?.value || "draft",
+        articleStyle: styleSelect?.value || "system",
+        readerDensity: densitySelect?.value || "comfortable",
+        toc: tocCheckbox?.checked ?? true,
+        body: bodyTextarea.value
+      });
+
+      const parseMarkdown = (md: string) => {
+        return md
+          .replace(/^### (.+)$/gm, '<h4>$1</h4>')
+          .replace(/^## (.+)$/gm, '<h3 id="$1">$1</h3>')
+          .replace(/^# (.+)$/gm, '<h2>$1</h2>')
+          .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.+?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/^- (.+)$/gm, '<li>$1</li>')
+          .replace(/(<li>.*<\/li>\n?)+/gs, (m: string) => `<ul>${m}</ul>`)
+          .replace(/^> (.+)$/gm, '<blockquote><p>$1</p></blockquote>')
+          .replace(/^(?!<[hbulo])((?!^\s*$).+)$/gm, '<p>$1</p>')
+          .replace(/\n{2,}/g, '\n');
+      };
+
+      function updatePreview() {
+        const d = getFormData();
+        if (previewCard instanceof HTMLElement) {
+          previewCard.dataset.articleStyle = d.articleStyle;
+          previewCard.dataset.readerDensity = d.readerDensity;
+        }
+        const tagsHtml = d.tags.length ? `<div class="article-tags">${d.tags.map((t: string) => `<span class="article-tag">${t}</span>`).join("")}</div>` : "";
+        if (!(previewInner instanceof HTMLElement)) return;
+        previewInner.innerHTML = `
+          <div class="article-shell" data-article-style="${d.articleStyle}" data-reader-density="${d.readerDensity}">
+            <header class="article-header">
+              <div class="article-meta">
+                <span class="article-category">${d.category}</span>
+                <time>${d.date}${d.updated ? " / updated " + d.updated : ""}</time>
+              </div>
+              <h1 class="article-title">${d.title || "Untitled"}</h1>
+              <p class="article-summary">${d.summary || "No summary yet."}</p>
+              ${tagsHtml}
+              <div class="article-actions">
+                <span class="article-style-badge">${d.articleStyle}</span>
+                <span class="meta-pill">${d.status}</span>
+              </div>
+            </header>
+            <div class="article-body">${parseMarkdown(d.body || "No content yet.")}</div>
+          </div>
+        `;
+      }
+
+      const generateMarkdown = () => {
+        const d = getFormData();
+        const frontmatter = [
+          "---",
+          `title: "${d.title.replace(/"/g, '\\"')}"`,
+          `slug: "${d.slug}"`,
+          `date: "${d.date}"`,
+          d.updated ? `updated: "${d.updated}"` : null,
+          `summary: "${d.summary.replace(/"/g, '\\"')}"`,
+          `tags: [${d.tags.map((t: string) => `"${t.replace(/"/g, '\\"')}"`).join(", ")}]`,
+          `category: "${d.category}"`,
+          `status: "${d.status}"`,
+          `articleStyle: "${d.articleStyle}"`,
+          `readerDensity: "${d.readerDensity}"`,
+          `toc: ${d.toc}`,
+          "---",
+          "",
+          d.body
+        ].filter((line: string | null) => line !== null).join("\n");
+        return frontmatter;
+      };
+
+      const validate = () => {
+        const d = getFormData();
+        const errors: string[] = [];
+        if (!d.title.trim()) errors.push("Title is required");
+        if (!d.slug.trim()) errors.push("Slug is required");
+        if (!/^[a-z0-9\u4e00-\u9fff][a-z0-9\u4e00-\u9fff-]*$/.test(d.slug)) errors.push("Slug must use lowercase letters, numbers, and hyphens");
+        if (!d.summary.trim()) errors.push("Summary is required");
+        if (d.tags.length === 0) errors.push("At least one tag is required");
+        if (!d.body.trim()) errors.push("Body content is required");
+        return errors;
+      };
+
+      document.addEventListener("click", (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+
+        if (target.closest("[data-composer-load-sample]")) {
+          bodyTextarea.value = "## First Section\n\nThis is a paragraph with **bold** and *italic* text.\n\n- Item one\n- Item two\n- Item three\n\n## Second Section\n\n> This is a blockquote.\n\nMore content here.\n\n## Code Example\n\n```bash\nnpm run build\nnpm run check\n```";
+          updatePreview();
+        }
+
+        if (target.closest("[data-composer-save-draft]")) {
+          try { localStorage.setItem(LS_KEY, JSON.stringify(getFormData())); } catch {}
+          announce("Draft saved.");
+        }
+
+        if (target.closest("[data-composer-load-draft]")) {
+          try {
+            const draft = JSON.parse(localStorage.getItem(LS_KEY) || "{}");
+            if (draft.title) titleInput.value = draft.title;
+            if (slugInput) slugInput.value = draft.slug || "";
+            if (dateInput) dateInput.value = draft.date || today;
+            if (updatedInput) updatedInput.value = draft.updated || "";
+            if (summaryInput) summaryInput.value = draft.summary || "";
+            if (tagsInput) tagsInput.value = (draft.tags || []).join(", ");
+            if (categoryInput) categoryInput.value = draft.category || "";
+            if (statusSelect) statusSelect.value = draft.status || "draft";
+            if (styleSelect) styleSelect.value = draft.articleStyle || "system";
+            if (densitySelect) densitySelect.value = draft.readerDensity || "comfortable";
+            if (tocCheckbox) tocCheckbox.checked = draft.toc ?? true;
+            if (draft.body) bodyTextarea.value = draft.body;
+            updatePreview();
+            announce("Draft loaded.");
+          } catch { announce("No draft found."); }
+        }
+
+        if (target.closest("[data-composer-clear-draft]")) {
+          if (confirm("Clear saved draft?")) {
+            try { localStorage.removeItem(LS_KEY); } catch {}
+            announce("Draft cleared.");
+          }
+        }
+
+        if (target.closest("[data-composer-copy]")) {
+          const errors = validate();
+          if (errors.length > 0) { announce("Fix: " + errors.join(", ")); return; }
+          const md = generateMarkdown();
+          navigator.clipboard.writeText(md).then(() => announce("Markdown copied.")).catch(() => announce("Copy failed."));
+        }
+
+        if (target.closest("[data-composer-download]")) {
+          const errors = validate();
+          if (errors.length > 0) { announce("Fix: " + errors.join(", ")); return; }
+          const md = generateMarkdown();
+          const blob = new Blob([md], { type: "text/markdown" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `${getFormData().slug || "article"}.md`;
+          a.click();
+          URL.revokeObjectURL(url);
+          announce("File downloaded.");
+        }
+
+        if (target.closest("[data-composer-import]")) {
+          const fileInput = document.querySelector("[data-composer-file-input]");
+          if (fileInput instanceof HTMLInputElement) fileInput.click();
+        }
+      });
+
+      const fileInput = document.querySelector("[data-composer-file-input]");
+      if (fileInput instanceof HTMLInputElement) {
+        fileInput.addEventListener("change", () => {
+          const file = fileInput.files?.[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = () => {
+            const text = reader.result as string;
+            const fmMatch = text.match(/^---\n([\s\S]*?)\n---/);
+            if (fmMatch) {
+              const fm = fmMatch[1];
+              const body = text.slice(fmMatch[0].length).trim();
+              const getField = (key: string) => {
+                const m = fm.match(new RegExp(`${key}:\\s*"?([^"\\n]+)"?`));
+                return m ? m[1].trim() : "";
+              };
+              const getArray = (key: string) => {
+                const m = fm.match(new RegExp(`${key}:\\s*\\[([^\\]]*)\\]`));
+                return m ? m[1].split(",").map((s: string) => s.trim().replace(/"/g, "")) : [];
+              };
+              if (titleInput) titleInput.value = getField("title");
+              if (slugInput) { slugInput.value = getField("slug"); slugInput.dataset.manual = "true"; }
+              if (dateInput) dateInput.value = getField("date") || today;
+              if (updatedInput) updatedInput.value = getField("updated");
+              if (summaryInput) summaryInput.value = getField("summary");
+              if (tagsInput) tagsInput.value = getArray("tags").join(", ");
+              if (categoryInput) categoryInput.value = getField("category");
+              if (statusSelect) statusSelect.value = getField("status") || "draft";
+              if (styleSelect) styleSelect.value = getField("articleStyle") || "system";
+              if (densitySelect) densitySelect.value = getField("readerDensity") || "comfortable";
+              if (tocCheckbox) tocCheckbox.checked = getField("toc") !== "false";
+              if (bodyTextarea) bodyTextarea.value = body;
+              updatePreview();
+              announce("Markdown imported.");
+            } else {
+              if (bodyTextarea) bodyTextarea.value = text;
+              updatePreview();
+              announce("File loaded as body content (no frontmatter found).");
+            }
+          };
+          reader.readAsText(file);
+          fileInput.value = "";
+        });
+      }
+
+      const announce = (msg: string) => {
+        document.dispatchEvent(new CustomEvent("labos:announce", { detail: { message: msg } }));
+      };
+
+      updatePreview();
+    };
+
+    initComposer();
+    document.addEventListener("astro:page-load", initComposer);
+  </script>
+</BaseLayout>

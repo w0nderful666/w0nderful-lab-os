@@ -2,7 +2,7 @@
 
 OS-themed personal blog, open-source lab, and project showcase hub for w0nderful666.
 
-Current version: `v0.6.3`
+Current version: `v0.7.0`
 
 Live demo: https://w0nderful666.github.io/w0nderful-lab-os/
 
@@ -278,6 +278,38 @@ This project does not require a backend, database, login system, or CMS. Article
 4. If all pass, the site deploys to GitHub Pages automatically
 
 No user data is uploaded. All content is static. The entire publishing flow is `git push`.
+
+## Article Composer
+
+Composer.app provides a local Markdown article creation tool at `/composer/`.
+
+### What It Does
+
+- Fill in article frontmatter (title, slug, date, summary, tags, category, status, articleStyle, readerDensity, toc)
+- Write Markdown content in a textarea
+- Live preview with articleStyle rendering
+- Copy the complete Markdown to clipboard
+- Download as .md file
+- Open GitHub folder for manual upload
+
+### What It Does NOT Do
+
+- No backend, database, or login system
+- No GitHub Token input
+- No automatic push or commit
+- No online publishing backend
+
+### Draft Persistence
+
+Drafts are saved to `localStorage` under `lab-composer-draft`. They never leave your browser.
+
+### Recommended Publishing Flow
+
+1. Write article in Composer.app
+2. Download the .md file
+3. Place it in `src/content/blog/`
+4. Commit and push to GitHub
+5. GitHub Pages auto-deploys
 
 ## System Health
 
