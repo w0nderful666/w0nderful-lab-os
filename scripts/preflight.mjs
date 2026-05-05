@@ -76,10 +76,10 @@ async function readRootFile(filePath) {
 
 async function checkPackageVersion() {
   const packageJson = JSON.parse(await readRootFile("package.json"));
-  if (packageJson.version === "0.6.0") {
-    pass("package.json version is 0.6.0");
+  if (packageJson.version === "0.6.1") {
+    pass("package.json version is 0.6.1");
   } else {
-    fail(`package.json version is ${packageJson.version}, expected 0.6.0`);
+    fail(`package.json version is ${packageJson.version}, expected 0.6.1`);
   }
 }
 

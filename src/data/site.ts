@@ -1,8 +1,8 @@
 export const site = {
   name: "w0nderful Lab OS",
   packageName: "w0nderful-lab-os",
-  version: "0.6.0",
-  displayVersion: "v0.6.0",
+  version: "0.6.1",
+  displayVersion: "v0.6.1",
   author: "w0nderful666",
   title: "w0nderful Lab OS",
   description:
