@@ -1,5 +1,20 @@
 # Release Notes
 
+## v0.7.0
+
+- Added Article Composer (Composer.app) for local Markdown article creation with frontmatter form, Markdown textarea, and live preview.
+- Added frontmatter form fields: title, slug, date, updated, summary, tags, category, status, articleStyle, readerDensity, toc.
+- Added live preview using existing Article Style System with real-time articleStyle and readerDensity switching.
+- Added Markdown generation with correct frontmatter format, escaped strings, and array/boolean serialization.
+- Added Copy Markdown button using navigator.clipboard API.
+- Added Download .md button with automatic filename from slug.
+- Added Open GitHub Folder link to repository's src/content/blog directory.
+- Added localStorage draft persistence with Save/Load/Clear buttons and key lab-composer-draft.
+- Added Import .md file support with frontmatter parsing for title, slug, date, tags, status, articleStyle, and body content.
+- Added basic validation for required fields before Copy/Download.
+- Added composer route /composer/ with AppWindow, Dock entry, and Command Palette integration.
+- Added composer CSS with responsive two-column layout, form styling, and mobile degradation.
+
 ## v0.6.3
 
 - Added article template at docs/ARTICLE_TEMPLATE.md with complete frontmatter fields, example content, and publishing instructions.

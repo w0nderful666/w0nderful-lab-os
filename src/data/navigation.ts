@@ -7,7 +7,8 @@ export type ActiveApp =
   | "timeline"
   | "about"
   | "settings"
-  | "terminal";
+  | "terminal"
+  | "composer";
 
 export const topNavigation = [
   { id: "home", label: "Home", i18nKey: "nav.home", href: withBase("") },
@@ -40,5 +41,11 @@ export const dockNavigation = [
     label: "Settings",
     i18nKey: "nav.settings",
     href: withBase("settings/")
+  },
+  {
+    id: "composer",
+    label: "Composer",
+    i18nKey: "nav.composer",
+    href: withBase("composer/")
   }
 ] as const;

@@ -12,7 +12,8 @@ export type LabOSApp =
   | "timeline"
   | "about"
   | "settings"
-  | "terminal";
+  | "terminal"
+  | "composer";
 
 export type LayoutState = "idle" | "focused" | "expanded";
 export type ThemeSetting = "light" | "dark" | "system";
@@ -110,7 +111,8 @@ const appIds = new Set<LabOSApp>([
   "timeline",
   "about",
   "settings",
-  "terminal"
+  "terminal",
+  "composer"
 ]);
 
 const storageKey = site.storageKey;

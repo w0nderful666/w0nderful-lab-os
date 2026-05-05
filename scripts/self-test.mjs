@@ -21,6 +21,7 @@ const requiredFiles = [
   "src/components/os/WelcomeToast.astro",
   "src/components/apps/TerminalApp.astro",
   "src/pages/404.astro",
+  "src/pages/composer/index.astro",
   "docs/COMMAND_SYSTEM.md",
   "docs/MOTION_GUIDE.md",
   "docs/INTERACTION_RULES.md",
@@ -37,7 +38,7 @@ const requiredFiles = [
 
 const requiredPageStrings = [
   "w0nderful Lab OS",
-  "v0.6.3",
+  "v0.7.0",
   "Local First",
   "No Backend",
   "GitHub Pages Ready",
