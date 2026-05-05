@@ -11,12 +11,12 @@ export type TimelineEntry = {
 
 export const timeline: TimelineEntry[] = [
   {
-    id: "lab-os-v084-motion-recovery",
+    id: "lab-os-v085-motion-system-rewrite",
     date: "2026-05-05",
     type: "Release",
-    title: "w0nderful-lab-os v0.8.4 Detail Transition Motion Recovery",
+    title: "w0nderful-lab-os v0.8.5 OS Motion System Rewrite",
     description:
-      "Fixed detail transition animation by disabling CSS transition conflict during swap, added !important to animation selectors to override opacity transition on detail-panel.",
+      "Rewrote detail transition animation system with proper keyframes, fixed CSS syntax error, added Slower/Cinematic motion speeds, --detail-duration now responds to Motion Speed setting.",
     relatedProject: "w0nderful-lab-os"
   },
   {

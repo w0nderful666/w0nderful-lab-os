@@ -2,7 +2,7 @@
 
 OS-themed personal blog, open-source lab, and project showcase hub for w0nderful666.
 
-Current version: `v0.8.4`
+Current version: `v0.8.5`
 
 Live demo: https://w0nderful666.github.io/w0nderful-lab-os/
 

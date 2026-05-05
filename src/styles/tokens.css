@@ -76,19 +76,34 @@ html[data-theme="light"] {
   --shadow-soft: 0 10px 28px rgba(26, 43, 38, 0.1);
 }
 
-html[data-motion-speed="slow"] {
-  --app-duration: var(--motion-slow);
-  --panel-duration: var(--motion-slow);
+html[data-motion-speed="fast"] {
+  --app-duration: var(--motion-fast);
+  --panel-duration: var(--motion-fast);
+  --detail-duration: 120ms;
 }
 
 html[data-motion-speed="normal"] {
   --app-duration: var(--motion-normal);
   --panel-duration: var(--motion-normal);
+  --detail-duration: 220ms;
 }
 
-html[data-motion-speed="fast"] {
-  --app-duration: var(--motion-fast);
-  --panel-duration: var(--motion-fast);
+html[data-motion-speed="slow"] {
+  --app-duration: var(--motion-slow);
+  --panel-duration: var(--motion-slow);
+  --detail-duration: 360ms;
+}
+
+html[data-motion-speed="slower"] {
+  --app-duration: 600ms;
+  --panel-duration: 600ms;
+  --detail-duration: 520ms;
+}
+
+html[data-motion-speed="cinematic"] {
+  --app-duration: 820ms;
+  --panel-duration: 820ms;
+  --detail-duration: 720ms;
 }
 
 html[data-experience="performance"] {

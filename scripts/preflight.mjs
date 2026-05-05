@@ -76,10 +76,10 @@ async function readRootFile(filePath) {
 
 async function checkPackageVersion() {
   const packageJson = JSON.parse(await readRootFile("package.json"));
-  if (packageJson.version === "0.8.4") {
-    pass("package.json version is 0.8.4");
+  if (packageJson.version === "0.8.5") {
+    pass("package.json version is 0.8.5");
   } else {
-    fail(`package.json version is ${packageJson.version}, expected 0.8.4`);
+    fail(`package.json version is ${packageJson.version}, expected 0.8.5`);
   }
 }
 
@@ -311,7 +311,7 @@ async function checkInteractionPolish() {
   }
 
   const motionCss = await readRootFile("src/styles/motion.css");
-  if (motionCss.includes("detail-content-out") && motionCss.includes("detail-content-in") && motionCss.includes("detail-os-out")) {
+  if (motionCss.includes("detail-os-exit") && motionCss.includes("detail-os-enter") && motionCss.includes("detail-slide-exit") && motionCss.includes("detail-fade-exit")) {
     pass("Detail transition keyframes exist in motion.css");
   } else {
     fail("Detail transition keyframes exist in motion.css");

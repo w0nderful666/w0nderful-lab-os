@@ -18,7 +18,7 @@ export type LabOSApp =
 export type LayoutState = "idle" | "focused" | "expanded";
 export type ThemeSetting = "light" | "dark" | "system";
 export type ExperienceMode = "performance" | "balanced" | "quality";
-export type MotionSpeed = "slow" | "normal" | "fast";
+export type MotionSpeed = "slow" | "slower" | "cinematic" | "normal" | "fast";
 export type Language = "en" | "zh";
 export type ThemePalette = "aurora" | "graphite" | "ubuntu" | "mint" | "terminal";
 export type BackgroundPreset = "aurora" | "frosted" | "glacier" | "sakura" | "mesh" | "grid" | "terminal" | "paper" | "space";
@@ -171,6 +171,8 @@ const labels = {
     "settings.quality": "Quality",
     "settings.motionSpeed": "Motion Speed",
     "settings.slow": "Slow",
+    "settings.slower": "Slower",
+    "settings.cinematic": "Cinematic",
     "settings.normal": "Normal",
     "settings.fast": "Fast",
     "settings.language": "Language",
@@ -248,6 +250,8 @@ const labels = {
     "settings.quality": "\u9ad8\u8d28\u91cf",
     "settings.motionSpeed": "\u52a8\u753b\u901f\u7387",
     "settings.slow": "\u6162",
+    "settings.slower": "\u66f4\u6162",
+    "settings.cinematic": "\u7535\u5f71\u611f",
     "settings.normal": "\u6b63\u5e38",
     "settings.fast": "\u5feb",
     "settings.language": "\u8bed\u8a00",
@@ -327,7 +331,8 @@ const readPersistedSettings = (): PersistedSettings => {
 const isTheme = (value: unknown): value is ThemeSetting => value === "light" || value === "dark" || value === "system";
 const isExperience = (value: unknown): value is ExperienceMode =>
   value === "performance" || value === "balanced" || value === "quality";
-const isMotionSpeed = (value: unknown): value is MotionSpeed => value === "slow" || value === "normal" || value === "fast";
+const isMotionSpeed = (value: unknown): value is MotionSpeed =>
+  value === "slow" || value === "slower" || value === "cinematic" || value === "normal" || value === "fast";
 const isLanguage = (value: unknown): value is Language => value === "en" || value === "zh";
 const isPalette = (value: unknown): value is ThemePalette =>
   value === "aurora" || value === "graphite" || value === "ubuntu" || value === "mint" || value === "terminal";

@@ -1,5 +1,31 @@
 # Release Notes
 
+## v0.8.5
+
+OS Motion System Rewrite — proper right-slide detail transition, expanded motion speeds, CSS syntax fix.
+
+### Added
+
+- Two new Motion Speed options: **Slower** (600ms) and **Cinematic** (820ms).
+- `--detail-duration` now responds to Motion Speed setting (was previously fixed at 180ms).
+- Speed duration mapping: Fast=120ms, Normal=220ms, Slow=360ms, Slower=520ms, Cinematic=720ms.
+
+### Fixed
+
+- Rewrote motion.css: fixed CSS syntax error (dangling `to {}` block from duplicate `detail-slide-out` keyframe).
+- New detail transition keyframes:
+  - **OS Panel**: exit=`translateX(-10px) scale(0.995) blur(1px)`, enter=`translateX(24px) scale(0.985) blur(2px)`
+  - **Slide**: exit=`translateX(-8px)`, enter=`translateX(16px)`
+  - **Fade**: opacity only
+  - **Off**: no animation
+- All 4 Detail Transition modes (Off/Fade/Slide/OS Panel) now have distinct, visible animations.
+- CSS `transition: none !important` on `.detail-panel` during swap prevents transition/animation conflict.
+
+### Preserved
+
+- All existing theme, background, i18n, Composer, floating controls, single-scroll fixes preserved.
+- OS Effects Off / Performance mode / reduced-motion still disable animations.
+
 ## v0.8.4
 
 Detail Transition Motion Recovery — fixed CSS transition conflict that prevented detail-swapping animation from running.

@@ -1,35 +1,50 @@
-@keyframes detail-content-out {
+/* ============================================
+   Detail Transition Keyframes
+   ============================================ */
+
+/* OS Panel mode: full right-slide with scale + blur */
+@keyframes detail-os-exit {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0);
+  }
   to {
     opacity: 0;
-    transform: translateY(-6px) scale(0.985);
-    filter: saturate(0.94);
+    transform: translateX(-10px) scale(0.995);
+    filter: blur(1px);
   }
 }
 
-@keyframes detail-content-in {
+@keyframes detail-os-enter {
   from {
     opacity: 0;
-    transform: translateY(8px) scale(0.985);
-    filter: saturate(1.03);
+    transform: translateX(24px) scale(0.985);
+    filter: blur(2px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: saturate(1);
+    transform: translateX(0) scale(1);
+    filter: blur(0);
   }
 }
 
-@keyframes detail-slide-out {
+/* Slide mode: lightweight right-slide */
+@keyframes detail-slide-exit {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
   to {
     opacity: 0;
-    transform: translateX(-12px);
+    transform: translateX(-8px);
   }
 }
 
-@keyframes detail-slide-in {
+@keyframes detail-slide-enter {
   from {
     opacity: 0;
-    transform: translateX(24px);
+    transform: translateX(16px);
   }
   to {
     opacity: 1;
@@ -37,89 +52,87 @@
   }
 }
 
-@keyframes detail-slide-out {
-  to {
-    opacity: 0;
-    transform: translateX(-16px);
-  }
-}
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+/* Fade mode: only opacity */
+@keyframes detail-fade-exit {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
-@keyframes detail-os-out {
-  to {
-    opacity: 0;
-    transform: translateY(-4px) scale(0.98);
-    filter: blur(1px) saturate(0.9);
-  }
+@keyframes detail-fade-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-@keyframes detail-os-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px) scale(0.98);
-    filter: blur(2px) saturate(1.05);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0) saturate(1);
-  }
-}
+/* ============================================
+   Detail Transition Selectors
+   ============================================ */
 
-[data-detail-transition="fade"] [data-detail-swapping="true"] > .detail-swap-body,
-[data-detail-transition="fade"] [data-detail-swapping="true"][data-article-rendered] {
-  animation: detail-content-out var(--detail-duration) ease forwards !important;
-  transition: none !important;
-}
-
-[data-detail-transition="fade"] [data-detail-swapping="done"] > .detail-swap-body,
-[data-detail-transition="fade"] [data-detail-swapping="done"][data-article-rendered] {
-  animation: detail-content-in var(--detail-duration) ease both !important;
-  transition: none !important;
-}
-
-[data-detail-transition="slide"] [data-detail-swapping="true"] > .detail-swap-body,
-[data-detail-transition="slide"] [data-detail-swapping="true"][data-article-rendered] {
-  animation: detail-slide-out var(--detail-duration) ease forwards !important;
-  transition: none !important;
-}
-
-[data-detail-transition="slide"] [data-detail-swapping="done"] > .detail-swap-body,
-[data-detail-transition="slide"] [data-detail-swapping="done"][data-article-rendered] {
-  animation: detail-slide-in var(--detail-duration) ease both !important;
-  transition: none !important;
-}
-
+/* OS Panel mode */
 [data-detail-transition="os"] [data-detail-swapping="true"] > .detail-swap-body,
 [data-detail-transition="os"] [data-detail-swapping="true"][data-article-rendered] {
-  animation: detail-os-out var(--detail-duration) ease forwards !important;
+  animation: detail-os-exit var(--detail-duration) ease forwards !important;
   transition: none !important;
 }
 
 [data-detail-transition="os"] [data-detail-swapping="done"] > .detail-swap-body,
 [data-detail-transition="os"] [data-detail-swapping="done"][data-article-rendered] {
-  animation: detail-os-in var(--detail-duration) ease both !important;
+  animation: detail-os-enter var(--detail-duration) ease both !important;
   transition: none !important;
 }
 
+/* Slide mode */
+[data-detail-transition="slide"] [data-detail-swapping="true"] > .detail-swap-body,
+[data-detail-transition="slide"] [data-detail-swapping="true"][data-article-rendered] {
+  animation: detail-slide-exit var(--detail-duration) ease forwards !important;
+  transition: none !important;
+}
+
+[data-detail-transition="slide"] [data-detail-swapping="done"] > .detail-swap-body,
+[data-detail-transition="slide"] [data-detail-swapping="done"][data-article-rendered] {
+  animation: detail-slide-enter var(--detail-duration) ease both !important;
+  transition: none !important;
+}
+
+/* Fade mode */
+[data-detail-transition="fade"] [data-detail-swapping="true"] > .detail-swap-body,
+[data-detail-transition="fade"] [data-detail-swapping="true"][data-article-rendered] {
+  animation: detail-fade-exit var(--detail-duration) ease forwards !important;
+  transition: none !important;
+}
+
+[data-detail-transition="fade"] [data-detail-swapping="done"] > .detail-swap-body,
+[data-detail-transition="fade"] [data-detail-swapping="done"][data-article-rendered] {
+  animation: detail-fade-enter var(--detail-duration) ease both !important;
+  transition: none !important;
+}
+
+/* Off mode */
 [data-detail-transition="off"] .detail-swap-body,
 [data-detail-transition="off"][data-article-rendered] {
   animation: none !important;
 }
 
+/* Performance mode disables all detail animations */
 html[data-experience="performance"] [data-detail-transition] .detail-swap-body,
 html[data-experience="performance"] [data-detail-transition] [data-article-rendered] {
   animation: none !important;
 }
 
+/* OS Effects off disables all detail animations */
 html[data-os-effects="off"] [data-detail-transition] .detail-swap-body,
 html[data-os-effects="off"] [data-detail-transition] [data-article-rendered] {
   animation: none !important;
 }
+
+/* Disable CSS transition on detail-panel during swap to prevent conflict */
+.detail-panel:has([data-detail-swapping]),
+.detail-panel[data-detail-swapping] {
+  transition: none !important;
+}
+
+/* ============================================
+   Page / Window Transitions
+   ============================================ */
 
 @keyframes window-enter {
   from {
@@ -201,6 +214,10 @@ html[data-os-effects="off"] [data-detail-transition] [data-article-rendered] {
   }
 }
 
+/* ============================================
+   Component Transitions
+   ============================================ */
+
 .motion-enter {
   animation: window-enter var(--app-duration) ease both;
 }
@@ -217,11 +234,6 @@ html[data-os-effects="off"] [data-detail-transition] [data-article-rendered] {
     box-shadow var(--panel-duration) ease,
     background var(--panel-duration) ease,
     opacity var(--panel-duration) ease;
-}
-
-.detail-panel:has([data-detail-swapping]),
-.detail-panel[data-detail-swapping] {
-  transition: none !important;
 }
 
 .interactive-card:hover {
@@ -262,6 +274,10 @@ body[data-app-leaving="true"] .desktop-shell {
   filter: saturate(0.94);
 }
 
+/* ============================================
+   Performance Mode
+   ============================================ */
+
 html[data-experience="performance"] .interactive-card:hover,
 html[data-experience="performance"] .dock-item:hover,
 html[data-experience="performance"] .button:hover,
@@ -288,6 +304,10 @@ html[data-experience="performance"]::view-transition-old(lab-app-window),
 html[data-experience="performance"]::view-transition-new(lab-app-window) {
   animation-duration: 1ms;
 }
+
+/* ============================================
+   Reduced Motion
+   ============================================ */
 
 @media (prefers-reduced-motion: reduce) {
   * {
