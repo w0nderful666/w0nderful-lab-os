@@ -2339,10 +2339,6 @@ kbd {
     display: block;
   }
 
-  .master-detail {
-    display: block;
-  }
-
   .master-detail > .master-panel,
   .master-detail > .detail-panel,
   .master-detail[data-layout="focused"] > .master-panel,
@@ -2401,9 +2397,6 @@ kbd {
 
   .detail-actions .button {
     width: 100%;
-  }
-
-  .reader-body {
   }
 
   .window-controls {

@@ -1,5 +1,41 @@
 # Release Notes
 
+## v0.8.0
+
+Stable OS Baseline — deep style unification, Master-Detail grid layout, Composer stabilization, single-scroll reading, and comprehensive test gates.
+
+### Added
+
+- Blog reading progress bar now tracks detail-panel scroll position for single-scroll reading.
+- Timeline entry for v0.8.0 Stable OS Baseline release.
+
+### Improved
+
+- Master-Detail uses CSS Grid layout with toolbar as a full-width grid row across Blog, Projects, and Timeline.
+- Detail panel uses `visibility: hidden` in idle state for complete initial hiding.
+- Single-scroll reading: reader-body no longer has nested max-height/overflow.
+- Composer save-status and draft-notice use `align-self: start` to prevent grid stretching.
+- Composer preview width isolated to `[data-composer-preview-card]` selectors only.
+- Composer i18n binding for Dock entry (EN: Composer, ZH: 创作).
+- Unified `.md-reader-toolbar` styling with sticky positioning inside detail-panel scroll context.
+
+### Fixed
+
+- CSS: removed duplicate `.master-detail { display: block }` rule in mobile section.
+- CSS: removed empty `.reader-body {}` rule in mobile section.
+- Blog scroll progress bar now correctly tracks reading position.
+
+### Validation
+
+- self-test: 58+ checks covering file existence, page strings, and product capabilities.
+- preflight: 120+ checks covering version consistency, control layer, interaction polish, blog content, forbidden content, and privacy boundaries.
+- build / check / self-test / preflight all pass.
+
+### Known Issues
+
+- `projectData` declared but never read hint in blog/index.astro (unused variable, no runtime impact).
+- `document.execCommand` deprecated warning in system-state.ts (fallback clipboard copy, no runtime impact).
+
 ## v0.7.2.1
 
 - Fixed Composer preview width isolation: preview width controls now only affect the preview card, not the outer layout grid.
