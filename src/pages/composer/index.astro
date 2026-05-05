@@ -168,6 +168,7 @@ import AppWindow from "../../components/os/AppWindow.astro";
       const showSaveStatus = (status: "saved" | "saving" | "unsaved" | "cleared") => {
         if (!saveStatus || !saveStatusText) return;
         saveStatus.hidden = false;
+        saveStatus.classList.remove("status-saved", "status-cleared");
         switch (status) {
           case "saved":
             saveStatusText.textContent = "✓ Saved locally";
@@ -175,11 +176,9 @@ import AppWindow from "../../components/os/AppWindow.astro";
             break;
           case "saving":
             saveStatusText.textContent = "Saving...";
-            saveStatus.classList.remove("status-saved");
             break;
           case "unsaved":
             saveStatusText.textContent = "● Unsaved changes";
-            saveStatus.classList.remove("status-saved");
             break;
           case "cleared":
             saveStatusText.textContent = "Draft cleared";

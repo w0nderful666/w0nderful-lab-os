@@ -76,6 +76,12 @@ for (const post of sortedPosts) {
       </div>
 
       <div class="master-detail blog-reader-layout" data-blog-layout data-layout="idle">
+        <div class="detail-actions md-reader-toolbar">
+          <button type="button" class="button button-secondary reader-back" data-reader-back data-md-close>Back to list</button>
+          <button type="button" class="button button-secondary" data-md-expand>Expand list</button>
+          <button type="button" class="detail-focus-toggle" data-detail-focus-toggle aria-label="Focus detail panel" aria-pressed="false">Focus</button>
+          <ArticleStyleSwitcher />
+        </div>
         <section class="master-panel blog-list-panel" data-blog-list-panel aria-label="Article list">
           <div class="search-result-count" data-post-count aria-live="polite">
             <strong data-post-count-num>{postMeta.length}</strong>
@@ -111,12 +117,6 @@ for (const post of sortedPosts) {
         </section>
 
         <article class="detail-panel reader-panel" data-post-reader aria-live="polite">
-          <div class="detail-actions reader-topline md-reader-toolbar">
-            <button type="button" class="button button-secondary reader-back" data-reader-back data-md-close>Back to list</button>
-            <button type="button" class="button button-secondary" data-md-expand>Expand list</button>
-            <button type="button" class="detail-focus-toggle" data-detail-focus-toggle aria-label="Focus detail panel" aria-pressed="false">Focus</button>
-            <ArticleStyleSwitcher />
-          </div>
           <div class="reader-progress" aria-label="Reading progress"><span data-reader-progress></span></div>
           <div data-article-rendered data-article-slug={initialPost?.id || ""}>
             {initialMeta && (

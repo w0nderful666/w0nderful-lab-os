@@ -696,10 +696,21 @@ html[data-experience="performance"] .setting-panel {
 }
 
 .master-detail {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 18px;
-  align-items: flex-start;
+  align-items: start;
   min-width: 0;
+}
+
+.master-detail > .md-reader-toolbar {
+  display: none;
+}
+
+.master-detail[data-layout="focused"] > .md-reader-toolbar,
+.master-detail[data-layout="expanded"] > .md-reader-toolbar {
+  display: flex;
+  grid-column: 1 / -1;
 }
 
 .master-detail[data-layout="idle"] {
@@ -707,20 +718,13 @@ html[data-experience="performance"] .setting-panel {
 }
 
 .master-panel {
-  flex: 1 1 100%;
   min-width: 0;
-  transition:
-    flex-basis var(--panel-duration) ease,
-    opacity var(--panel-duration) ease,
-    transform var(--panel-duration) ease;
 }
 
 .master-detail > .detail-panel {
-  flex: 0 1 0%;
   overflow: hidden;
   opacity: 0;
   pointer-events: none;
-  transform: translateX(20px);
   min-width: 0;
   width: 0;
   visibility: hidden;
@@ -736,23 +740,26 @@ html[data-experience="performance"] .setting-panel {
   visibility: hidden;
 }
 
+.master-detail[data-layout="focused"] {
+  grid-template-columns: 27% 73%;
+}
+
 .master-detail[data-layout="focused"] > .master-panel {
-  flex-basis: 27%;
+  grid-column: 1;
 }
 
 .master-detail[data-layout="focused"] > .detail-panel {
-  flex-basis: 73%;
+  grid-column: 2;
   overflow-y: auto;
   overflow-x: hidden;
   opacity: 1;
   pointer-events: auto;
-  transform: translateX(0);
   visibility: visible;
+  width: auto;
 }
 
-.master-detail[data-layout="expanded"] > .master-panel,
-.master-detail[data-layout="expanded"] > .detail-panel {
-  flex-basis: 50%;
+.master-detail[data-layout="expanded"] {
+  grid-template-columns: 1fr 1fr;
 }
 
 .master-detail[data-layout="expanded"] > .detail-panel {
@@ -760,28 +767,16 @@ html[data-experience="performance"] .setting-panel {
   overflow-x: hidden;
   opacity: 1;
   pointer-events: auto;
-  transform: translateX(0);
   visibility: visible;
+  width: auto;
 }
 
-.master-detail[data-detail-mode="focus"][data-layout="focused"] > .master-panel {
-  flex-basis: 15%;
+.master-detail[data-detail-mode="focus"][data-layout="focused"] {
+  grid-template-columns: 15% 85%;
 }
 
-.master-detail[data-detail-mode="focus"][data-layout="focused"] > .detail-panel {
-  flex-basis: 85%;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-.master-detail[data-detail-mode="focus"][data-layout="expanded"] > .master-panel {
-  flex-basis: 15%;
-}
-
-.master-detail[data-detail-mode="focus"][data-layout="expanded"] > .detail-panel {
-  flex-basis: 85%;
-  overflow-y: auto;
-  overflow-x: hidden;
+.master-detail[data-detail-mode="focus"][data-layout="expanded"] {
+  grid-template-columns: 15% 85%;
 }
 
 .detail-focus-toggle {
@@ -853,7 +848,6 @@ html[data-experience="performance"] .setting-panel {
   flex-wrap: wrap;
   gap: 8px;
   padding: 10px 16px;
-  margin: -16px -16px 12px;
   border-bottom: 1px solid var(--border);
   background: var(--bg-panel);
   backdrop-filter: blur(8px);
@@ -2003,15 +1997,16 @@ kbd {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 10px;
+  padding: 3px 8px;
   margin-bottom: 8px;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   background: var(--bg-soft);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
   color: var(--text-muted);
   width: fit-content;
+  max-width: 200px;
 }
 
 .save-status[hidden] {
@@ -2342,13 +2337,17 @@ kbd {
     display: block;
   }
 
+  .master-detail {
+    display: block;
+  }
+
   .master-detail > .master-panel,
   .master-detail > .detail-panel,
   .master-detail[data-layout="focused"] > .master-panel,
   .master-detail[data-layout="focused"] > .detail-panel,
   .master-detail[data-layout="expanded"] > .master-panel,
   .master-detail[data-layout="expanded"] > .detail-panel {
-    flex-basis: auto;
+    grid-column: auto;
   }
 
   .master-detail[data-layout="idle"] > .detail-panel {
@@ -2366,23 +2365,29 @@ kbd {
   .master-detail[data-layout="expanded"] > .detail-panel,
   .master-detail[data-detail-mode="focus"][data-layout="focused"] > .detail-panel,
   .master-detail[data-detail-mode="focus"][data-layout="expanded"] > .detail-panel {
-    display: grid;
+    display: block;
     max-height: none;
     overflow: visible;
     opacity: 1;
     pointer-events: auto;
-    transform: translateX(0);
+    transform: none;
     visibility: visible;
+    width: auto;
+  }
+
+  .master-detail > .md-reader-toolbar {
+    display: flex !important;
+    position: static;
+    margin: 0 0 12px;
+    padding: 10px 12px;
+  }
+
+  .master-detail[data-layout="idle"] > .md-reader-toolbar {
+    display: none !important;
   }
 
   .detail-focus-toggle {
     display: none;
-  }
-
-  .md-reader-toolbar {
-    position: static;
-    margin: 0 0 12px;
-    padding: 10px 12px;
   }
 
   .reader-topline,

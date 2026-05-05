@@ -280,7 +280,7 @@ async function checkInteractionPolish() {
   }
 
   const osTheme = await readRootFile("src/styles/os-theme.css");
-  if (osTheme.includes("flex-basis: 27%") && osTheme.includes("flex-basis: 73%")) {
+  if (osTheme.includes("grid-template-columns: 27% 73%") && osTheme.includes("grid-template-columns: 15% 85%")) {
     pass("focused Master-Detail ratio is optimized");
   } else {
     fail("focused Master-Detail ratio is optimized");
