@@ -11,6 +11,42 @@ export type TimelineEntry = {
 
 export const timeline: TimelineEntry[] = [
   {
+    id: "lab-os-v060-blog-publishing",
+    date: "2026-05-05",
+    type: "Release",
+    title: "w0nderful-lab-os v0.6.0 blog publishing stable release",
+    description:
+      "Astro Content Collections, Markdown articles, Article Style System with 6 styles, Reader Style switcher, Copy Link, TOC, and 4 example articles.",
+    relatedProject: "w0nderful-lab-os"
+  },
+  {
+    id: "lab-os-v050-os-systemization",
+    date: "2026-05-04",
+    type: "Release",
+    title: "w0nderful-lab-os v0.5.0 OS experience systemization",
+    description:
+      "Desktop Workspace shortcuts, enhanced System Bar, System Health checks, Keyboard Shortcuts, Command Palette Chinese aliases, and Toggle Theme.",
+    relatedProject: "w0nderful-lab-os"
+  },
+  {
+    id: "lab-os-v042-experience-polish",
+    date: "2026-05-04",
+    type: "Release",
+    title: "w0nderful-lab-os v0.4.2 experience polish release",
+    description:
+      "Dock active state, window layering, Command Palette grouped results, Settings Preview Card, Empty State, 404 notice, and Welcome Toast.",
+    relatedProject: "w0nderful-lab-os"
+  },
+  {
+    id: "lab-os-v040-control-layer",
+    date: "2026-05-04",
+    type: "Release",
+    title: "w0nderful-lab-os v0.4.0 control layer release",
+    description:
+      "Command Palette, Terminal.app, System State, Global Search, Recent Items, and Project/Blog/Timeline linking.",
+    relatedProject: "w0nderful-lab-os"
+  },
+  {
     id: "lab-os-visible-interaction-release",
     date: "2026-05-04",
     type: "Release",

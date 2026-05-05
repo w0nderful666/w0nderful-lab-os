@@ -8,7 +8,7 @@ Live demo: https://w0nderful666.github.io/w0nderful-lab-os/
 
 ## Positioning
 
-`w0nderful-lab-os` is an A-Level static site that presents a personal blog and project hub through a MacOS / Linux desktop metaphor. The v0.4.0 Control Layer turns the site into an operable personal lab: projects become Apps, posts become Docs, timeline entries become System Log records, settings become System Settings, and shared commands can control them.
+`w0nderful-lab-os` is an A-Level static site that presents a personal blog and project hub through a MacOS / Linux desktop metaphor. The Control Layer turns the site into an operable personal lab: projects become Apps, posts become Docs, timeline entries become System Log records, settings become System Settings, and shared commands can control them. v0.6.0 adds Astro Content Collections for Markdown blog publishing with an Article Style System.
 
 ## A-Level Standard
 
@@ -59,7 +59,7 @@ The OS control layer still owns app state. Command Palette and Terminal.app use 
 
 ## Control Layer
 
-The v0.4.0 Control Layer is built from small vanilla TypeScript modules:
+The Control Layer is built from small vanilla TypeScript modules:
 
 - `src/scripts/system-state.ts` owns current app, selected project/post/timeline entry, layout state, theme, Experience Mode, Motion Speed, language, Recent Items, and command history.
 - `src/scripts/command-palette.ts` powers the global Command Palette and keyboard controls.
@@ -69,7 +69,7 @@ The v0.4.0 Control Layer is built from small vanilla TypeScript modules:
 
 State changes sync to `html` and `body` data attributes, persist lightweight preferences to `localStorage`, and dispatch `labos:*` custom events for app changes, settings changes, command execution, and content opening.
 
-The v0.4.2 experience pass keeps the same static architecture while improving the feeling of one continuous OS surface: Dock active state, grouped Command Palette results, Settings.app visual preview, first-visit guidance, empty states, and the 404 notice all use the same System State and transition lifecycle.
+The v0.6.x release series keeps the same static architecture while adding Markdown blog publishing, Article Style System, and Reader Style override. The OS surface continues to improve with Dock active state, grouped Command Palette results, Settings.app visual preview, first-visit guidance, empty states, and the 404 notice.
 
 ## Keyboard Shortcuts
 
@@ -91,7 +91,7 @@ Animations are intentionally small and use `transform` and `opacity`. App window
 
 ## OS-like Experience Enhancements
 
-v0.5.0 focuses on systemization of the OS experience:
+v0.5.0 focused on systemization of the OS experience:
 
 - Desktop Workspace with app launcher shortcuts that behave like OS desktop icons with hover lift and real navigation.
 - Enhanced System Bar showing current app, palette, background, clickable version, and local time.
@@ -351,7 +351,7 @@ npm run preflight
 ## Roadmap
 
 - Move Blog.app body blocks into Astro content collections.
-- Add screenshots after the v0.4.2 GitHub Pages deployment.
+- Add screenshots after the v0.6.x GitHub Pages deployment.
 - Add project detail pages when individual projects need deeper case studies.
 - Expand terminal command aliases only after the core command surface stays stable.
 

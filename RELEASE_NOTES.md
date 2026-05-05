@@ -1,5 +1,13 @@
 # Release Notes
 
+## v0.6.1
+
+- Unified version numbers across site.ts, package.json, projects.ts, README, and RELEASE_NOTES.
+- Updated w0nderful-lab-os project version in projects data from v0.4.0 to v0.6.1.
+- Added timeline entries for v0.4.0, v0.4.2, v0.5.0, and v0.6.0 releases.
+- Updated README positioning description to reflect current v0.6.x release series.
+- Updated roadmap screenshot reference to v0.6.x deployment.
+
 ## v0.6.0
 
 - Added Astro Content Collections for blog posts with Markdown support, frontmatter schema validation, and static rendering.
