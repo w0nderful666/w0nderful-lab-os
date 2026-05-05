@@ -1,5 +1,19 @@
 # Release Notes
 
+## v0.7.2
+
+- Added Composer letter icon "C" to Dock, unified with other app icons.
+- Unified Master-Detail reader toolbar across Blog, Projects, and Timeline using shared .md-reader-toolbar class.
+- Added sticky reader toolbar that stays visible while scrolling through long articles.
+- Fixed detail panel single-scroll reading: overrode master-detail overflow with !important rules.
+- Fixed detail panel initial hiding: added width: 0 and explicit overflow: hidden for idle state.
+- Added Composer Preview Width controls with 4 presets: Narrow (48ch), Article (72ch), Wide (90ch), Full.
+- Preview Width uses data-preview-width attribute on preview card only, not on outer layout grid.
+- Preview Width persists in localStorage (lab-composer-preview-width) across page reloads.
+- Made save-status more compact with width: fit-content and smaller padding.
+- Added backdrop-filter fallback for performance mode.
+- Mobile-friendly toolbar with flex-wrap.
+
 ## v0.7.1
 
 - Added Draft Notice with OS-style banner showing local draft detection with timestamp, Continue Draft and Clear Draft buttons, and confirmation before clearing.

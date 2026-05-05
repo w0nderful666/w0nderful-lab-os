@@ -104,9 +104,19 @@ import AppWindow from "../../components/os/AppWindow.astro";
 
       <div class="composer-preview-panel" data-composer-preview-panel>
         <div class="setting-panel">
-          <p class="eyebrow">Live Preview</p>
-          <h3>Article Preview</h3>
-          <div class="settings-preview-card" data-composer-preview data-composer-preview-card>
+          <div class="preview-header">
+            <div>
+              <p class="eyebrow">Live Preview</p>
+              <h3>Article Preview</h3>
+            </div>
+            <div class="preview-width-controls" role="group" aria-label="Preview width">
+              <button type="button" class="preview-width-btn" data-preview-width="narrow" title="Narrow (48ch)" aria-label="Narrow preview width">窄</button>
+              <button type="button" class="preview-width-btn is-active" data-preview-width="article" title="Article (72ch)" aria-label="Article preview width">文</button>
+              <button type="button" class="preview-width-btn" data-preview-width="wide" title="Wide (90ch)" aria-label="Wide preview width">宽</button>
+              <button type="button" class="preview-width-btn" data-preview-width="full" title="Full width" aria-label="Full preview width">全</button>
+            </div>
+          </div>
+          <div class="settings-preview-card" data-composer-preview data-composer-preview-card data-preview-width="article">
             <div class="composer-preview-inner" data-composer-preview-inner></div>
           </div>
         </div>
@@ -229,6 +239,26 @@ import AppWindow from "../../components/os/AppWindow.astro";
       };
 
       checkDraft();
+
+      const previewCardEl = document.querySelector("[data-composer-preview-card]");
+      const previewWidthBtns = document.querySelectorAll("[data-preview-width]");
+      const applyPreviewWidth = (width: string) => {
+        if (!previewCardEl) return;
+        previewCardEl.setAttribute("data-preview-width", width);
+        previewWidthBtns.forEach((btn) => {
+          btn.classList.toggle("is-active", btn.getAttribute("data-preview-width") === width);
+        });
+        try { localStorage.setItem("lab-composer-preview-width", width); } catch {}
+      };
+      const savedWidth = (() => {
+        try { return localStorage.getItem("lab-composer-preview-width"); } catch { return null; }
+      })();
+      applyPreviewWidth(savedWidth || "article");
+      previewWidthBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          applyPreviewWidth(btn.getAttribute("data-preview-width") || "article");
+        });
+      });
 
       const autoSlug = (title: string) =>
         title.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 60);
