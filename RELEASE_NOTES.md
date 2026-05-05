@@ -1,5 +1,24 @@
 # Release Notes
 
+## v0.8.3
+
+Reader Controls + Detail Transition Polish — right-docked floating controls, hidden scrollbar, Composer floating preview, restored slide-in animation.
+
+### Improved
+
+- Floating reader controls now right-docked at `right: 12px; top: 35vh`, collapsed by default with `+` toggle.
+- Left master list uses `scrollbar-width: none` and `::-webkit-scrollbar { width: 0 }` to hide visible scrollbar while preserving scroll functionality.
+- Composer preview width controls converted to floating control pattern, collapsed by default with `W` toggle.
+- Detail slide-in animation strengthened: `translateX(24px)` entry, `translateX(-16px)` exit for more visible right-slide effect.
+- Preview width values updated: narrow=360px, article=640px, wide=820px, full=100% (from ch-based to px-based for more predictable sizing).
+
+### Validation
+
+- All OS Motion preserved.
+- Theme flash fix preserved.
+- i18n coverage preserved.
+- Composer functionality unchanged.
+
 ## v0.8.2
 
 Shell Interaction + Theme/i18n Polish — floating reader controls, sticky master list, Composer notice isolation, theme flash fix, new backgrounds, contrast and i18n polish.

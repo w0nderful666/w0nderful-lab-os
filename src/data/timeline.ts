@@ -11,12 +11,12 @@ export type TimelineEntry = {
 
 export const timeline: TimelineEntry[] = [
   {
-    id: "lab-os-v082-shell-interaction-polish",
+    id: "lab-os-v083-reader-controls-polish",
     date: "2026-05-05",
     type: "Release",
-    title: "w0nderful-lab-os v0.8.2 Shell Interaction + Theme/i18n Polish",
+    title: "w0nderful-lab-os v0.8.3 Reader Controls + Detail Transition Polish",
     description:
-      "Floating reader controls, sticky master list, Composer notice isolation, theme flash fix, new background presets, contrast polish, and comprehensive i18n coverage.",
+      "Right-docked floating reader controls, hidden sidebar scrollbar, Composer floating preview controls, restored right-slide detail transition, stronger slide-in animation.",
     relatedProject: "w0nderful-lab-os"
   },
   {

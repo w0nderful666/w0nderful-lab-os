@@ -103,17 +103,20 @@ import AppWindow from "../../components/os/AppWindow.astro";
       </div>
 
       <div class="composer-preview-panel" data-composer-preview-panel>
+        <div class="md-reader-toolbar is-collapsed" data-preview-controls>
+          <button type="button" class="md-reader-toolbar-toggle" data-preview-controls-toggle aria-label="Toggle preview width" aria-expanded="false" title="Preview Width">W</button>
+          <div class="md-reader-toolbar-body">
+            <button type="button" class="button button-secondary preview-width-btn" data-preview-width="narrow" title="Narrow (360px)" aria-label="Narrow preview width">Narrow</button>
+            <button type="button" class="button button-secondary preview-width-btn is-active" data-preview-width="article" title="Article (640px)" aria-label="Article preview width">Article</button>
+            <button type="button" class="button button-secondary preview-width-btn" data-preview-width="wide" title="Wide (820px)" aria-label="Wide preview width">Wide</button>
+            <button type="button" class="button button-secondary preview-width-btn" data-preview-width="full" title="Full width" aria-label="Full preview width">Full</button>
+          </div>
+        </div>
         <div class="setting-panel">
           <div class="preview-header">
             <div>
               <p class="eyebrow">Live Preview</p>
               <h3>Article Preview</h3>
-            </div>
-            <div class="preview-width-controls" role="group" aria-label="Preview width">
-              <button type="button" class="preview-width-btn" data-preview-width="narrow" title="Narrow (48ch)" aria-label="Narrow preview width">窄</button>
-              <button type="button" class="preview-width-btn is-active" data-preview-width="article" title="Article (72ch)" aria-label="Article preview width">文</button>
-              <button type="button" class="preview-width-btn" data-preview-width="wide" title="Wide (90ch)" aria-label="Wide preview width">宽</button>
-              <button type="button" class="preview-width-btn" data-preview-width="full" title="Full width" aria-label="Full preview width">全</button>
             </div>
           </div>
           <div class="settings-preview-card" data-composer-preview data-composer-preview-card data-preview-width="article">
@@ -240,7 +243,7 @@ import AppWindow from "../../components/os/AppWindow.astro";
       checkDraft();
 
       const previewCardEl = document.querySelector("[data-composer-preview-card]");
-      const previewWidthBtns = document.querySelectorAll(".preview-width-controls [data-preview-width]");
+      const previewWidthBtns = document.querySelectorAll("[data-preview-controls] [data-preview-width]");
       const applyPreviewWidth = (width: string) => {
         if (!previewCardEl) return;
         previewCardEl.setAttribute("data-preview-width", width);
@@ -258,6 +261,18 @@ import AppWindow from "../../components/os/AppWindow.astro";
           applyPreviewWidth(btn.getAttribute("data-preview-width") || "article");
         });
       });
+
+      const previewControlsToggle = document.querySelector("[data-preview-controls-toggle]");
+      if (previewControlsToggle instanceof HTMLButtonElement) {
+        previewControlsToggle.addEventListener("click", () => {
+          const toolbar = previewControlsToggle.closest("[data-preview-controls]");
+          if (toolbar instanceof HTMLElement) {
+            const collapsed = toolbar.classList.toggle("is-collapsed");
+            previewControlsToggle.setAttribute("aria-expanded", String(!collapsed));
+            previewControlsToggle.textContent = collapsed ? "W" : "W";
+          }
+        });
+      }
 
       const autoSlug = (title: string) =>
         title.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 60);

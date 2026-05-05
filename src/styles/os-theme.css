@@ -728,6 +728,14 @@ html[data-experience="performance"] .setting-panel {
   max-height: calc(100vh - var(--system-bar-offset) - 28px);
   overflow-y: auto;
   overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.master-detail[data-layout="focused"] > .master-panel::-webkit-scrollbar,
+.master-detail[data-layout="expanded"] > .master-panel::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
 .master-detail > .detail-panel {
@@ -844,27 +852,25 @@ html[data-experience="performance"] .setting-panel {
 
 .md-reader-toolbar {
   position: fixed;
-  right: 20px;
-  top: 80px;
+  right: 12px;
+  top: 35vh;
   z-index: 40;
   display: none;
   flex-direction: column;
-  gap: 6px;
-  padding: 10px;
+  gap: 4px;
+  padding: 6px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--bg-elevated);
   backdrop-filter: blur(12px);
   box-shadow: var(--shadow);
-  max-width: 200px;
   transition:
     opacity var(--motion-duration) ease,
     transform var(--motion-duration) ease;
 }
 
 .md-reader-toolbar.is-collapsed {
-  max-width: 44px;
-  padding: 6px;
+  padding: 4px;
 }
 
 .md-reader-toolbar.is-collapsed .md-reader-toolbar-body {
@@ -875,14 +881,14 @@ html[data-experience="performance"] .setting-panel {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 28px;
-  min-height: 28px;
+  min-width: 30px;
+  min-height: 30px;
   padding: 4px;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   color: var(--text-muted);
   background: var(--bg-soft);
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
   transition:
@@ -904,16 +910,18 @@ html[data-experience="performance"] .setting-panel {
 .md-reader-toolbar-body {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
+  min-width: 140px;
 }
 
 .md-reader-toolbar .button {
   width: 100%;
-  min-height: 30px;
-  padding: 4px 8px;
-  font-size: 0.75rem;
+  min-height: 28px;
+  padding: 3px 8px;
+  font-size: 0.72rem;
   text-align: left;
   justify-content: flex-start;
+  white-space: nowrap;
 }
 
 .master-detail[data-layout="focused"] > .md-reader-toolbar,
@@ -945,7 +953,6 @@ html[data-experience="performance"] .md-reader-toolbar {
   }
 
   .md-reader-toolbar.is-collapsed {
-    max-width: none;
     left: auto;
     right: 10px;
     bottom: 90px;
@@ -956,6 +963,7 @@ html[data-experience="performance"] .md-reader-toolbar {
     flex-direction: row;
     flex-wrap: wrap;
     gap: 6px;
+    min-width: auto;
   }
 
   .md-reader-toolbar .button {
@@ -2059,17 +2067,17 @@ kbd {
 }
 
 [data-composer-preview-card][data-preview-width="narrow"] {
-  max-width: 48ch;
+  max-width: 360px;
   margin: 0 auto;
 }
 
 [data-composer-preview-card][data-preview-width="article"] {
-  max-width: 72ch;
+  max-width: 640px;
   margin: 0 auto;
 }
 
 [data-composer-preview-card][data-preview-width="wide"] {
-  max-width: 90ch;
+  max-width: 820px;
   margin: 0 auto;
 }
 
