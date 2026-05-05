@@ -28,6 +28,7 @@ const requiredFiles = [
   "docs/SYSTEM_STATE.md",
   "docs/THEME_SYSTEM.md",
   "docs/TERMINAL_COMMANDS.md",
+  "docs/ARTICLE_TEMPLATE.md",
   "src/styles/motion.css",
   "README.md",
   "RELEASE_NOTES.md",
@@ -36,7 +37,7 @@ const requiredFiles = [
 
 const requiredPageStrings = [
   "w0nderful Lab OS",
-  "v0.6.2",
+  "v0.6.3",
   "Local First",
   "No Backend",
   "GitHub Pages Ready",
