@@ -49,7 +49,7 @@ const serializedPosts = posts.map((post) => ({
     </div>
   </div>
 
-  <div class="master-detail project-matrix-layout" data-project-layout data-layout="idle">
+  <div class="master-detail os-master-detail project-matrix-layout projects-master-detail" data-os-master-detail data-project-layout data-layout="idle" data-detail-open="false" data-detail-transition="os">
     <div class="detail-actions md-reader-toolbar is-collapsed" data-reader-controls>
       <button type="button" class="md-reader-toolbar-toggle" data-controls-toggle aria-label="Toggle controls" aria-expanded="false" title="Controls">+</button>
       <div class="md-reader-toolbar-body">
@@ -58,7 +58,7 @@ const serializedPosts = posts.map((post) => ({
         <button type="button" class="detail-focus-toggle" data-detail-focus-toggle aria-label="Focus detail panel" aria-pressed="false" data-i18n="detail.focus">Focus</button>
       </div>
     </div>
-    <section class="master-panel project-list-panel" aria-label="Project matrix">
+    <section class="master-panel os-master-pane project-list-panel" aria-label="Project matrix">
       <div class="project-grid" data-project-grid>
         {projects.map((project, index) => <ProjectCard project={project} selected={index === 0} />)}
       </div>
@@ -70,8 +70,8 @@ const serializedPosts = posts.map((post) => ({
       />
     </section>
 
-    <aside class="detail-panel project-detail-panel" data-project-detail aria-live="polite">
-      <div class="detail-swap-body">
+    <aside class="detail-panel os-detail-pane project-detail-panel" data-project-detail aria-live="polite">
+      <div class="detail-swap-body os-detail-surface">
       <p class="eyebrow" data-project-detail-type>{initialProject.type}</p>
       <h3 data-project-detail-name>{initialProject.name}</h3>
       <p data-project-detail-summary>{initialProject.summary}</p>
@@ -239,8 +239,12 @@ const serializedPosts = posts.map((post) => ({
   };
 
   const setLayout = (value: "idle" | "focused" | "expanded") => {
-    if (layout instanceof HTMLElement) layout.dataset.layout = value;
-    window.labOS?.setState({ layoutState: value });
+    window.labOSMasterDetail?.syncShellLayout(layout instanceof HTMLElement ? layout : null, value);
+    if (!window.labOSMasterDetail && layout instanceof HTMLElement) {
+      layout.dataset.layout = value;
+      layout.dataset.detailOpen = String(value !== "idle");
+      window.labOS?.setState({ layoutState: value });
+    }
     document.querySelectorAll("[data-project-expand]").forEach((node) => {
       if (node instanceof HTMLButtonElement) {
         node.textContent = value === "expanded" ? "Focus detail" : "Expand list";
@@ -252,6 +256,7 @@ const serializedPosts = posts.map((post) => ({
     const project = projectData.find((item) => item.slug === slug) || projectData[0];
     if (!project) return;
     if (project.slug === activeSlug && layout instanceof HTMLElement && layout.dataset.layout !== "idle") return;
+    const isOpeningFromIdle = shouldFocus && layout instanceof HTMLElement && layout.dataset.layout === "idle";
     activeSlug = project.slug;
     cards.forEach((card) => card.setAttribute("data-selected", card.getAttribute("data-project-slug") === activeSlug ? "true" : "false"));
 
@@ -274,28 +279,44 @@ const serializedPosts = posts.map((post) => ({
       if (tagWrap) { tagWrap.textContent = ""; project.tags.forEach((tag) => tagWrap.append(createBadge(tag))); }
     };
 
+    const surface = detail?.querySelector(".os-detail-surface");
     const transition = document.documentElement.dataset.detailTransition || "os";
-    if (transition === "off" || !(detail instanceof HTMLElement)) {
+    const motionDisabled =
+      isOpeningFromIdle ||
+      transition === "off" ||
+      document.documentElement.dataset.osEffects === "off" ||
+      document.documentElement.dataset.experience === "performance";
+    if (motionDisabled || !(surface instanceof HTMLElement)) {
       doUpdate();
+      window.labOSMasterDetail?.syncMasterHeight(
+        layout instanceof HTMLElement ? layout : null,
+        surface instanceof HTMLElement ? surface : null
+      );
+    } else if (window.labOSMasterDetail) {
+      window.labOSMasterDetail.runDetailSwap({
+        layout: layout instanceof HTMLElement ? layout : null,
+        surface,
+        update: doUpdate
+      });
     } else {
-      const duration = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--detail-duration")) || 180;
-      detail.dataset.detailSwapping = "true";
-      setTimeout(() => {
-        doUpdate();
-        detail.dataset.detailSwapping = "done";
-        setTimeout(() => { delete detail.dataset.detailSwapping; }, duration);
-      }, duration);
+      doUpdate();
     }
 
-    if (shouldFocus) {
+if (shouldFocus) {
       setLayout("focused");
-      requestAnimationFrame(() => {
-        if (detail instanceof HTMLElement) {
-          const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-          const experience = document.documentElement.dataset.experience;
-          const behavior = prefersReduced || experience === "performance" ? "instant" : "smooth";
-          detail.scrollIntoView({ behavior, block: "nearest" });
-        }
+      if (window.labOSMasterDetail) {
+        window.labOSMasterDetail.alignDetail(detail instanceof HTMLElement ? detail : null);
+      } else if (detail instanceof HTMLElement) {
+        detail.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    }
+
+    if (detail instanceof HTMLElement && shouldFocus) {
+      window.requestAnimationFrame(() => {
+        detail.scrollTo({
+          top: 0,
+          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches || document.documentElement.dataset.experience === "performance" ? "auto" : "smooth"
+        });
       });
     }
   };

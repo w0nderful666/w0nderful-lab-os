@@ -13,6 +13,7 @@ const requiredFiles = [
   "src/data/commands.ts",
   "src/scripts/system-state.ts",
   "src/scripts/search-index.ts",
+  "src/scripts/os-master-detail.ts",
   "src/scripts/command-palette.ts",
   "src/scripts/terminal.ts",
   "src/scripts/shortcuts.ts",
@@ -41,7 +42,7 @@ const requiredFiles = [
 
 const requiredPageStrings = [
   "w0nderful Lab OS",
-  "v0.8.7",
+  "v0.8.9",
   "Local First",
   "No Backend",
   "GitHub Pages Ready",

@@ -289,6 +289,16 @@ html[data-experience="performance"] .master-detail > .detail-panel {
   animation: none !important;
 }
 
+html[data-experience="performance"] .os-master-detail,
+html[data-experience="performance"] .os-master-pane,
+html[data-experience="performance"] .os-detail-pane,
+html[data-experience="performance"] .os-detail-surface,
+html[data-os-effects="off"] .os-detail-surface {
+  animation: none !important;
+  filter: none !important;
+  transform: none !important;
+}
+
 .reader-body section {
   animation: content-fade-up var(--panel-duration) ease both;
   animation-delay: calc(var(--stagger-index, 0) * 35ms);
@@ -354,5 +364,15 @@ html[data-experience="performance"]::view-transition-new(lab-app-window) {
   ::view-transition-old(*),
   ::view-transition-new(*) {
     animation-duration: 1ms !important;
+  }
+
+  .os-master-detail,
+  .os-master-pane,
+  .os-detail-pane,
+  .os-detail-surface,
+  .os-item-card {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+    filter: none !important;
   }
 }

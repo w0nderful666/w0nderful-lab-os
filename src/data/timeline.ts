@@ -11,6 +11,24 @@ export type TimelineEntry = {
 
 export const timeline: TimelineEntry[] = [
   {
+    id: "lab-os-v089-os-master-detail-shell",
+    date: "2026-05-06",
+    type: "Release",
+    title: "w0nderful-lab-os v0.8.9 OS Master-Detail Shell",
+    description:
+      "Unified Blog, Projects, and Timeline around a shared OS Master-Detail shell with real layout-width animation, shared detail surface switching, Motion Speed tokens, and reduced-motion coverage.",
+    relatedProject: "w0nderful-lab-os"
+  },
+  {
+    id: "lab-os-v088-blog-master-detail-motion",
+    date: "2026-05-06",
+    type: "Release",
+    title: "w0nderful-lab-os v0.8.8 Blog Master-Detail Motion",
+    description:
+      "Restored OS-level Blog Master-Detail layout animation, added explicit detail-open state, and fixed Motion Speed so detail transitions follow Settings instead of being overwritten by Motion Intensity.",
+    relatedProject: "w0nderful-lab-os"
+  },
+  {
     id: "lab-os-v087-token-unification",
     date: "2026-05-05",
     type: "Release",

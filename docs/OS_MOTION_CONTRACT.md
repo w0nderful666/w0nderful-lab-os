@@ -11,7 +11,7 @@ Motion Speed Setting (html[data-motion-speed])
   -> --app-duration, --panel-duration, --detail-duration
 
 Motion Intensity Setting (html[data-motion-intensity])
-  -> --motion-distance, --card-lift, --dock-lift, --dock-scale, --detail-duration
+  -> --motion-distance, --card-lift, --dock-lift, --dock-scale
 
 Experience Mode (html[data-experience])
   -> performance: all durations = 1ms, all transforms = 0
@@ -30,7 +30,9 @@ OS Effects (html[data-os-effects])
 | `--app-duration` | var(--motion-normal) | App enter/exit, page transitions |
 | `--panel-duration` | var(--motion-normal) | Panel transitions, component transitions |
 | `--motion-duration` | var(--panel-duration) | General-purpose transition duration |
-| `--detail-duration` | 180ms | Detail panel content swap |
+| `--detail-duration` | 220ms | Detail panel content swap |
+| `--os-motion-layout-duration` | var(--panel-duration) | Master-Detail shell flex-basis changes |
+| `--os-motion-content-duration` | var(--detail-duration) | Master-Detail surface first-open slide |
 
 ### Motion Speed Mapping
 
@@ -117,6 +119,10 @@ Detail transitions are defined in `src/styles/motion.css` and controlled by `dat
 | `fade` | Opacity only |
 | `off` | No animation |
 
+### 2.4.1 OS Master-Detail Shell
+
+Blog, Projects, and Timeline use `.os-master-detail` with v0.6-style real `flex-basis` changes. The shell animation uses `--os-motion-layout-duration` and `--os-motion-ease`; the inner `.os-detail-surface` provides the first-open slide. Switching between already-open items MUST NOT replay the panel-open slide, but MAY use a text-only `data-content-switch` fade/settle transition driven by `--os-motion-content-duration`. Do not use `scale()` as the primary split-view animation.
+
 ### 2.5 Reader Body Sections
 
 ```css
@@ -139,15 +145,14 @@ Detail transitions are defined in `src/styles/motion.css` and controlled by `dat
 
 ### 3.1 Detail Transition (Projects / Blog / Timeline)
 
-All three apps use the same detail swap pattern:
+All three apps use the shared OS Master-Detail shell pattern:
 
-1. Set `data-detail-swapping="true"` on the content wrapper
-2. Wait `--detail-duration` for exit animation
-3. Swap content
-4. Set `data-detail-swapping="done"` for enter animation
-5. Remove attribute after duration
+1. First open: animate real shell layout with `flex-basis`
+2. Detail pane appears with the v0.6-style right-to-left slide
+3. Switching between already-open items does not replay the panel-open slide
+4. Text changes may use the shared `data-content-switch` fade/settle transition
 
-The CSS selectors in `motion.css` handle the animation based on `data-detail-transition` on the parent `.master-detail`.
+The goal is OS split-view pressure and live text reflow, with only a restrained content-settle cue during item switches.
 
 ### 3.2 Floating Controls (md-reader-toolbar)
 
@@ -258,11 +263,11 @@ transition: opacity var(--motion-duration) ease;
 
 **REQUIRED:** Fix the layout issue while preserving the animation contract.
 
-### 5.3 NEVER Use CSS Transition for Detail Swap
+### 5.3 NEVER Animate Detail Text Instead Of The Split Layout
 
-The detail swap uses CSS `animation` (not `transition`) with `data-detail-swapping` attributes. The `.detail-panel` has `transition` for layout changes (flex-basis, padding, etc.), but content swap MUST use the animation system.
+The Master-Detail effect must come from real layout change (`flex-basis`, width, or equivalent layout track movement). Do not replace it with text fade/slide choreography.
 
-During swap, `transition: none !important` is applied to prevent conflict.
+When the detail panel is already open, switching content should not replay the panel-open animation. A token-driven text-only transition is allowed when it supports readability and respects reduced motion, Performance mode, and OS Effects Off.
 
 ## 6. Adding New Animated Components
 
