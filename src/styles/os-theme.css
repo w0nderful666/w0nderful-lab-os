@@ -805,8 +805,9 @@ html[data-experience="performance"] .setting-panel {
 .os-master-detail[data-layout="focused"] > .os-detail-pane {
   flex: 1 1 73%;
   max-width: 100%;
+  max-height: var(--detail-panel-max-height);
   opacity: 1;
-  overflow: visible;
+  overflow-y: auto;
   pointer-events: auto;
   transform: translateX(0);
   visibility: visible;
@@ -823,8 +824,9 @@ html[data-experience="performance"] .setting-panel {
 .os-master-detail[data-layout="expanded"] > .os-detail-pane {
   flex: 1 1 50%;
   max-width: 100%;
+  max-height: var(--detail-panel-max-height);
   opacity: 1;
-  overflow: visible;
+  overflow-y: auto;
   pointer-events: auto;
   transform: translateX(0);
   visibility: visible;
@@ -1311,8 +1313,6 @@ html[data-experience="performance"] .md-reader-toolbar {
 
 .reader-panel {
   align-content: start;
-  max-height: var(--detail-panel-max-height);
-  overflow-y: auto;
   overflow-x: hidden;
 }
 
