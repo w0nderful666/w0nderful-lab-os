@@ -959,8 +959,8 @@ html[data-experience="performance"] .setting-panel {
 
 .md-reader-toolbar {
   position: fixed;
-  right: 12px;
-  top: 35vh;
+  right: 1px;
+  top: 81vh;
   z-index: 40;
   display: none;
   flex-direction: column;
@@ -971,9 +971,14 @@ html[data-experience="performance"] .setting-panel {
   background: var(--bg-elevated);
   backdrop-filter: blur(var(--glass-blur));
   box-shadow: var(--shadow);
+  transform: translateX(calc(100% + 8px));
   transition:
     opacity var(--motion-duration) ease,
     transform var(--motion-duration) ease;
+}
+
+.md-reader-toolbar:not(.is-collapsed) {
+  transform: translateX(0);
 }
 
 .md-reader-toolbar.is-collapsed {
@@ -1057,6 +1062,7 @@ html[data-experience="performance"] .md-reader-toolbar {
     align-items: center;
     justify-content: center;
     padding: 8px 12px;
+    transform: translateX(0);
   }
 
   .md-reader-toolbar.is-collapsed {
