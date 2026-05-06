@@ -257,7 +257,7 @@ for (const post of sortedPosts) {
     setLayoutState("idle");
   };
 
-const selectPost = (slug: string, shouldOpen = true) => {
+  const selectPost = (slug: string, shouldOpen = true) => {
     const post = postData.find((p) => p.slug === slug) || postData[0];
     if (!post) return;
     if (post.slug === activeSlug && layout instanceof HTMLElement && layout.dataset.layout !== "idle") return;
@@ -302,22 +302,6 @@ const selectPost = (slug: string, shouldOpen = true) => {
 
     if (shouldOpen) openReader();
     else updateProgress();
-
-    if (container instanceof HTMLElement) {
-      window.requestAnimationFrame(() => {
-        window.labOSMasterDetail?.syncMasterHeight(
-          layout instanceof HTMLElement ? layout : null,
-          container
-        );
-        const detailPanel = container.closest(".os-detail-pane, .reader-panel");
-        if (detailPanel instanceof HTMLElement) {
-          const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-          const experience = document.documentElement.dataset.experience;
-          const behavior = prefersReduced || experience === "performance" ? "instant" : "smooth";
-          detailPanel.scrollTo({ top: 0, behavior });
-        }
-      });
-    }
   };
 
   const applyPostFilters = () => {
