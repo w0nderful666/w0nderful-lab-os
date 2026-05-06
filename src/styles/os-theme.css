@@ -1311,9 +1311,6 @@ html[data-experience="performance"] .md-reader-toolbar {
 
 .reader-panel {
   align-content: start;
-  max-height: var(--detail-panel-max-height);
-  overflow-y: auto;
-  overflow-x: hidden;
 }
 
 .reader-topline {
