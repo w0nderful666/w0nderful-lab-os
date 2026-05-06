@@ -302,6 +302,20 @@ for (const post of sortedPosts) {
 
     if (shouldOpen) openReader();
     else updateProgress();
+
+    if (container instanceof HTMLElement) {
+      window.requestAnimationFrame(() => {
+        const detailPanel = container.closest(".os-detail-pane, .reader-panel");
+        if (detailPanel instanceof HTMLElement) {
+          const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          const experience = document.documentElement.dataset.experience;
+          detailPanel.scrollTo({
+            top: 0,
+            behavior: reducedMotion || experience === "performance" ? "auto" : "smooth"
+          });
+        }
+      });
+    }
   };
 
   const applyPostFilters = () => {

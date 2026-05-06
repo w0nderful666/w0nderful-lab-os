@@ -220,13 +220,22 @@ const initialProject = projects.find(
       doUpdate();
     }
 
-    if (shouldFocus) {
+if (shouldFocus) {
       setLayout("focused");
       if (window.labOSMasterDetail) {
         window.labOSMasterDetail.alignDetail(detail instanceof HTMLElement ? detail : null);
       } else if (detail instanceof HTMLElement) {
         detail.scrollIntoView({ behavior: "smooth", block: "nearest" });
       }
+    }
+
+    if (detail instanceof HTMLElement && shouldFocus) {
+      window.requestAnimationFrame(() => {
+        detail.scrollTo({
+          top: 0,
+          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches || document.documentElement.dataset.experience === "performance" ? "auto" : "smooth"
+        });
+      });
     }
   };
 

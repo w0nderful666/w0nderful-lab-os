@@ -790,7 +790,9 @@ html[data-experience="performance"] .setting-panel {
   flex-basis: 0%;
   max-width: 0;
   min-width: 0;
+  height: 0;
   overflow: hidden;
+  contain: layout size;
   transform: translateX(calc(var(--motion-distance) * 2.5));
   visibility: hidden;
 }
@@ -849,7 +851,10 @@ html[data-experience="performance"] .setting-panel {
 
 .os-detail-surface {
   min-width: 0;
+  min-height: 0;
   opacity: 0;
+  height: 0;
+  overflow: hidden;
   transform: translateX(var(--motion-distance));
   transition:
     opacity var(--os-motion-content-duration) var(--os-motion-ease),
@@ -859,6 +864,8 @@ html[data-experience="performance"] .setting-panel {
 .os-master-detail[data-layout="focused"] .os-detail-surface,
 .os-master-detail[data-layout="expanded"] .os-detail-surface {
   opacity: 1;
+  height: auto;
+  overflow: visible;
   transform: translateX(0);
 }
 
