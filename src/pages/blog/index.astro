@@ -4,7 +4,6 @@ import AppWindow from "../../components/os/AppWindow.astro";
 import EmptyState from "../../components/common/EmptyState.astro";
 import ArticleStyleSwitcher from "../../components/blog/ArticleStyleSwitcher.astro";
 import { getCollection, render } from "astro:content";
-import { projects } from "../../data/projects";
 
 const allPosts = await getCollection("blog", ({ data }) => data.status === "published");
 const sortedPosts = allPosts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
@@ -56,7 +55,7 @@ for (const post of sortedPosts) {
 
 <BaseLayout active="blog" title="Blog.app" description="Blog reader with Markdown articles and article style system.">
   <AppWindow title="Blog.app" subtitle="Reader workspace" wide detailControls>
-    <div class="blog-workbench" data-blog-workbench data-master-detail data-layout="idle">
+    <div class="blog-workbench" data-blog-workbench data-master-detail data-layout="idle" data-detail-open="false">
       <div class="toolbar toolbar-stacked">
         <label class="search-field">
           <span>Search</span>
@@ -75,7 +74,7 @@ for (const post of sortedPosts) {
         <button type="button" class="button button-secondary" data-post-clear-filters>Clear Filters</button>
       </div>
 
-      <div class="master-detail blog-reader-layout" data-blog-layout data-layout="idle">
+      <div class="master-detail os-master-detail blog-reader-layout blog-master-detail" data-os-master-detail data-blog-layout data-layout="idle" data-detail-open="false" data-detail-transition="os">
         <div class="detail-actions md-reader-toolbar is-collapsed" data-reader-controls>
           <button type="button" class="md-reader-toolbar-toggle" data-controls-toggle aria-label="Toggle controls" aria-expanded="false" title="Controls">+</button>
           <div class="md-reader-toolbar-body">
@@ -85,7 +84,7 @@ for (const post of sortedPosts) {
             <ArticleStyleSwitcher />
           </div>
         </div>
-        <section class="master-panel blog-list-panel" data-blog-list-panel aria-label="Article list">
+        <section class="master-panel os-master-pane blog-list-panel" data-blog-list-panel aria-label="Article list">
           <div class="search-result-count" data-post-count aria-live="polite">
             <strong data-post-count-num>{postMeta.length}</strong>
             <span>articles</span>
@@ -93,7 +92,7 @@ for (const post of sortedPosts) {
           <div class="post-list" data-post-list>
             {postMeta.map((post, i) => (
               <article
-                class="post-card interactive-card"
+                class="post-card interactive-card os-item-card"
                 data-post-card
                 data-post-slug={post.slug}
                 data-post-category={post.category}
@@ -119,9 +118,9 @@ for (const post of sortedPosts) {
           <EmptyState title="No matching files found" description="Try another title, tag, or clear filters." data-post-empty hidden />
         </section>
 
-        <article class="detail-panel reader-panel" data-post-reader aria-live="polite">
+        <article class="detail-panel os-detail-pane reader-panel" data-post-reader aria-live="polite">
           <div class="reader-progress" aria-label="Reading progress"><span data-reader-progress></span></div>
-          <div data-article-rendered data-article-slug={initialPost?.id || ""}>
+          <div class="os-detail-surface" data-article-rendered data-article-slug={initialPost?.id || ""}>
             {initialMeta && (
               <div class="article-shell" data-article-style={initialMeta.articleStyle} data-reader-density={initialMeta.readerDensity}>
                 <header class="article-header">
@@ -157,8 +156,6 @@ for (const post of sortedPosts) {
     </div>
 
     <script is:inline type="application/json" id="blog-posts-data" set:html={JSON.stringify(postMeta)} />
-    <script is:inline type="application/json" id="blog-projects-data" set:html={JSON.stringify(projects.map((p) => ({ slug: p.slug, name: p.name, type: p.type })))} />
-
     {renderedArticles.map((article) => {
       const meta = postMeta.find((p) => p.slug === article.id);
       const ArticleContent = article.Content;
@@ -195,12 +192,8 @@ for (const post of sortedPosts) {
     tags: string[]; articleStyle: string; readerDensity: string; readingTime: string;
     relatedProject: string; toc: boolean;
   };
-  type ProjectRecord = { slug: string; name: string; type: string };
-
   const dataNode = document.getElementById("blog-posts-data");
-  const projectDataNode = document.getElementById("blog-projects-data");
   const postData: PostRecord[] = dataNode?.textContent ? JSON.parse(dataNode.textContent) : [];
-  const projectData: ProjectRecord[] = projectDataNode?.textContent ? JSON.parse(projectDataNode.textContent) : [];
   const workbench = document.querySelector("[data-blog-workbench]");
   const layout = document.querySelector("[data-blog-layout]");
   const searchInput = document.querySelector("[data-post-search-input]");
@@ -215,6 +208,21 @@ for (const post of sortedPosts) {
   let activeCategory = "all";
   let activeTag = "all";
   let activeSlug = new URLSearchParams(window.location.search).get("post") || postData[0]?.slug || "";
+
+  const setLayoutState = (state: "idle" | "focused" | "expanded") => {
+    const isOpen = state !== "idle";
+    if (workbench instanceof HTMLElement) {
+      workbench.dataset.layout = state;
+      workbench.dataset.detailOpen = String(isOpen);
+    }
+    if (window.labOSMasterDetail) {
+      window.labOSMasterDetail.syncShellLayout(layout instanceof HTMLElement ? layout : null, state);
+    } else if (layout instanceof HTMLElement) {
+      layout.dataset.layout = state;
+      layout.dataset.detailOpen = String(isOpen);
+      window.labOS?.setState({ layoutState: state });
+    }
+  };
 
   const applyReaderStyle = () => {
     const savedStyle = localStorage.getItem("lab-reader-style") || "follow";
@@ -234,9 +242,7 @@ for (const post of sortedPosts) {
   };
 
   const openReader = () => {
-    if (workbench instanceof HTMLElement) workbench.dataset.layout = "focused";
-    if (layout instanceof HTMLElement) layout.dataset.layout = "focused";
-    window.labOS?.setState({ layoutState: "focused" });
+    setLayoutState("focused");
     requestAnimationFrame(() => {
       updateProgress();
       if (reader instanceof HTMLElement) {
@@ -248,15 +254,14 @@ for (const post of sortedPosts) {
   };
 
   const closeReader = () => {
-    if (workbench instanceof HTMLElement) workbench.dataset.layout = "idle";
-    if (layout instanceof HTMLElement) layout.dataset.layout = "idle";
-    window.labOS?.setState({ layoutState: "idle" });
+    setLayoutState("idle");
   };
 
   const selectPost = (slug: string, shouldOpen = true) => {
     const post = postData.find((p) => p.slug === slug) || postData[0];
     if (!post) return;
     if (post.slug === activeSlug && layout instanceof HTMLElement && layout.dataset.layout !== "idle") return;
+    const isOpeningFromIdle = shouldOpen && layout instanceof HTMLElement && layout.dataset.layout === "idle";
     activeSlug = post.slug;
     cards.forEach((c) => c.setAttribute("data-selected", c.getAttribute("data-post-slug") === activeSlug ? "true" : "false"));
 
@@ -274,16 +279,25 @@ for (const post of sortedPosts) {
     };
 
     const transition = document.documentElement.dataset.detailTransition || "os";
-    if (transition === "off" || !(container instanceof HTMLElement)) {
+    const motionDisabled =
+      isOpeningFromIdle ||
+      transition === "off" ||
+      document.documentElement.dataset.osEffects === "off" ||
+      document.documentElement.dataset.experience === "performance";
+    if (motionDisabled || !(container instanceof HTMLElement)) {
       doUpdate();
+      window.labOSMasterDetail?.syncMasterHeight(
+        layout instanceof HTMLElement ? layout : null,
+        container instanceof HTMLElement ? container : null
+      );
+    } else if (window.labOSMasterDetail) {
+      window.labOSMasterDetail.runDetailSwap({
+        layout: layout instanceof HTMLElement ? layout : null,
+        surface: container,
+        update: doUpdate
+      });
     } else {
-      const duration = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--detail-duration")) || 180;
-      container.dataset.detailSwapping = "true";
-      setTimeout(() => {
-        doUpdate();
-        container.dataset.detailSwapping = "done";
-        setTimeout(() => { delete container.dataset.detailSwapping; }, duration);
-      }, duration);
+      doUpdate();
     }
 
     if (shouldOpen) openReader();
@@ -331,10 +345,8 @@ for (const post of sortedPosts) {
   if (expandBtn instanceof HTMLButtonElement) expandBtn.addEventListener("click", () => {
     const current = layout instanceof HTMLElement ? layout.dataset.layout : "idle";
     const next = current === "expanded" ? "focused" : "expanded";
-    if (layout instanceof HTMLElement) layout.dataset.layout = next;
-    if (workbench instanceof HTMLElement) workbench.dataset.layout = next;
+    setLayoutState(next);
     expandBtn.textContent = next === "expanded" ? "Focus detail" : "Expand list";
-    window.labOS?.setState({ layoutState: next });
   });
   const clearBtn = document.querySelector("[data-post-clear-filters]");
   if (clearBtn instanceof HTMLButtonElement) clearBtn.addEventListener("click", () => {

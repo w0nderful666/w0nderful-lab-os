@@ -2,7 +2,7 @@
 
 OS-themed personal blog, open-source lab, and project showcase hub for w0nderful666.
 
-Current version: `v0.8.7`
+Current version: `v0.8.9`
 
 Live demo: https://w0nderful666.github.io/w0nderful-lab-os/
 
@@ -127,7 +127,9 @@ When a list item is clicked, the detail panel automatically scrolls into the cur
 
 On mobile, the same states become list or full-screen detail so the interface stays readable without horizontal scrolling.
 
-Desktop detail panels use sticky positioning with their own scroll area. This keeps project, article, and timeline details visible while the master list scrolls.
+Desktop detail panels use sticky positioning while the page remains the single vertical scroll surface. This keeps project, article, and timeline details visible without nested reader scrollbars.
+
+The shared OS Master-Detail shell uses `.os-master-detail`, `.os-master-pane`, `.os-detail-pane`, and `.os-detail-surface` across Blog.app, Projects.app, and Timeline.app. The split opens through v0.6-style real `flex-basis` width changes so card text and detail text reflow while the panel expands; the detail surface adds only a light slide on first open, while switching between already-open items uses a text-only settle transition without replaying the panel slide.
 
 ## Experience Mode
 
@@ -143,11 +145,12 @@ Theme and language settings are also persisted in the same local settings object
 
 Motion Speed is stored in the same `localStorage` settings object and applied as `html[data-motion-speed]`:
 
-- `slow` makes transitions more visible for demos and inspection.
-- `normal` is the default.
 - `fast` keeps the OS feedback crisp.
+- `normal` is the default.
+- `slow` makes transitions more visible for demos and inspection.
+- `slower` and `cinematic` provide deliberately slower inspection profiles.
 
-The CSS defines `--motion-fast`, `--motion-normal`, `--motion-slow`, `--app-duration`, and `--panel-duration`. Performance mode automatically reduces animation even if a slower speed is selected.
+The CSS defines `--motion-fast`, `--motion-normal`, `--motion-slow`, `--app-duration`, `--panel-duration`, and `--detail-duration`. Blog, Projects, and Timeline detail swaps read these tokens, so Settings.app Motion Speed changes apply to article/content transitions. Performance mode automatically reduces animation even if a slower speed is selected.
 
 Page transitions reuse the same variables. Performance mode shortens transitions to near-instant, Balanced mode uses light fade and translate motion, Quality mode increases the OS-level lift, and `prefers-reduced-motion` disables complex transition timing.
 

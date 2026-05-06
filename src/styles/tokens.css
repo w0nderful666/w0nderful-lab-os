@@ -36,6 +36,10 @@
   --app-duration: var(--motion-normal);
   --panel-duration: var(--motion-normal);
   --motion-duration: var(--panel-duration);
+  --os-motion-layout-duration: var(--panel-duration);
+  --os-motion-content-duration: var(--detail-duration);
+  --os-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --os-motion-ease-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
   --motion-distance: 8px;
   --page-transition-distance: 10px;
   --page-transition-scale: 0.992;
@@ -46,7 +50,7 @@
   --dock-scale: 1.04;
   --app-enter-scale: 1;
   --app-exit-scale: 0.985;
-  --detail-duration: 180ms;
+  --detail-duration: 220ms;
   --detail-ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
@@ -129,7 +133,6 @@ html[data-experience="performance"] {
 }
 
 html[data-motion-intensity="minimal"] {
-  --detail-duration: 80ms;
   --motion-distance: 4px;
   --card-lift: 0px;
   --dock-lift: 0px;
@@ -137,7 +140,6 @@ html[data-motion-intensity="minimal"] {
 }
 
 html[data-motion-intensity="balanced"] {
-  --detail-duration: 180ms;
   --motion-distance: 8px;
   --card-lift: -2px;
   --dock-lift: -2px;
@@ -145,7 +147,6 @@ html[data-motion-intensity="balanced"] {
 }
 
 html[data-motion-intensity="expressive"] {
-  --detail-duration: 260ms;
   --motion-distance: 14px;
   --card-lift: -3px;
   --dock-lift: -3px;

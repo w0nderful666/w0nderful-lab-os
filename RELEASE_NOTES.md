@@ -1,5 +1,44 @@
 # Release Notes
 
+## v0.8.9
+
+OS Master-Detail Shell - unified Blog, Projects, and Timeline around one shared split-view interaction model.
+
+### Added
+
+- Shared `.os-master-detail`, `.os-master-pane`, `.os-detail-pane`, `.os-detail-surface`, and `.os-item-card` classes for Master-Detail apps.
+- Shared `src/scripts/os-master-detail.ts` helper for layout state, detail-open state, content swap timing, and reduced-motion-aware scroll alignment.
+- New OS motion aliases: `--os-motion-layout-duration`, `--os-motion-content-duration`, `--os-motion-ease`, and `--os-motion-ease-emphasized`.
+
+### Fixed
+
+- Blog, Projects, and Timeline now animate the real split layout with v0.6-style `flex-basis` changes instead of page-like fade-only behavior.
+- Detail text and master-card text reflow during the panel expansion because the layout changes actual available width.
+- First open uses the shell expansion; switching between already-open items uses a text-only settle transition without replaying the panel slide, matching the v0.6 split-view pressure.
+- The left master list now follows the active detail content height and animates its max-height with the shared OS layout timing.
+- Reduced motion, Performance mode, OS Effects Off, and Settings Motion Speed all cover the shared shell.
+
+### Validation
+
+- self-test / preflight gates updated for the unified shell, shared script, motion tokens, reduced-motion coverage, and duplicate-animation prevention.
+
+## v0.8.8
+
+Blog Master-Detail Motion - fixed the Blog list-to-reader transition so the outer OS layout animates visibly and follows Settings Motion Speed.
+
+### Fixed
+
+- Blog `.master-detail` now keeps two grid tracks and animates from list-only to split reader layout with `--panel-duration` and `--detail-ease`.
+- Blog workbench and layout containers now expose `data-detail-open="false|true"` alongside `data-layout`.
+- Blog article detail swaps now mark the parent layout with `data-detail-swapping`, while still using the existing `data-article-rendered` swap target.
+- Motion Speed now controls `--detail-duration` again; Motion Intensity no longer overwrites detail swap duration after the speed rule.
+- OS Effects Off and Performance mode skip Blog content swap timers instead of scheduling invisible detail animations.
+- OS Motion Contract updated so Motion Intensity controls distance/lift/scale while Motion Speed owns detail duration.
+
+### Validation
+
+- self-test / preflight gates updated for v0.8.8 and Blog motion contract checks.
+
 ## v0.8.7
 
 Token Unification — replaced all hardcoded colors, shadows, borders, and backdrop-filter values with OS tokens. Consolidated duplicate CSS. No new features; style governance only.

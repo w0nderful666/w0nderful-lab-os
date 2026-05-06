@@ -76,10 +76,10 @@ async function readRootFile(filePath) {
 
 async function checkPackageVersion() {
   const packageJson = JSON.parse(await readRootFile("package.json"));
-  if (packageJson.version === "0.8.7") {
-    pass("package.json version is 0.8.7");
+  if (packageJson.version === "0.8.9") {
+    pass("package.json version is 0.8.9");
   } else {
-    fail(`package.json version is ${packageJson.version}, expected 0.8.7`);
+    fail(`package.json version is ${packageJson.version}, expected 0.8.9`);
   }
 }
 
@@ -347,7 +347,7 @@ async function checkInteractionPolish() {
   }
 
   const osTheme = await readRootFile("src/styles/os-theme.css");
-  if (osTheme.includes("grid-template-columns: 27% 73%") && osTheme.includes("grid-template-columns: 15% 85%")) {
+  if (osTheme.includes("flex: 0 1 27%") && osTheme.includes("flex: 1 1 73%") && osTheme.includes("flex-basis: 85%")) {
     pass("focused Master-Detail ratio is optimized");
   } else {
     fail("focused Master-Detail ratio is optimized");
@@ -521,6 +521,7 @@ async function checkInteractionPolish() {
   const blogApp = await readRootFile("src/components/apps/BlogApp.astro");
   const blogPage = await readRootFile("src/pages/blog/index.astro");
   const timelineApp = await readRootFile("src/components/apps/TimelineApp.astro");
+  const osMasterDetailScript = await readRootFile("src/scripts/os-master-detail.ts");
   if (projectsApp.includes("data-detail-focus-toggle") && blogApp.includes("data-detail-focus-toggle") && timelineApp.includes("data-detail-focus-toggle")) {
     pass("Projects / Blog / Timeline include detail focus toggle");
   } else {
@@ -533,10 +534,10 @@ async function checkInteractionPolish() {
     fail("Projects / Timeline include detail swap body wrapper");
   }
 
-  if ((projectsApp.includes("data-detail-swapping") || projectsApp.includes("detailSwapping")) && (blogPage.includes("data-detail-swapping") || blogPage.includes("detailSwapping")) && (timelineApp.includes("data-detail-swapping") || timelineApp.includes("detailSwapping"))) {
-    pass("Projects / Blog / Timeline include detail transition hooks");
+  if (osMasterDetailScript.includes("runDetailSwap") && osMasterDetailScript.includes("contentSwitch") && osMasterDetailScript.includes("update();")) {
+    pass("Projects / Blog / Timeline use shared text-only detail replacement hook");
   } else {
-    fail("Projects / Blog / Timeline include detail transition hooks");
+    fail("Projects / Blog / Timeline use shared text-only detail replacement hook");
   }
 
   if (projectsApp.includes("scrollIntoView") && blogApp.includes("scrollIntoView") && timelineApp.includes("scrollIntoView")) {
@@ -590,10 +591,112 @@ async function checkInteractionPolish() {
   }
 
   const osThemeCss = await readRootFile("src/styles/os-theme.css");
+  const tokenCss = await readRootFile("src/styles/tokens.css");
   if (osThemeCss.includes("visibility: hidden") && osThemeCss.includes("data-layout=\"idle\"] > .detail-panel")) {
     pass("Detail panel has visibility:hidden in idle state");
   } else {
     fail("Detail panel has visibility:hidden in idle state");
+  }
+
+  if (osThemeCss.includes("display: flex") && osThemeCss.includes("flex-basis var(--os-motion-layout-duration) var(--os-motion-ease)")) {
+    pass("Master-Detail flex-basis layout animation uses OS motion tokens");
+  } else {
+    fail("Master-Detail flex-basis layout animation uses OS motion tokens");
+  }
+
+  if (osThemeCss.includes("--os-master-pane-max-height") && osThemeCss.includes("max-height var(--os-motion-layout-duration) var(--os-motion-ease)") && osMasterDetailScript.includes("syncMasterHeight")) {
+    pass("Master-Detail master pane height follows detail content with OS motion tokens");
+  } else {
+    fail("Master-Detail master pane height follows detail content with OS motion tokens");
+  }
+
+  const masterDetailSources = [blogPage, projectsApp, timelineApp];
+  if (masterDetailSources.every((source) => source.includes("os-master-detail") && source.includes("data-os-master-detail"))) {
+    pass("Blog / Projects / Timeline use unified os-master-detail shell");
+  } else {
+    fail("Blog / Projects / Timeline use unified os-master-detail shell");
+  }
+
+  if (masterDetailSources.every((source) => source.includes("os-master-pane") && source.includes("os-detail-pane") && source.includes("os-detail-surface"))) {
+    pass("Blog / Projects / Timeline include master pane, detail pane, and detail surface");
+  } else {
+    fail("Blog / Projects / Timeline include master pane, detail pane, and detail surface");
+  }
+
+  if (projectsApp.includes("projects-master-detail") && timelineApp.includes("timeline-master-detail") && blogPage.includes("blog-master-detail")) {
+    pass("Each Master-Detail app has semantic shell class");
+  } else {
+    fail("Each Master-Detail app has semantic shell class");
+  }
+
+  if (osMasterDetailScript.includes("syncShellLayout") && osMasterDetailScript.includes("runDetailSwap") && osMasterDetailScript.includes("dataset.detailOpen")) {
+    pass("Shared os-master-detail script owns layout and content swap helpers");
+  } else {
+    fail("Shared os-master-detail script owns layout and content swap helpers");
+  }
+
+  if (osThemeCss.includes("--os-motion-layout-duration") && osThemeCss.includes("--os-motion-content-duration") && tokenCss.includes("--os-motion-layout-duration")) {
+    pass("Unified Master-Detail shell uses Settings-backed OS motion tokens");
+  } else {
+    fail("Unified Master-Detail shell uses Settings-backed OS motion tokens");
+  }
+
+  const forbiddenCoreMotion = /(?:os-master-detail|os-master-pane|os-detail-pane|os-detail-surface|os-item-card)[\s\S]{0,240}(?:300ms|0\.3s|500ms)/.test(osThemeCss);
+  if (!forbiddenCoreMotion) {
+    pass("Unified Master-Detail core has no forbidden hardcoded motion durations");
+  } else {
+    fail("Unified Master-Detail core has no forbidden hardcoded motion durations");
+  }
+
+  if (osThemeCss.includes(".os-master-detail[data-detail-open=\"true\"] .os-master-pane .project-card h3") && osThemeCss.includes("white-space: normal")) {
+    pass("Master cards are allowed to reflow in open split view");
+  } else {
+    fail("Master cards are allowed to reflow in open split view");
+  }
+
+  const osDetailSurfaceBlock = osThemeCss.match(/\.os-detail-surface \{[\s\S]*?\n\}/)?.[0] || "";
+  if (osDetailSurfaceBlock.includes("transform: translateX") && !osDetailSurfaceBlock.includes("scale(") && !osDetailSurfaceBlock.includes("filter:")) {
+    pass("Detail surface uses slide layer without scale-based fake layout");
+  } else {
+    fail("Detail surface uses slide layer without scale-based fake layout");
+  }
+
+  if (osThemeCss.includes("@media (max-width: 760px)") && osThemeCss.includes(".master-detail[data-layout=\"focused\"] > .detail-panel")) {
+    pass("Master-Detail mobile degradation rules exist");
+  } else {
+    fail("Master-Detail mobile degradation rules exist");
+  }
+
+  if (motionCss.includes(".os-master-detail") && motionCss.includes("prefers-reduced-motion") && motionCss.includes("html[data-experience=\"performance\"] .os-master-detail")) {
+    pass("Reduced motion and Performance mode cover unified Master-Detail shell");
+  } else {
+    fail("Reduced motion and Performance mode cover unified Master-Detail shell");
+  }
+
+  if (!projectsApp.includes("detail.dataset.detailSwapping") && !timelineApp.includes("detail.dataset.detailSwapping") && !blogPage.includes("container.dataset.detailSwapping") && !osThemeCss.includes("[data-switching=\"true\"]") && osThemeCss.includes("data-content-switch")) {
+    pass("Blog / Projects / Timeline use text-only detail switching without replaying panel open");
+  } else {
+    fail("Blog / Projects / Timeline use text-only detail switching without replaying panel open");
+  }
+
+  if (blogPage.includes('data-detail-open="false"') && blogPage.includes("dataset.detailOpen = String(isOpen)")) {
+    pass("Blog has explicit detail-open state");
+  } else {
+    fail("Blog has explicit detail-open state");
+  }
+
+  const blogHasHardcodedMotion = /(?:transition|animation)[^;\n]*(?:\d+ms|0\.\d+s)/.test(blogPage);
+  if (!blogHasHardcodedMotion) {
+    pass("Blog page has no hardcoded transition/animation durations");
+  } else {
+    fail("Blog page has no hardcoded transition/animation durations");
+  }
+
+  const intensityBlock = tokenCss.match(/html\[data-motion-intensity="minimal"\][\s\S]*?html\[data-motion-intensity="expressive"\][\s\S]*?\n}/)?.[0] || "";
+  if (tokenCss.includes('html[data-motion-speed="cinematic"]') && !intensityBlock.includes("--detail-duration")) {
+    pass("Motion Speed owns detail duration without Motion Intensity override");
+  } else {
+    fail("Motion Speed owns detail duration without Motion Intensity override");
   }
 
   if (!osThemeCss.includes("max-height: min(52vh, 560px)") || osThemeCss.includes(".reader-body {") && !osThemeCss.includes("overflow-y: auto")) {

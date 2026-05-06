@@ -30,13 +30,23 @@ All apps using Master–Detail (Projects, Blog, Timeline) MUST use this structur
 </div>
 ```
 
+Current implementation adds shared shell classes to this structure:
+
+- `.os-master-detail` on the Master-Detail root
+- `.os-master-pane` on the list panel
+- `.os-detail-pane` on the detail panel
+- `.os-detail-surface` around the selected content
+- `.os-item-card` on selectable cards/entries
+
+The shell uses v0.6-style real `flex-basis` changes so text reflows during the split-view transition.
+
 ### Layout States
 
-| State | `data-layout` | Master | Detail | Grid |
+| State | `data-layout` | Master | Detail | Split width |
 |-------|--------------|--------|--------|------|
-| Idle | `"idle"` | Full width | Hidden (visibility: hidden, width: 0) | `1fr` |
-| Focused | `"focused"` | 27% (sticky) | 73% (scrollable) | `27% 73%` |
-| Expanded | `"expanded"` | 50% | 50% | `1fr 1fr` |
+| Idle | `"idle"` | Full width | Hidden (visibility: hidden, width: 0) | `100% / 0%` |
+| Focused | `"focused"` | 27% (sticky) | 73% (scrollable) | `27% / 73%` |
+| Expanded | `"expanded"` | 50% | 50% | `50% / 50%` |
 
 ### Focus Mode
 
@@ -101,12 +111,14 @@ In focused/expanded states, the master panel uses sticky positioning:
 .master-detail[data-layout="expanded"] > .master-panel {
   position: sticky;
   top: var(--system-bar-offset);
-  max-height: calc(100vh - var(--system-bar-offset) - 28px);
+  max-height: var(--os-master-pane-max-height, var(--detail-panel-max-height));
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: none;
 }
 ```
+
+The shared `os-master-detail` script measures the active detail surface and writes `--os-master-pane-max-height` to the shell. This keeps the left list close to the current detail content height while clamping it to the viewport-safe detail max height. Height changes use `--os-motion-layout-duration` and `--os-motion-ease`.
 
 ### Compact Mode (Focus Mode)
 

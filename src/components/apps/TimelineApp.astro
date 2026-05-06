@@ -26,7 +26,7 @@ const initialProject = projects.find(
     <button type="button" class="button button-secondary" data-log-clear-filters>Clear Filters</button>
   </div>
 
-  <div class="master-detail timeline-workbench" data-log-layout data-layout="idle">
+  <div class="master-detail os-master-detail timeline-workbench timeline-master-detail" data-os-master-detail data-log-layout data-layout="idle" data-detail-open="false" data-detail-transition="os">
     <div class="detail-actions md-reader-toolbar is-collapsed" data-reader-controls>
       <button type="button" class="md-reader-toolbar-toggle" data-controls-toggle aria-label="Toggle controls" aria-expanded="false" title="Controls">+</button>
       <div class="md-reader-toolbar-body">
@@ -35,12 +35,12 @@ const initialProject = projects.find(
         <button type="button" class="detail-focus-toggle" data-detail-focus-toggle aria-label="Focus detail panel" aria-pressed="false" data-i18n="detail.focus">Focus</button>
       </div>
     </div>
-    <section class="master-panel timeline-list-panel" aria-label="Timeline entries">
+    <section class="master-panel os-master-pane timeline-list-panel" aria-label="Timeline entries">
       <div class="timeline-list" data-log-list>
         {
           timeline.map((entry, index) => (
             <article
-              class="timeline-entry interactive-card"
+              class="timeline-entry interactive-card os-item-card"
               data-log-card
               data-log-id={entry.id}
               data-log-type={entry.type}
@@ -66,8 +66,8 @@ const initialProject = projects.find(
       />
     </section>
 
-    <aside class="detail-panel timeline-detail-panel" data-log-detail aria-live="polite">
-      <div class="detail-swap-body">
+    <aside class="detail-panel os-detail-pane timeline-detail-panel" data-log-detail aria-live="polite">
+      <div class="detail-swap-body os-detail-surface">
       <p class="eyebrow" data-log-detail-type>{initialEntry.type}</p>
       <h3 data-log-detail-title>{initialEntry.title}</h3>
       <p data-log-detail-description>{initialEntry.description}</p>
@@ -142,8 +142,12 @@ const initialProject = projects.find(
   };
 
   const setLayout = (value: "idle" | "focused" | "expanded") => {
-    if (layout instanceof HTMLElement) layout.dataset.layout = value;
-    window.labOS?.setState({ layoutState: value });
+    window.labOSMasterDetail?.syncShellLayout(layout instanceof HTMLElement ? layout : null, value);
+    if (!window.labOSMasterDetail && layout instanceof HTMLElement) {
+      layout.dataset.layout = value;
+      layout.dataset.detailOpen = String(value !== "idle");
+      window.labOS?.setState({ layoutState: value });
+    }
     document.querySelectorAll("[data-log-expand]").forEach((node) => {
       if (node instanceof HTMLButtonElement) {
         node.textContent = value === "expanded" ? "Focus detail" : "Expand list";
@@ -180,6 +184,7 @@ const initialProject = projects.find(
     const entry = logData.find((item) => item.id === id) || logData[0];
     if (!entry) return;
     if (entry.id === activeId && layout instanceof HTMLElement && layout.dataset.layout !== "idle") return;
+    const isOpeningFromIdle = shouldFocus && layout instanceof HTMLElement && layout.dataset.layout === "idle";
     activeId = entry.id;
     cards.forEach((card) => card.setAttribute("data-selected", card.getAttribute("data-log-id") === activeId ? "true" : "false"));
 
@@ -192,29 +197,36 @@ const initialProject = projects.find(
       renderRelatedProject(entry);
     };
 
+    const surface = detail?.querySelector(".os-detail-surface");
     const transition = document.documentElement.dataset.detailTransition || "os";
-    if (transition === "off" || !(detail instanceof HTMLElement)) {
+    const motionDisabled =
+      isOpeningFromIdle ||
+      transition === "off" ||
+      document.documentElement.dataset.osEffects === "off" ||
+      document.documentElement.dataset.experience === "performance";
+    if (motionDisabled || !(surface instanceof HTMLElement)) {
       doUpdate();
+      window.labOSMasterDetail?.syncMasterHeight(
+        layout instanceof HTMLElement ? layout : null,
+        surface instanceof HTMLElement ? surface : null
+      );
+    } else if (window.labOSMasterDetail) {
+      window.labOSMasterDetail.runDetailSwap({
+        layout: layout instanceof HTMLElement ? layout : null,
+        surface,
+        update: doUpdate
+      });
     } else {
-      const duration = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--detail-duration")) || 180;
-      detail.dataset.detailSwapping = "true";
-      setTimeout(() => {
-        doUpdate();
-        detail.dataset.detailSwapping = "done";
-        setTimeout(() => { delete detail.dataset.detailSwapping; }, duration);
-      }, duration);
+      doUpdate();
     }
 
     if (shouldFocus) {
       setLayout("focused");
-      requestAnimationFrame(() => {
-        if (detail instanceof HTMLElement) {
-          const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-          const experience = document.documentElement.dataset.experience;
-          const behavior = prefersReduced || experience === "performance" ? "instant" : "smooth";
-          detail.scrollIntoView({ behavior, block: "nearest" });
-        }
-      });
+      if (window.labOSMasterDetail) {
+        window.labOSMasterDetail.alignDetail(detail instanceof HTMLElement ? detail : null);
+      } else if (detail instanceof HTMLElement) {
+        detail.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
     }
   };
 
