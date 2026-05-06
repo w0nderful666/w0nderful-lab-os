@@ -11,15 +11,6 @@ export type TimelineEntry = {
 
 export const timeline: TimelineEntry[] = [
   {
-    id: "lab-os-v0891-reader-toolbar-position",
-    date: "2026-05-06",
-    type: "Release",
-    title: "w0nderful-lab-os v0.8.9.1 Floating Toolbar Fix",
-    description:
-      "Moved reader toolbar to right:1px; top:81vh, changed expand animation from left to right slide.",
-    relatedProject: "w0nderful-lab-os"
-  },
-  {
     id: "lab-os-v089-os-master-detail-shell",
     date: "2026-05-06",
     type: "Release",
