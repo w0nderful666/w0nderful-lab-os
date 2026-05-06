@@ -1,6 +1,6 @@
 ---
 title: "AI Skill 使用手册：我该怎么让 AI 按规则修改代码"
-slug: "ai-agent-web-project-lessons"
+slug: "ai-agent-skills-manual"
 date: "2026-05-06"
 updated: "2026-05-06"
 summary: "这份文档总结如何用 w0nderful-agent-skills 让 AI 更稳定地创建项目、接手项目、修 bug、加功能、发版，核心是提示词策略、边界控制和测试门禁。"
