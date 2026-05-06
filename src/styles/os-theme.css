@@ -805,9 +805,8 @@ html[data-experience="performance"] .setting-panel {
 .os-master-detail[data-layout="focused"] > .os-detail-pane {
   flex: 1 1 73%;
   max-width: 100%;
-  max-height: var(--detail-panel-max-height);
   opacity: 1;
-  overflow-y: auto;
+  overflow: visible;
   pointer-events: auto;
   transform: translateX(0);
   visibility: visible;
@@ -824,9 +823,8 @@ html[data-experience="performance"] .setting-panel {
 .os-master-detail[data-layout="expanded"] > .os-detail-pane {
   flex: 1 1 50%;
   max-width: 100%;
-  max-height: var(--detail-panel-max-height);
   opacity: 1;
-  overflow-y: auto;
+  overflow: visible;
   pointer-events: auto;
   transform: translateX(0);
   visibility: visible;
