@@ -1,0 +1,190 @@
+---
+---
+
+<div class="context-menu" data-context-menu hidden>
+  <div class="context-menu-inner" data-context-menu-list></div>
+</div>
+
+<script>
+  type MenuItem = {
+    label: string;
+    shortcut?: string;
+    action: () => void;
+    divider?: boolean;
+    disabled?: boolean;
+  };
+
+  const menu = document.querySelector("[data-context-menu]");
+  const menuList = document.querySelector("[data-context-menu-list]");
+  let isOpen = false;
+
+  const getItems = (target: Element): MenuItem[] => {
+    const link = target.closest("a[data-app-link]");
+    const projectCard = target.closest("[data-lab-open-project]");
+    const postCard = target.closest("[data-lab-open-post]");
+
+    if (projectCard instanceof HTMLElement) {
+      const slug = projectCard.dataset.labOpenProject || "";
+      return [
+        { label: "Open Project", action: () => window.labOS.openProject(slug) },
+        { label: "Open in New Tab", action: () => window.open(projectCard.closest("a")?.href, "_blank") },
+        { label: "Copy Link", shortcut: "⌘C", action: () => navigator.clipboard.writeText(window.location.origin + (projectCard.closest("a")?.pathname || "")) },
+      ];
+    }
+
+    if (postCard instanceof HTMLElement) {
+      const slug = postCard.dataset.labOpenPost || "";
+      return [
+        { label: "Read Article", action: () => window.labOS.openPost(slug) },
+        { label: "Open in New Tab", action: () => window.open(postCard.closest("a")?.href, "_blank") },
+        { label: "Copy Link", shortcut: "⌘C", action: () => navigator.clipboard.writeText(window.location.origin + (postCard.closest("a")?.pathname || "")) },
+      ];
+    }
+
+    if (link instanceof HTMLElement) {
+      const app = link.dataset.appLink;
+      return [
+        { label: `Open ${app}`, action: () => window.labOS.openApp(app as Parameters<typeof window.labOS.openApp>[0]) },
+        { label: "Open in New Tab", action: () => window.open((link as HTMLAnchorElement).href, "_blank") },
+      ];
+    }
+
+    return [
+      { label: "Command Palette", shortcut: "⌘K", action: () => document.dispatchEvent(new CustomEvent("labos:open-command-palette")) },
+      { label: "Go Home", action: () => window.labOS.openApp("home") },
+      { label: "Terminal", shortcut: "G+T", action: () => window.labOS.openApp("terminal") },
+      { divider: true, label: "Toggle Theme", action: () => window.labOS.setState({ theme: document.documentElement.dataset.theme === "dark" ? "light" : "dark" }) },
+    ];
+  };
+
+  const render = (items: MenuItem[]) => {
+    if (!menuList) return;
+    menuList.innerHTML = "";
+    for (const item of items) {
+      if (item.divider) {
+        const div = document.createElement("div");
+        div.className = "context-divider";
+        menuList.append(div);
+      }
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "context-item";
+      btn.disabled = !!item.disabled;
+      btn.innerHTML = `<span class="context-label">${item.label}</span>${item.shortcut ? `<span class="context-shortcut">${item.shortcut}</span>` : ""}`;
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        close();
+        item.action();
+      });
+      menuList.append(btn);
+    }
+  };
+
+  const open = (x: number, y: number, target: Element) => {
+    if (!menu) return;
+    const items = getItems(target);
+    render(items);
+    menu.removeAttribute("hidden");
+    isOpen = true;
+
+    const rect = menu.getBoundingClientRect();
+    const maxX = window.innerWidth - rect.width - 8;
+    const maxY = window.innerHeight - rect.height - 8;
+    (menu as HTMLElement).style.left = `${Math.min(x, maxX)}px`;
+    (menu as HTMLElement).style.top = `${Math.min(y, maxY)}px`;
+  };
+
+  const close = () => {
+    if (!menu) return;
+    menu.setAttribute("hidden", "");
+    isOpen = false;
+  };
+
+  document.addEventListener("contextmenu", (e) => {
+    if (e.defaultPrevented) return;
+    e.preventDefault();
+    open(e.clientX, e.clientY, e.target as Element);
+  });
+
+  document.addEventListener("click", (e) => {
+    if (isOpen && !menu?.contains(e.target as Node)) close();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") close();
+  });
+</script>
+
+<style>
+  .context-menu {
+    position: fixed;
+    z-index: 9999;
+    min-width: 200px;
+    padding: 4px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    background: var(--bg-panel);
+    backdrop-filter: blur(var(--glass-blur));
+    box-shadow: var(--shadow);
+    animation: context-in 0.12s ease;
+  }
+
+  .context-menu[hidden] {
+    display: none;
+  }
+
+  .context-menu-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .context-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 7px 10px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.1s ease;
+    text-align: left;
+    width: 100%;
+  }
+
+  .context-item:hover {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  .context-item:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  .context-label {
+    font-weight: 500;
+  }
+
+  .context-shortcut {
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    font-family: var(--font-mono);
+  }
+
+  .context-divider {
+    height: 1px;
+    margin: 3px 4px;
+    background: var(--border);
+  }
+
+  @keyframes context-in {
+    from { opacity: 0; transform: scale(0.96) translateY(-4px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+</style>

@@ -3,6 +3,8 @@ import SystemBar from "../components/os/SystemBar.astro";
 import Dock from "../components/os/Dock.astro";
 import CommandPalette from "../components/os/CommandPalette.astro";
 import WelcomeToast from "../components/os/WelcomeToast.astro";
+import BootScreen from "../components/os/BootScreen.astro";
+import ContextMenu from "../components/os/ContextMenu.astro";
 import { ClientRouter } from "astro:transitions";
 import { site } from "../data/site";
 import type { ActiveApp } from "../data/navigation";
@@ -47,6 +49,10 @@ const pageTitle = title === site.title ? site.title : `${title} | ${site.name}`;
     <meta property="og:type" content="website" />
     <meta property="og:url" content={site.liveUrl} />
     <link rel="icon" href={`${import.meta.env.BASE_URL}favicon.svg`} />
+    <link rel="alternate" type="application/rss+xml" title={site.name} href={`${import.meta.env.BASE_URL}rss.xml`} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Inter+Tight:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
     <title>{pageTitle}</title>
     <ClientRouter />
     <script is:inline>
@@ -96,12 +102,14 @@ const pageTitle = title === site.title ? site.title : `${title} | ${site.name}`;
   <body
     data-current-app={active}
   >
+    <BootScreen />
     <SystemBar active={active} />
     <main class="desktop-shell" transition:name="lab-main" transition:animate="fade">
       <slot />
     </main>
     <Dock active={active} />
     <CommandPalette />
+    <ContextMenu />
     <WelcomeToast />
     <footer class="site-footer" transition:name="lab-footer" transition:persist>
       <span>{site.name}</span>
@@ -127,6 +135,7 @@ const pageTitle = title === site.title ? site.title : `${title} | ${site.name}`;
       import "../scripts/os-master-detail";
       import "../scripts/command-palette";
       import "../scripts/shortcuts";
+      import "../scripts/scroll-reveal";
     </script>
   </body>
 </html>

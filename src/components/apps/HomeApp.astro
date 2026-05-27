@@ -27,7 +27,7 @@ const desktopShortcuts = [
 <div class="desktop-workspace">
   <section class="desktop-shortcuts" aria-label="Desktop application shortcuts">
     <p class="eyebrow desktop-stagger" style="--stagger-index: 0">Desktop</p>
-    <div class="shortcut-grid">
+    <div class="shortcut-grid" data-reveal-stagger>
       {
         desktopShortcuts.map((shortcut) => (
           <a
@@ -84,7 +84,7 @@ Local First / No Backend / GitHub Pages Ready</code></pre>
     </div>
   </AppWindow>
 
-  <div class="widget-grid">
+  <div class="widget-grid" data-reveal-stagger>
     <DesktopWidget title="Featured Projects" meta="Pinned apps" stagger={2}>
       <div class="compact-list">
         {
