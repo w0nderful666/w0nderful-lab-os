@@ -802,50 +802,20 @@ const openTimeline = (id: string, options: OpenOptions = {}) => {
   }
 };
 
-const setTheme = (theme: ThemeSetting) => {
-  commit({ theme }, "labos:settings-change", { setting: "theme", value: theme });
+const commitSetting = <K extends keyof LabOSState>(key: K, value: LabOSState[K]) => {
+  commit({ [key]: value } as Partial<LabOSState>, "labos:settings-change", { setting: key, value });
   document.dispatchEvent(new CustomEvent("lab-os-settings-change", { detail: getStateSnapshot() }));
 };
 
-const setExperienceMode = (experienceMode: ExperienceMode) => {
-  commit({ experienceMode }, "labos:settings-change", { setting: "experienceMode", value: experienceMode });
-  document.dispatchEvent(new CustomEvent("lab-os-settings-change", { detail: getStateSnapshot() }));
-};
-
-const setMotionSpeed = (motionSpeed: MotionSpeed) => {
-  commit({ motionSpeed }, "labos:settings-change", { setting: "motionSpeed", value: motionSpeed });
-  document.dispatchEvent(new CustomEvent("lab-os-settings-change", { detail: getStateSnapshot() }));
-};
-
-const setLanguage = (language: Language) => {
-  commit({ language }, "labos:settings-change", { setting: "language", value: language });
-  document.dispatchEvent(new CustomEvent("lab-os-settings-change", { detail: getStateSnapshot() }));
-};
-
-const setPalette = (palette: ThemePalette) => {
-  commit({ palette }, "labos:settings-change", { setting: "palette", value: palette });
-  document.dispatchEvent(new CustomEvent("lab-os-settings-change", { detail: getStateSnapshot() }));
-};
-
-const setBackground = (background: BackgroundPreset) => {
-  commit({ background }, "labos:settings-change", { setting: "background", value: background });
-  document.dispatchEvent(new CustomEvent("lab-os-settings-change", { detail: getStateSnapshot() }));
-};
-
-const setOsEffects = (osEffects: OsEffects) => {
-  commit({ osEffects }, "labos:settings-change", { setting: "osEffects", value: osEffects });
-  document.dispatchEvent(new CustomEvent("lab-os-settings-change", { detail: getStateSnapshot() }));
-};
-
-const setMotionIntensity = (motionIntensity: MotionIntensity) => {
-  commit({ motionIntensity }, "labos:settings-change", { setting: "motionIntensity", value: motionIntensity });
-  document.dispatchEvent(new CustomEvent("lab-os-settings-change", { detail: getStateSnapshot() }));
-};
-
-const setDetailTransition = (detailTransition: DetailTransition) => {
-  commit({ detailTransition }, "labos:settings-change", { setting: "detailTransition", value: detailTransition });
-  document.dispatchEvent(new CustomEvent("lab-os-settings-change", { detail: getStateSnapshot() }));
-};
+const setTheme = (theme: ThemeSetting) => commitSetting("theme", theme);
+const setExperienceMode = (experienceMode: ExperienceMode) => commitSetting("experienceMode", experienceMode);
+const setMotionSpeed = (motionSpeed: MotionSpeed) => commitSetting("motionSpeed", motionSpeed);
+const setLanguage = (language: Language) => commitSetting("language", language);
+const setPalette = (palette: ThemePalette) => commitSetting("palette", palette);
+const setBackground = (background: BackgroundPreset) => commitSetting("background", background);
+const setOsEffects = (osEffects: OsEffects) => commitSetting("osEffects", osEffects);
+const setMotionIntensity = (motionIntensity: MotionIntensity) => commitSetting("motionIntensity", motionIntensity);
+const setDetailTransition = (detailTransition: DetailTransition) => commitSetting("detailTransition", detailTransition);
 
 function addRecentItem(item: Omit<RecentItem, "id" | "timestamp">) {
   const id = `${item.type}:${item.target}`;

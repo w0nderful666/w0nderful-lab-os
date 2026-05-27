@@ -1,6 +1,6 @@
 ---
 import { site } from "../../data/site";
-import { topNavigation, type ActiveApp } from "../../data/navigation";
+import { topNavigation, dockNavigation, type ActiveApp } from "../../data/navigation";
 import { withBase } from "../../data/site";
 
 type Props = {
@@ -8,15 +8,9 @@ type Props = {
 };
 
 const { active } = Astro.props;
-const appLabels: Record<string, string> = {
-  home: "Home",
-  projects: "Projects",
-  blog: "Blog",
-  timeline: "Timeline",
-  about: "About",
-  settings: "Settings",
-  terminal: "Terminal"
-};
+const appLabels: Record<string, string> = Object.fromEntries(
+  dockNavigation.map((item) => [item.id, item.label])
+);
 ---
 
 <header class="system-bar" transition:name="lab-system-bar" transition:persist>

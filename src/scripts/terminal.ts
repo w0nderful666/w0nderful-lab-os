@@ -15,10 +15,10 @@ const projectAliases = new Map<string, string>([
 const navigationCommands = new Set(["home", "projects", "blog", "timeline", "about", "settings", "terminal"]);
 const themeCommands = new Set<ThemeSetting>(["light", "dark", "system"]);
 const modeCommands = new Set<ExperienceMode>(["performance", "balanced", "quality"]);
-const speedCommands = new Set<MotionSpeed>(["slow", "normal", "fast"]);
+const speedCommands = new Set<MotionSpeed>(["slow", "slower", "cinematic", "normal", "fast"]);
 const languageCommands = new Set<Language>(["en", "zh"]);
 const paletteCommands = new Set<ThemePalette>(["aurora", "graphite", "ubuntu", "mint", "terminal"]);
-const backgroundCommands = new Set<BackgroundPreset>(["aurora", "grid", "terminal", "paper", "space"]);
+const backgroundCommands = new Set<BackgroundPreset>(["aurora", "frosted", "glacier", "sakura", "mesh", "grid", "terminal", "paper", "space"]);
 
 const getNodes = () => {
   const root = document.querySelector("[data-terminal-root]");
@@ -99,9 +99,9 @@ const help = (output: HTMLElement) => {
     "home, projects, blog, timeline, about, settings, terminal",
     "open fxxkpdf, open image-limit-helper, open open-tools-starter, open lab",
     "theme light|dark|system, mode performance|balanced|quality",
-    "speed slow|normal|fast, lang zh|en",
+    "speed slow|slower|cinematic|normal|fast, lang zh|en",
     "palette aurora|graphite|ubuntu|mint|terminal",
-    "background aurora|grid|terminal|paper|space",
+    "background aurora|frosted|glacier|sakura|mesh|grid|terminal|paper|space",
     "search pdf, search github, search prompt, search blog, search tool, search local",
     "github"
   ].forEach((line) => printLine(output, line));
@@ -166,60 +166,64 @@ const runCommand = (output: HTMLElement, rawCommand: string) => {
   window.labOS.addCommandHistory(command);
   printPrompt(output, command);
 
-  const [base, ...rest] = command.toLowerCase().split(/\s+/);
-  const value = rest.join(" ");
+  try {
+    const [base, ...rest] = command.toLowerCase().split(/\s+/);
+    const value = rest.join(" ");
 
-  if (base === "help") {
-    help(output);
-    return;
-  }
-  if (base === "clear") {
-    output.textContent = "";
-    return;
-  }
-  if (base === "whoami") {
-    printLine(output, `${site.author} / A-Level local-first lab operator`);
-    return;
-  }
-  if (base === "status") {
-    const state = window.labOS.getState();
-    printLine(
-      output,
-      `app=${state.currentApp} theme=${state.theme} palette=${state.palette} background=${state.background} mode=${state.experienceMode} speed=${state.motionSpeed}`
-    );
-    printLine(output, `recent=${state.recentItems.length} history=${state.commandHistory.length}`);
-    return;
-  }
-  if (base === "version") {
-    printLine(output, `${site.displayVersion} / Control Layer Release`);
-    return;
-  }
-  if (base === "github") {
-    window.open("https://github.com/w0nderful666", "_blank", "noopener,noreferrer");
-    printLine(output, "Opening GitHub profile.");
-    return;
-  }
-  if (navigationCommands.has(base)) {
-    runNavigation(output, base);
-    return;
-  }
-  if (base === "open") {
-    runOpen(output, value);
-    return;
-  }
-  if (base === "theme" || base === "mode" || base === "speed" || base === "lang" || base === "palette" || base === "background") {
-    runSettings(output, base, value);
-    return;
-  }
-  if (base === "search") {
-    const query = value || "local";
-    const results = searchLabIndex(query, 8);
-    printLine(output, `Search "${query}" returned ${results.length} local match${results.length === 1 ? "" : "es"}.`);
-    printSearchResults(output, query, results);
-    return;
-  }
+    if (base === "help") {
+      help(output);
+      return;
+    }
+    if (base === "clear") {
+      output.textContent = "";
+      return;
+    }
+    if (base === "whoami") {
+      printLine(output, `${site.author} / A-Level local-first lab operator`);
+      return;
+    }
+    if (base === "status") {
+      const state = window.labOS.getState();
+      printLine(
+        output,
+        `app=${state.currentApp} theme=${state.theme} palette=${state.palette} background=${state.background} mode=${state.experienceMode} speed=${state.motionSpeed}`
+      );
+      printLine(output, `recent=${state.recentItems.length} history=${state.commandHistory.length}`);
+      return;
+    }
+    if (base === "version") {
+      printLine(output, `${site.displayVersion} / Control Layer Release`);
+      return;
+    }
+    if (base === "github") {
+      window.open("https://github.com/w0nderful666", "_blank", "noopener,noreferrer");
+      printLine(output, "Opening GitHub profile.");
+      return;
+    }
+    if (navigationCommands.has(base)) {
+      runNavigation(output, base);
+      return;
+    }
+    if (base === "open") {
+      runOpen(output, value);
+      return;
+    }
+    if (base === "theme" || base === "mode" || base === "speed" || base === "lang" || base === "palette" || base === "background") {
+      runSettings(output, base, value);
+      return;
+    }
+    if (base === "search") {
+      const query = value || "local";
+      const results = searchLabIndex(query, 8);
+      printLine(output, `Search "${query}" returned ${results.length} local match${results.length === 1 ? "" : "es"}.`);
+      printSearchResults(output, query, results);
+      return;
+    }
 
-  printLine(output, `Command "${command}" was not recognized. Type help for available commands.`, "warn");
+    printLine(output, `Command "${command}" was not recognized. Type help for available commands.`, "warn");
+  } catch (error) {
+    printLine(output, `Error executing command: ${error instanceof Error ? error.message : "unknown error"}`, "error");
+  }
 };
 
 export function initTerminalApp() {

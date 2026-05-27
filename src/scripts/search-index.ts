@@ -36,7 +36,11 @@ const scoreResult = (result: Omit<SearchResult, "score">, query: string) => {
   return score;
 };
 
+let cachedIndex: SearchResult[] | null = null;
+
 export const getSearchIndex = (): SearchResult[] => {
+  if (cachedIndex) return cachedIndex;
+
   const projectResults = projects.map((project) => ({
     id: `project:${project.slug}`,
     source: "Project" as const,
@@ -78,7 +82,8 @@ export const getSearchIndex = (): SearchResult[] => {
     score: 0
   }));
 
-  return [...projectResults, ...postResults, ...timelineResults, ...commandResults];
+  cachedIndex = [...projectResults, ...postResults, ...timelineResults, ...commandResults];
+  return cachedIndex;
 };
 
 export const searchLabIndex = (query: string, limit = 12): SearchResult[] => {

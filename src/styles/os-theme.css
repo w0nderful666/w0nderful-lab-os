@@ -241,7 +241,7 @@ html[data-experience="performance"] .setting-panel {
   width: 24px;
   height: 24px;
   place-items: center;
-  border-radius: 7px;
+  border-radius: var(--radius-sm);
   color: var(--accent-text);
   background: var(--accent);
   font-size: 0.82rem;
@@ -1617,7 +1617,7 @@ kbd {
   justify-content: center;
   padding: 1px 6px;
   border: 1px solid var(--border);
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   color: var(--text);
   background: var(--bg-soft);
   font-family: var(--font-mono);
@@ -2000,7 +2000,7 @@ kbd {
 .preview-dock span {
   width: 22px;
   height: 22px;
-  border-radius: 7px;
+  border-radius: var(--radius-sm);
   background: var(--bg-soft);
 }
 
