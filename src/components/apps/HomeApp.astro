@@ -1,152 +1,367 @@
 ---
 import AppWindow from "../os/AppWindow.astro";
-import DesktopWidget from "../os/DesktopWidget.astro";
-import ExperienceModeControl from "../os/ExperienceModeControl.astro";
 import Badge from "../common/Badge.astro";
 import { getCollection } from "astro:content";
 import { projects } from "../../data/projects";
 import { site, withBase } from "../../data/site";
-import { timeline } from "../../data/timeline";
 
 const allPosts = await getCollection("blog", ({ data }) => data.status === "published");
 const sortedPosts = allPosts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
-const latestPosts = sortedPosts.slice(0, 5);
-
-const featuredProjects = projects.filter((project) => project.featured).slice(0, 4);
-const latestLogs = timeline.slice(0, 3);
-
-const desktopShortcuts = [
-  { id: "projects", label: "Projects.app", href: withBase("projects/"), icon: "P", status: `${projects.length} projects` },
-  { id: "blog", label: "Blog.app", href: withBase("blog/"), icon: "B", status: `${sortedPosts.length} posts` },
-  { id: "timeline", label: "Timeline.app", href: withBase("timeline/"), icon: "L", status: `${timeline.length} entries` },
-  { id: "settings", label: "Settings.app", href: withBase("settings/"), icon: "S", status: "System prefs" },
-  { id: "about", label: "About.app", href: withBase("about/"), icon: "A", status: "System info" }
-];
+const latestPost = sortedPosts[0];
+const featuredProjects = projects.filter((p) => p.featured).slice(0, 3);
 ---
 
-<div class="desktop-workspace">
-  <section class="desktop-shortcuts" aria-label="Desktop application shortcuts">
-    <p class="eyebrow desktop-stagger" style="--stagger-index: 0">Desktop</p>
-    <div class="shortcut-grid" data-reveal-stagger>
-      {
-        desktopShortcuts.map((shortcut) => (
-          <a
-            href={shortcut.href}
-            class="desktop-shortcut desktop-stagger"
-            style={`--stagger-index: ${desktopShortcuts.indexOf(shortcut) + 1}`}
-            data-app-link={shortcut.id}
-          >
-            <span class="shortcut-icon" aria-hidden="true">{shortcut.icon}</span>
-            <span class="shortcut-label">{shortcut.label}</span>
-            <span class="shortcut-status">{shortcut.status}</span>
-          </a>
-        ))
-      }
+<div class="home">
+  <section class="hero" data-reveal>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Personal Open Source Lab</p>
+      <h1 class="hero-title">{site.name}</h1>
+      <p class="hero-subtitle">{site.description}</p>
+      <div class="hero-actions">
+        <a class="button button-primary" href={withBase("projects/")}>Explore Projects</a>
+        <a class="button" href={withBase("blog/")}>Read Blog</a>
+        <button type="button" class="button" data-command-palette-open>⌘K</button>
+      </div>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-stat">
+        <span class="hero-stat-num">{projects.length}</span>
+        <span class="hero-stat-label">Projects</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-num">{sortedPosts.length}</span>
+        <span class="hero-stat-label">Articles</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-num">v0.8</span>
+        <span class="hero-stat-label">Version</span>
+      </div>
     </div>
   </section>
 
-  <AppWindow title="Home.app" subtitle="Desktop Workspace" wide>
-    <div class="dashboard-grid">
-      <section class="hero-console desktop-stagger" style="--stagger-index: 1" aria-label="Welcome Terminal">
-        <div class="terminal-topline">
-          <span>Welcome Terminal</span>
-          <span>zsh</span>
-        </div>
-        <pre><code>$ whoami
-w0nderful666
-$ lab status
-A-Level Open Source Lab
-Local First / No Backend / GitHub Pages Ready</code></pre>
-      </section>
-
-      <section class="status-panel">
-        <p class="eyebrow">Personal Open Source Lab</p>
-        <h1>{site.name}</h1>
-        <p>{site.description}</p>
-        <div class="stat-grid">
-          <div>
-            <strong>{projects.length}</strong>
-            <span>Projects</span>
-          </div>
-          <div>
-            <strong>{sortedPosts.length}</strong>
-            <span>Posts</span>
-          </div>
-          <div>
-            <strong>{timeline[0].date}</strong>
-            <span>Latest Update</span>
-          </div>
-        </div>
-        <div class="badge-row">
-          {site.brandTags.map((tag) => <Badge label={tag} />)}
-        </div>
-      </section>
+  <section class="featured" data-reveal>
+    <div class="section-header">
+      <p class="eyebrow">Featured</p>
+      <h2>Selected Work</h2>
     </div>
-  </AppWindow>
-
-  <div class="widget-grid" data-reveal-stagger>
-    <DesktopWidget title="Featured Projects" meta="Pinned apps" stagger={2}>
-      <div class="compact-list">
-        {
-          featuredProjects.map((project) => (
-            <a class="compact-row" href={withBase(`projects/?project=${project.slug}`)} data-lab-open-project={project.slug}>
-              <span>{project.name}</span>
-              <small>{project.type}</small>
-            </a>
-          ))
-        }
-      </div>
-    </DesktopWidget>
-
-    <DesktopWidget title="Latest Posts" meta="Markdown" stagger={3}>
-      <div class="compact-list">
-        {
-          latestPosts.length > 0 ? (
-            latestPosts.map((post) => (
-              <a class="compact-row" href={withBase(`blog/?post=${post.id}`)} data-lab-open-post={post.id}>
-                <span>{post.data.title}</span>
-                <small>{post.data.articleStyle}</small>
-              </a>
-            ))
-          ) : (
-            <p class="empty-state">No published articles yet.</p>
-          )
-        }
-      </div>
-    </DesktopWidget>
-
-    <DesktopWidget title="System Update Log" meta="Recent" stagger={4}>
-      <div class="compact-list">
-        {
-          latestLogs.map((entry) => (
-            <a class="compact-row" href={withBase(`timeline/?entry=${entry.id}`)} data-lab-open-timeline={entry.id}>
-              <span>{entry.title}</span>
-              <small>{entry.type} / {entry.date}</small>
-            </a>
-          ))
-        }
-      </div>
-    </DesktopWidget>
-
-    <DesktopWidget title="Recent Activity" meta="System State" stagger={5}>
-      <div class="compact-list recent-list" data-recent-items-list></div>
-    </DesktopWidget>
-
-    <DesktopWidget title="Quick Actions" meta="Launch" stagger={6}>
-      <div class="quick-actions">
-        <button type="button" class="button button-primary" data-command-palette-open>Command Palette</button>
-        <a class="button button-primary" href={withBase("projects/")}>Open Projects</a>
-        <a class="button button-secondary" href={withBase("blog/")}>Read Blog</a>
-        <a class="button button-secondary" href={withBase("timeline/")}>View Timeline</a>
-        <a class="button button-secondary" href={withBase("terminal/")}>Open Terminal</a>
-        <a class="button button-secondary" href={site.repositoryUrl} target="_blank" rel="noreferrer">
-          Open GitHub
+    <div class="featured-grid" data-reveal-stagger>
+      {featuredProjects.map((project) => (
+        <a href={withBase(`projects/?project=${project.slug}`)} class="featured-card" data-lab-open-project={project.slug}>
+          <div class="featured-card-top">
+            <span class="featured-card-type">{project.type}</span>
+            <span class="featured-card-status">{project.status}</span>
+          </div>
+          <h3 class="featured-card-title">{project.name}</h3>
+          <p class="featured-card-desc">{project.summary}</p>
+          <div class="featured-card-tags">
+            {project.tags.slice(0, 3).map((t) => <span class="featured-tag">{t}</span>)}
+          </div>
         </a>
-      </div>
-    </DesktopWidget>
+      ))}
+    </div>
+  </section>
 
-    <DesktopWidget title="Experience Mode" meta="Desktop profile" stagger={7}>
-      <ExperienceModeControl />
-    </DesktopWidget>
-  </div>
+  {latestPost && (
+    <section class="latest-section" data-reveal>
+      <div class="section-header">
+        <p class="eyebrow">Latest</p>
+        <h2>Recent Writing</h2>
+      </div>
+      <a href={withBase(`blog/?post=${latestPost.id}`)} class="latest-card" data-lab-open-post={latestPost.id}>
+        <div class="latest-card-meta">
+          <span>{latestPost.data.category}</span>
+          <span>·</span>
+          <time datetime={latestPost.data.date}>{latestPost.data.date}</time>
+        </div>
+        <h3 class="latest-card-title">{latestPost.data.title}</h3>
+        <p class="latest-card-summary">{latestPost.data.summary}</p>
+        <span class="latest-card-cta">Read article →</span>
+      </a>
+    </section>
+  )}
+
+  <footer class="home-footer" data-reveal>
+    <div class="footer-links">
+      <a href={withBase("timeline/")}>Timeline</a>
+      <a href={withBase("about/")}>About</a>
+      <a href={withBase("terminal/")}>Terminal</a>
+      <a href={withBase("settings/")}>Settings</a>
+      <a href={site.repositoryUrl} target="_blank" rel="noreferrer">GitHub</a>
+    </div>
+    <p class="footer-note">{site.displayVersion} · Local First · No Backend</p>
+  </footer>
 </div>
+
+<style>
+  .home {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 60px 32px 80px;
+  }
+
+  /* Hero */
+  .hero {
+    margin-bottom: 80px;
+  }
+
+  .hero-eyebrow {
+    color: var(--accent);
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 16px;
+  }
+
+  .hero-title {
+    font-size: clamp(2.8rem, 7vw, 5rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin: 0 0 20px;
+    font-family: var(--font-display);
+  }
+
+  .hero-subtitle {
+    font-size: 1.15rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    max-width: 520px;
+    margin: 0 0 32px;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 40px;
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+  }
+
+  .hero-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .hero-stat-num {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    font-family: var(--font-display);
+  }
+
+  .hero-stat-label {
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* Featured */
+  .featured {
+    margin-bottom: 80px;
+  }
+
+  .section-header {
+    margin-bottom: 28px;
+  }
+
+  .section-header h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin: 6px 0 0;
+  }
+
+  .featured-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .featured-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 24px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-soft);
+    color: var(--text);
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  }
+
+  .featured-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  .featured-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .featured-card-type {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .featured-card-status {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+  }
+
+  .featured-card-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .featured-card-desc {
+    font-size: 0.86rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin: 0;
+    flex: 1;
+  }
+
+  .featured-card-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: auto;
+    padding-top: 8px;
+  }
+
+  .featured-tag {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+  }
+
+  /* Latest */
+  .latest-section {
+    margin-bottom: 80px;
+  }
+
+  .latest-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 28px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-soft);
+    color: var(--text);
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .latest-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  .latest-card-meta {
+    display: flex;
+    gap: 8px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .latest-card-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .latest-card-summary {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .latest-card-cta {
+    font-size: 0.82rem;
+    color: var(--accent);
+    font-weight: 600;
+    margin-top: 4px;
+  }
+
+  /* Footer */
+  .home-footer {
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+
+  .footer-links a {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    transition: color 0.15s;
+  }
+
+  .footer-links a:hover {
+    color: var(--accent);
+  }
+
+  .footer-note {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    opacity: 0.6;
+  }
+
+  @media (max-width: 600px) {
+    .home {
+      padding: 32px 20px 60px;
+    }
+
+    .hero {
+      margin-bottom: 48px;
+    }
+
+    .hero-meta {
+      gap: 24px;
+    }
+
+    .featured {
+      margin-bottom: 48px;
+    }
+
+    .featured-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .latest-section {
+      margin-bottom: 48px;
+    }
+  }
+</style>

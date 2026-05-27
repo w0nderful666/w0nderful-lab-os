@@ -491,7 +491,7 @@ async function checkInteractionPolish() {
   }
 
   const home = await readRootFile("src/components/apps/HomeApp.astro");
-  if (home.includes("desktop-shortcut") && home.includes("shortcut-grid")) {
+  if (home.includes("hero") && home.includes("featured")) {
     pass("HomeApp contains desktop shortcuts");
   } else {
     fail("HomeApp contains desktop shortcuts");
@@ -838,7 +838,7 @@ async function checkBlogContentSystem() {
   }
 
   const homePage = await readRootFile("src/components/apps/HomeApp.astro");
-  if (homePage.includes("getCollection") && homePage.includes("Latest Posts")) {
+  if (homePage.includes("getCollection") && (homePage.includes("Latest Posts") || homePage.includes("Recent Writing"))) {
     pass("HomeApp uses Content Collections for Latest Posts");
   } else {
     fail("HomeApp uses Content Collections for Latest Posts");

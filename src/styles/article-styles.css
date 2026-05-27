@@ -29,9 +29,12 @@
 }
 
 .article-title {
-  margin: 0 0 10px;
-  font-size: 1.8rem;
-  line-height: 1.2;
+  margin: 0 0 14px;
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  font-family: var(--font-display);
   overflow-wrap: anywhere;
 }
 
@@ -120,21 +123,24 @@
 .article-body h2,
 .article-body h3,
 .article-body h4 {
-  margin-top: 1.8em;
+  margin-top: 2em;
   margin-bottom: 0.6em;
-  line-height: 1.25;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  font-family: var(--font-display);
   overflow-wrap: anywhere;
 }
 
-.article-body h1 { font-size: 1.6rem; }
-.article-body h2 { font-size: 1.35rem; }
-.article-body h3 { font-size: 1.15rem; }
-.article-body h4 { font-size: 1rem; }
+.article-body h1 { font-size: 1.7rem; font-weight: 700; }
+.article-body h2 { font-size: 1.4rem; font-weight: 700; }
+.article-body h3 { font-size: 1.15rem; font-weight: 600; }
+.article-body h4 { font-size: 1rem; font-weight: 600; }
 
 .article-body p {
-  margin: 0 0 1em;
+  margin: 0 0 1.4em;
   color: var(--text-muted);
-  line-height: 1.7;
+  line-height: 1.8;
+  font-size: 1rem;
 }
 
 .article-body a {

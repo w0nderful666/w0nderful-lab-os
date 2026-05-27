@@ -34,14 +34,9 @@ const appLabels: Record<string, string> = Object.fromEntries(
   </div>
   <div class="system-bar-right">
     <button type="button" class="system-command-button" data-command-palette-open aria-label="Open Command Palette">
-      Command
+      ⌘K
     </button>
-    <a href={site.repositoryUrl} target="_blank" rel="noreferrer">GitHub</a>
-    <span class="system-bar-status" data-system-app-label>{appLabels[active] || "Home"}</span>
-    <span class="system-bar-status" data-system-palette-label>Aurora</span>
-    <span class="system-bar-status" data-system-background-label>Aurora Mist</span>
-    <a class="system-bar-version" href={withBase("settings/")} data-app-link="settings" title="Open Settings">{site.displayVersion}</a>
-    <span class="system-bar-compact">Local First</span>
+    <a class="system-bar-version" href={withBase("settings/")} data-app-link="settings" title="Settings">{site.displayVersion}</a>
     <time data-system-time datetime="">--:--</time>
   </div>
 </header>
