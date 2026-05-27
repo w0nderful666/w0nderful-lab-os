@@ -347,7 +347,7 @@ async function checkInteractionPolish() {
   }
 
   const osTheme = await readRootFile("src/styles/os-theme.css");
-  if (osTheme.includes("flex: 0 1 27%") && osTheme.includes("flex: 1 1 73%") && osTheme.includes("flex-basis: 85%")) {
+  if (osTheme.includes("flex: 0 1 24%") && osTheme.includes("flex: 1 1 76%") && osTheme.includes("flex-basis: 85%")) {
     pass("focused Master-Detail ratio is optimized");
   } else {
     fail("focused Master-Detail ratio is optimized");

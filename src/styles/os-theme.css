@@ -799,13 +799,13 @@ html[data-experience="performance"] .setting-panel {
 
 .master-detail[data-layout="focused"] > .master-panel,
 .os-master-detail[data-layout="focused"] > .os-master-pane {
-  flex: 0 1 27%;
-  max-width: 27%;
+  flex: 0 1 24%;
+  max-width: 24%;
 }
 
 .master-detail[data-layout="focused"] > .detail-panel,
 .os-master-detail[data-layout="focused"] > .os-detail-pane {
-  flex: 1 1 73%;
+  flex: 1 1 76%;
   max-width: 100%;
   opacity: 1;
   overflow: visible;
