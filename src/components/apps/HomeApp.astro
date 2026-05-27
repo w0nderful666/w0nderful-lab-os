@@ -102,6 +102,19 @@ const featuredProjects = projects.filter((p) => p.featured).slice(0, 3);
   /* Hero */
   .hero {
     margin-bottom: 80px;
+    position: relative;
+    padding-left: 20px;
+  }
+
+  .hero::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, var(--accent), transparent);
+    border-radius: 1px;
   }
 
   .hero-eyebrow {
@@ -278,6 +291,7 @@ const featuredProjects = projects.filter((p) => p.featured).slice(0, 3);
   .latest-card:hover {
     border-color: var(--accent);
     transform: translateY(-1px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
   }
 
   .latest-card-meta {
