@@ -20,8 +20,8 @@ const initialProject = projects.find(
       <input type="search" data-log-search-input placeholder="Search timeline entries" autocomplete="off" />
     </label>
     <div class="filter-group" aria-label="Timeline type filters">
-      <button type="button" class="filter-button is-active" data-log-filter="all">All</button>
-      {timelineTypes.map((type) => <button type="button" class="filter-button" data-log-filter={type}>{type}</button>)}
+      <button type="button" class="filter-button is-active" data-log-filter="all" aria-pressed="true">All</button>
+      {timelineTypes.map((type) => <button type="button" class="filter-button" data-log-filter={type} aria-pressed="false">{type}</button>)}
     </div>
     <button type="button" class="button button-secondary" data-log-clear-filters>Clear Filters</button>
   </div>
@@ -263,7 +263,11 @@ if (shouldFocus) {
   filterButtons.forEach((button) => {
     button.addEventListener("click", () => {
       activeFilter = button.getAttribute("data-log-filter") || "all";
-      filterButtons.forEach((item) => item.classList.toggle("is-active", item === button));
+      filterButtons.forEach((item) => {
+        const active = item === button;
+        item.classList.toggle("is-active", active);
+        item.setAttribute("aria-pressed", String(active));
+      });
       applyLogFilters();
     });
   });
@@ -312,7 +316,11 @@ if (shouldFocus) {
     clearButton.addEventListener("click", () => {
       activeFilter = "all";
       if (searchInput instanceof HTMLInputElement) searchInput.value = "";
-      filterButtons.forEach((item) => item.classList.toggle("is-active", item.getAttribute("data-log-filter") === "all"));
+      filterButtons.forEach((item) => {
+        const active = item.getAttribute("data-log-filter") === "all";
+        item.classList.toggle("is-active", active);
+        item.setAttribute("aria-pressed", String(active));
+      });
       applyLogFilters();
     });
   }

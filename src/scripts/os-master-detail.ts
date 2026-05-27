@@ -128,7 +128,13 @@ const syncAllMasterHeights = () => {
   });
 };
 
-window.addEventListener("resize", syncAllMasterHeights);
+let resizeTimer: ReturnType<typeof setTimeout> | null = null;
+const debouncedSyncHeights = () => {
+  if (resizeTimer) clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(syncAllMasterHeights, 100);
+};
+
+window.addEventListener("resize", debouncedSyncHeights);
 document.addEventListener("astro:page-load", syncAllMasterHeights);
 
 window.labOSMasterDetail = {

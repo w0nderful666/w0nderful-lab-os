@@ -20,17 +20,17 @@ const initialProject = projects.find((project) => project.slug === initialPost.r
 
       <div class="filter-stack">
         <div class="filter-group" aria-label="Post category filters">
-          <button type="button" class="filter-button is-active" data-post-category-filter="all">All</button>
+          <button type="button" class="filter-button is-active" data-post-category-filter="all" aria-pressed="true">All</button>
           {
             postCategories.map((category) => (
-              <button type="button" class="filter-button" data-post-category-filter={category}>{category}</button>
+              <button type="button" class="filter-button" data-post-category-filter={category} aria-pressed="false">{category}</button>
             ))
           }
         </div>
 
         <div class="filter-group" aria-label="Post tag filters">
-          <button type="button" class="filter-button is-active" data-post-tag-filter="all">All tags</button>
-          {postTags.map((tag) => <button type="button" class="filter-button" data-post-tag-filter={tag}>{tag}</button>)}
+          <button type="button" class="filter-button is-active" data-post-tag-filter="all" aria-pressed="true">All tags</button>
+          {postTags.map((tag) => <button type="button" class="filter-button" data-post-tag-filter={tag} aria-pressed="false">{tag}</button>)}
         </div>
       </div>
       <button type="button" class="button button-secondary" data-post-clear-filters>Clear Filters</button>
@@ -377,7 +377,11 @@ const initialProject = projects.find((project) => project.slug === initialPost.r
   categoryButtons.forEach((button) => {
     button.addEventListener("click", () => {
       activeCategory = button.getAttribute("data-post-category-filter") || "all";
-      categoryButtons.forEach((item) => item.classList.toggle("is-active", item === button));
+      categoryButtons.forEach((item) => {
+        const active = item === button;
+        item.classList.toggle("is-active", active);
+        item.setAttribute("aria-pressed", String(active));
+      });
       applyPostFilters();
     });
   });
@@ -385,7 +389,11 @@ const initialProject = projects.find((project) => project.slug === initialPost.r
   tagButtons.forEach((button) => {
     button.addEventListener("click", () => {
       activeTag = button.getAttribute("data-post-tag-filter") || "all";
-      tagButtons.forEach((item) => item.classList.toggle("is-active", item === button));
+      tagButtons.forEach((item) => {
+        const active = item === button;
+        item.classList.toggle("is-active", active);
+        item.setAttribute("aria-pressed", String(active));
+      });
       applyPostFilters();
     });
   });
@@ -432,8 +440,16 @@ const initialProject = projects.find((project) => project.slug === initialPost.r
       activeCategory = "all";
       activeTag = "all";
       if (searchInput instanceof HTMLInputElement) searchInput.value = "";
-      categoryButtons.forEach((item) => item.classList.toggle("is-active", item.getAttribute("data-post-category-filter") === "all"));
-      tagButtons.forEach((item) => item.classList.toggle("is-active", item.getAttribute("data-post-tag-filter") === "all"));
+      categoryButtons.forEach((item) => {
+        const active = item.getAttribute("data-post-category-filter") === "all";
+        item.classList.toggle("is-active", active);
+        item.setAttribute("aria-pressed", String(active));
+      });
+      tagButtons.forEach((item) => {
+        const active = item.getAttribute("data-post-tag-filter") === "all";
+        item.classList.toggle("is-active", active);
+        item.setAttribute("aria-pressed", String(active));
+      });
       applyPostFilters();
     });
   }

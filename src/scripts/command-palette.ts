@@ -15,6 +15,8 @@ type PaletteItem = {
 let boundGlobalEvents = false;
 let items: PaletteItem[] = [];
 let selectedIndex = 0;
+let previousFocus: HTMLElement | null = null;
+let cachedLaunchItems: PaletteItem[] | null = null;
 
 const groupRank: Record<PaletteItem["group"], number> = {
   Recent: 0,
@@ -128,12 +130,14 @@ const buildItems = () => {
   const state = window.labOS.getState();
   const recentItems = state.recentItems.slice(0, 5).map(recentToItem);
   const historyItems = state.commandHistory.slice(0, 4).map(historyToItem);
-  const launchItems = commands
-    .filter((command) => command.kind === "app" || command.kind === "settings" || command.kind === "utility")
-    .slice(0, 9)
-    .map(commandToItem);
+  if (!cachedLaunchItems) {
+    cachedLaunchItems = commands
+      .filter((command) => command.kind === "app" || command.kind === "settings" || command.kind === "utility")
+      .slice(0, 9)
+      .map(commandToItem);
+  }
 
-  return orderItems([...recentItems, ...historyItems, ...launchItems]).slice(0, 14);
+  return orderItems([...recentItems, ...historyItems, ...cachedLaunchItems]).slice(0, 14);
 };
 
 const updateSelection = () => {
@@ -229,6 +233,10 @@ const setOpen = (open: boolean) => {
   const nodes = getNodes();
   if (!nodes) return;
 
+  if (open) {
+    previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  }
+
   nodes.root.hidden = !open;
   document.body.dataset.commandPaletteOpen = String(open);
   document.body.style.overflow = open ? "hidden" : "";
@@ -237,6 +245,9 @@ const setOpen = (open: boolean) => {
     selectedIndex = 0;
     renderCommandPalette();
     window.setTimeout(() => nodes.input.focus(), 0);
+  } else if (previousFocus) {
+    window.setTimeout(() => previousFocus?.focus(), 0);
+    previousFocus = null;
   }
 };
 
@@ -299,6 +310,22 @@ export function initCommandPalette() {
       if (event.key === "Escape") {
         event.preventDefault();
         closeCommandPalette();
+      }
+
+      if (event.key === "Tab") {
+        const panel = currentNodes.root.querySelector(".command-palette-panel");
+        if (!(panel instanceof HTMLElement)) return;
+        const focusable = panel.querySelectorAll<HTMLElement>('button, input, [tabindex]:not([tabindex="-1"])');
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
       }
 
       if (event.key === "ArrowDown") {
