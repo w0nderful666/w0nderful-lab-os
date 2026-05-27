@@ -14,9 +14,10 @@
     disabled?: boolean;
   };
 
-  const menu = document.querySelector("[data-context-menu]");
-  const menuList = document.querySelector("[data-context-menu-list]");
   let isOpen = false;
+
+  const getMenu = () => document.querySelector("[data-context-menu]");
+  const getMenuList = () => document.querySelector("[data-context-menu-list]");
 
   const getItems = (target: Element): MenuItem[] => {
     const link = target.closest("a[data-app-link]");
@@ -58,6 +59,7 @@
   };
 
   const render = (items: MenuItem[]) => {
+    const menuList = getMenuList();
     if (!menuList) return;
     menuList.innerHTML = "";
     for (const item of items) {
@@ -82,33 +84,46 @@
   };
 
   const open = (x: number, y: number, target: Element) => {
+    const menu = getMenu();
     if (!menu) return;
     const items = getItems(target);
     render(items);
     menu.removeAttribute("hidden");
     isOpen = true;
 
-    const rect = menu.getBoundingClientRect();
-    const maxX = window.innerWidth - rect.width - 8;
-    const maxY = window.innerHeight - rect.height - 8;
-    (menu as HTMLElement).style.left = `${Math.min(x, maxX)}px`;
-    (menu as HTMLElement).style.top = `${Math.min(y, maxY)}px`;
+    requestAnimationFrame(() => {
+      const rect = menu.getBoundingClientRect();
+      const maxX = window.innerWidth - rect.width - 8;
+      const maxY = window.innerHeight - rect.height - 8;
+      (menu as HTMLElement).style.left = `${Math.min(x, maxX)}px`;
+      (menu as HTMLElement).style.top = `${Math.min(y, maxY)}px`;
+    });
   };
 
   const close = () => {
+    const menu = getMenu();
     if (!menu) return;
     menu.setAttribute("hidden", "");
     isOpen = false;
   };
 
-  document.addEventListener("contextmenu", (e) => {
-    if (e.defaultPrevented) return;
+  const handleContext = (e: MouseEvent) => {
+    const target = e.target;
+    if (!(target instanceof Element)) return;
     e.preventDefault();
-    open(e.clientX, e.clientY, e.target as Element);
-  });
+    open(e.clientX, e.clientY, target);
+  };
+
+  const initContextMenu = () => {
+    document.removeEventListener("contextmenu", handleContext);
+    document.addEventListener("contextmenu", handleContext);
+  };
+
+  initContextMenu();
+  document.addEventListener("astro:page-load", initContextMenu);
 
   document.addEventListener("click", (e) => {
-    if (isOpen && !menu?.contains(e.target as Node)) close();
+    if (isOpen && !getMenu()?.contains(e.target as Node)) close();
   });
 
   document.addEventListener("keydown", (e) => {

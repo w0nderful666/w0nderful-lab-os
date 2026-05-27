@@ -178,6 +178,16 @@ for (const post of sortedPosts) {
               </div>
             </header>
             <div class="article-body"><ArticleContent /></div>
+            <nav class="article-nav" data-article-nav aria-label="Article navigation">
+              <button type="button" class="article-nav-item article-nav-prev" data-article-nav-prev aria-label="Previous article">
+                <span class="article-nav-label">← Previous</span>
+                <span class="article-nav-title" data-article-nav-prev-title></span>
+              </button>
+              <button type="button" class="article-nav-item article-nav-next" data-article-nav-next aria-label="Next article">
+                <span class="article-nav-label">Next →</span>
+                <span class="article-nav-title" data-article-nav-next-title></span>
+              </button>
+            </nav>
           </div>
         </template>
       );
@@ -257,6 +267,30 @@ for (const post of sortedPosts) {
     setLayoutState("idle");
   };
 
+  const updateArticleNav = (slug: string) => {
+    const visibleCards = cards.filter((c) => !(c as HTMLElement).hidden);
+    const slugs = visibleCards.map((c) => c.getAttribute("data-post-slug") || "");
+    const idx = slugs.indexOf(slug);
+    const prevSlug = idx > 0 ? slugs[idx - 1] : null;
+    const nextSlug = idx < slugs.length - 1 ? slugs[idx + 1] : null;
+
+    const prevBtn = document.querySelector("[data-article-nav-prev]");
+    const nextBtn = document.querySelector("[data-article-nav-next]");
+    const prevTitle = document.querySelector("[data-article-nav-prev-title]");
+    const nextTitle = document.querySelector("[data-article-nav-next-title]");
+
+    if (prevBtn instanceof HTMLElement) {
+      prevBtn.style.display = prevSlug ? "" : "none";
+      prevBtn.onclick = prevSlug ? () => selectPost(prevSlug) : null;
+    }
+    if (prevTitle) prevTitle.textContent = prevSlug ? (postData.find((p) => p.slug === prevSlug)?.title || "") : "";
+    if (nextBtn instanceof HTMLElement) {
+      nextBtn.style.display = nextSlug ? "" : "none";
+      nextBtn.onclick = nextSlug ? () => selectPost(nextSlug) : null;
+    }
+    if (nextTitle) nextTitle.textContent = nextSlug ? (postData.find((p) => p.slug === nextSlug)?.title || "") : "";
+  };
+
   const selectPost = (slug: string, shouldOpen = true) => {
     const post = postData.find((p) => p.slug === slug) || postData[0];
     if (!post) return;
@@ -274,6 +308,7 @@ for (const post of sortedPosts) {
           container.appendChild(tpl.content.cloneNode(true));
           container.setAttribute("data-article-slug", slug);
           applyReaderStyle();
+          updateArticleNav(slug);
         }
       }
     };

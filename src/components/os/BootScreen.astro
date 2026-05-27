@@ -30,6 +30,15 @@
       }
     } catch {}
 
+  const skip = () => {
+    screen.classList.add("boot-exit");
+    try { sessionStorage.setItem("lab-os-booted", "true"); } catch {}
+    setTimeout(() => screen.remove(), 300);
+  };
+
+    screen.addEventListener("click", skip);
+    document.addEventListener("keydown", skip, { once: true });
+
     screen.dataset.bootDone = "true";
     const lines = screen.querySelectorAll("[data-boot-line]");
     const progress = screen.querySelector("[data-boot-progress]");
@@ -44,11 +53,7 @@
       }
     }, 200);
 
-    setTimeout(() => {
-      screen.classList.add("boot-exit");
-      try { sessionStorage.setItem("lab-os-booted", "true"); } catch {}
-      setTimeout(() => screen.remove(), 500);
-    }, 1400);
+    setTimeout(skip, 1400);
   };
 
   initBoot();
@@ -64,6 +69,7 @@
     align-items: center;
     justify-content: center;
     background: var(--bg);
+    cursor: pointer;
     transition: opacity 0.45s ease, transform 0.45s ease;
   }
 
