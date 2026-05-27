@@ -20,7 +20,7 @@ export type ThemeSetting = "light" | "dark" | "system";
 export type ExperienceMode = "performance" | "balanced" | "quality";
 export type MotionSpeed = "slow" | "slower" | "cinematic" | "normal" | "fast";
 export type Language = "en" | "zh";
-export type ThemePalette = "aurora" | "graphite" | "ubuntu" | "mint" | "terminal";
+export type ThemePalette = "aurora" | "macos" | "material" | "windows" | "kali" | "graphite" | "ubuntu" | "mint" | "terminal";
 export type BackgroundPreset = "aurora" | "frosted" | "glacier" | "sakura" | "mesh" | "grid" | "terminal" | "paper" | "space";
 export type OsEffects = "on" | "off";
 export type MotionIntensity = "minimal" | "balanced" | "expressive";
@@ -132,6 +132,10 @@ const defaultSettings = {
 
 const paletteLabels: Record<ThemePalette, string> = {
   aurora: "Aurora",
+  macos: "macOS",
+  material: "Material You",
+  windows: "Windows",
+  kali: "Kali Linux",
   graphite: "Graphite",
   ubuntu: "Ubuntu",
   mint: "Mint",
@@ -335,7 +339,7 @@ const isMotionSpeed = (value: unknown): value is MotionSpeed =>
   value === "slow" || value === "slower" || value === "cinematic" || value === "normal" || value === "fast";
 const isLanguage = (value: unknown): value is Language => value === "en" || value === "zh";
 const isPalette = (value: unknown): value is ThemePalette =>
-  value === "aurora" || value === "graphite" || value === "ubuntu" || value === "mint" || value === "terminal";
+  value === "aurora" || value === "macos" || value === "material" || value === "windows" || value === "kali" || value === "graphite" || value === "ubuntu" || value === "mint" || value === "terminal";
 const isBackground = (value: unknown): value is BackgroundPreset =>
   value === "aurora" || value === "frosted" || value === "glacier" || value === "sakura" || value === "mesh" || value === "grid" || value === "terminal" || value === "paper" || value === "space";
 const isOsEffects = (value: unknown): value is OsEffects => value === "on" || value === "off";

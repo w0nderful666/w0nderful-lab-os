@@ -231,6 +231,7 @@ const setOpen = (open: boolean) => {
 
   nodes.root.hidden = !open;
   document.body.dataset.commandPaletteOpen = String(open);
+  document.body.style.overflow = open ? "hidden" : "";
   if (open) {
     nodes.input.value = "";
     selectedIndex = 0;
@@ -263,6 +264,10 @@ export function initCommandPalette() {
     nodes.root.addEventListener("click", (event) => {
       const target = event.target;
       if (target instanceof Element && target.closest("[data-command-palette-close]")) {
+        closeCommandPalette();
+        return;
+      }
+      if (target === nodes.root) {
         closeCommandPalette();
       }
     });

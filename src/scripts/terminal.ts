@@ -17,7 +17,7 @@ const themeCommands = new Set<ThemeSetting>(["light", "dark", "system"]);
 const modeCommands = new Set<ExperienceMode>(["performance", "balanced", "quality"]);
 const speedCommands = new Set<MotionSpeed>(["slow", "slower", "cinematic", "normal", "fast"]);
 const languageCommands = new Set<Language>(["en", "zh"]);
-const paletteCommands = new Set<ThemePalette>(["aurora", "graphite", "ubuntu", "mint", "terminal"]);
+const paletteCommands = new Set<ThemePalette>(["aurora", "macos", "material", "windows", "kali", "graphite", "ubuntu", "mint", "terminal"]);
 const backgroundCommands = new Set<BackgroundPreset>(["aurora", "frosted", "glacier", "sakura", "mesh", "grid", "terminal", "paper", "space"]);
 
 const getNodes = () => {

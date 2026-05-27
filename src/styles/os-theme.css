@@ -1441,7 +1441,8 @@ html[data-experience="performance"] .md-reader-toolbar {
 .command-palette-panel {
   position: relative;
   z-index: 1;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   width: min(720px, 100%);
   max-height: min(78vh, 720px);
   overflow: hidden;
@@ -1504,6 +1505,8 @@ html[data-experience="performance"] .md-reader-toolbar {
   gap: 7px;
   overflow-y: auto;
   padding: 12px;
+  flex: 1;
+  min-height: 0;
 }
 
 .command-group-label {
