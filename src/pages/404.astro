@@ -1,21 +1,95 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import AppWindow from "../components/os/AppWindow.astro";
-import EmptyState from "../components/common/EmptyState.astro";
 import { withBase } from "../data/site";
 ---
 
 <BaseLayout active="home" title="404 System Notice" description="OS-style 404 system notice for w0nderful Lab OS.">
-  <AppWindow title="System Notice" subtitle="404 route not found" wide>
-    <section class="system-notice">
-      <EmptyState
-        title="404: Route not mounted"
-        description="The requested file is not available in this Lab OS build."
-      />
-      <div class="notice-actions">
-        <button type="button" class="button button-secondary" data-command-palette-open>Open Command Palette</button>
+  <div class="error-page">
+    <div class="error-content" data-reveal>
+      <div class="error-code">404</div>
+      <h1 class="error-title">Route not found</h1>
+      <p class="error-desc">The requested path does not exist in this workspace. It may have been moved, renamed, or never created.</p>
+      <div class="error-actions">
         <a class="button button-primary" href={withBase("")} data-app-link="home">Return Home</a>
+        <button type="button" class="button" data-command-palette-open>Command Palette ⌘K</button>
       </div>
-    </section>
-  </AppWindow>
+      <div class="error-hint">
+        <code>$ ls /current/path</code>
+        <span>ls: No such file or directory</span>
+      </div>
+    </div>
+  </div>
 </BaseLayout>
+
+<style>
+  .error-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 160px);
+    padding: 40px 24px;
+  }
+
+  .error-content {
+    max-width: 480px;
+    text-align: center;
+  }
+
+  .error-code {
+    font-size: 8rem;
+    font-weight: 800;
+    letter-spacing: -0.06em;
+    line-height: 1;
+    margin-bottom: 12px;
+    font-family: var(--font-display);
+    background: linear-gradient(135deg, var(--accent), var(--text-muted));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .error-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    margin: 0 0 12px;
+  }
+
+  .error-desc {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0 0 28px;
+  }
+
+  .error-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+  }
+
+  .error-hint {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 18px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-soft);
+    text-align: left;
+  }
+
+  .error-hint code {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--accent);
+  }
+
+  .error-hint span {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--danger);
+  }
+</style>
