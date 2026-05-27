@@ -278,7 +278,9 @@ export function initCommandPalette() {
 
     document.addEventListener("click", (event) => {
       const target = event.target;
-      if (target instanceof Element && target.closest("[data-command-palette-open]")) {
+      if (!(target instanceof Element)) return;
+      const trigger = target.closest("[data-command-palette-open]");
+      if (trigger instanceof HTMLElement && trigger !== document.body) {
         event.preventDefault();
         openCommandPalette();
       }
