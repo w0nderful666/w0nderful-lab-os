@@ -38,6 +38,8 @@ const appCommands: Command[] = [
   { id: "open-blog", title: "Open Blog", description: "Open Blog.app reader.", kind: "app", action: "open-app", target: "blog", keywords: ["blog", "posts", "reader", "wenzhang", "boke"] },
   { id: "open-timeline", title: "Open Timeline", description: "Open Timeline.app system log.", kind: "app", action: "open-app", target: "timeline", keywords: ["timeline", "log", "history", "shijianxian", "rizhi"] },
   { id: "open-about", title: "Open About", description: "Open About.app identity panel.", kind: "app", action: "open-app", target: "about", keywords: ["about", "identity", "guanyu", "system", "info", "xitong"] },
+  { id: "open-tags", title: "Browse Tags", description: "Browse all article tags.", kind: "app", action: "open-external", href: withBase("tags/"), keywords: ["tags", "biaoqian", "filter", "blog"] },
+  { id: "open-categories", title: "Browse Categories", description: "Browse article categories.", kind: "app", action: "open-external", href: withBase("categories/"), keywords: ["categories", "fenlei", "filter", "blog"] },
   { id: "open-settings", title: "Open Settings", description: "Open Settings.app controls.", kind: "app", action: "open-app", target: "settings", keywords: ["settings", "preferences", "controls", "shezhi", "zhuti", "beijing"] },
   { id: "open-terminal", title: "Open Terminal", description: "Open Terminal.app command console.", kind: "app", action: "open-app", target: "terminal", keywords: ["terminal", "console", "command", "zhongduan"] },
   { id: "open-composer", title: "Open Composer", description: "Open Composer.app article writer.", kind: "app", action: "open-app", target: "composer", keywords: ["composer", "writer", "article", "write", "chuangzuo", "wenzhang"] }

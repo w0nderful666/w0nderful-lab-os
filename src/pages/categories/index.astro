@@ -1,0 +1,117 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import AppWindow from "../../components/os/AppWindow.astro";
+import { posts, postCategories } from "../../data/posts";
+import { withBase } from "../../data/site";
+
+const categoryData = postCategories.map((cat) => ({
+  name: cat,
+  count: posts.filter((p) => p.category === cat).length,
+  latest: posts.filter((p) => p.category === cat).sort((a, b) => b.date.localeCompare(a.date))[0],
+})).sort((a, b) => b.count - a.count);
+---
+
+<BaseLayout active="blog" title="Categories">
+  <AppWindow title="Categories.app" subtitle="Article categories" wide>
+    <div class="categories-page">
+      <header class="categories-header">
+        <p class="eyebrow">Browse by Category</p>
+        <h1>Categories</h1>
+        <p class="categories-count">{categoryData.length} categories across {posts.length} articles</p>
+      </header>
+      <div class="categories-grid" data-reveal-stagger>
+        {categoryData.map((cat) => (
+          <a href={withBase(`blog/?category=${cat.name}`)} class="category-card" data-app-link="blog">
+            <div class="category-top">
+              <span class="category-name">{cat.name}</span>
+              <span class="category-count">{cat.count}</span>
+            </div>
+            {cat.latest && (
+              <p class="category-latest">Latest: {cat.latest.title}</p>
+            )}
+          </a>
+        ))}
+      </div>
+    </div>
+  </AppWindow>
+</BaseLayout>
+
+<style>
+  .categories-page {
+    padding: 24px;
+  }
+
+  .categories-header {
+    margin-bottom: 28px;
+  }
+
+  .categories-count {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    margin-top: 4px;
+  }
+
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+  }
+
+  .category-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 18px 20px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-soft);
+    color: var(--text);
+    transition: border-color 0.15s, background 0.15s, transform 0.15s;
+  }
+
+  .category-card:hover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    transform: translateY(-1px);
+  }
+
+  .category-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .category-name {
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  .category-count {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 28px;
+    padding: 0 8px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+
+  .category-latest {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 600px) {
+    .categories-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -11,39 +11,37 @@
     shortcut?: string;
     action: () => void;
     divider?: boolean;
-    disabled?: boolean;
   };
 
-  let isOpen = false;
-
-  const getMenu = () => document.querySelector("[data-context-menu]");
-  const getMenuList = () => document.querySelector("[data-context-menu-list]");
+  let open = false;
 
   const getItems = (target: Element): MenuItem[] => {
-    const link = target.closest("a[data-app-link]");
     const projectCard = target.closest("[data-lab-open-project]");
     const postCard = target.closest("[data-lab-open-post]");
+    const link = target.closest("a[data-app-link]");
 
     if (projectCard instanceof HTMLElement) {
       const slug = projectCard.dataset.labOpenProject || "";
+      const href = projectCard.closest("a")?.href || "";
       return [
         { label: "Open Project", action: () => window.labOS.openProject(slug) },
-        { label: "Open in New Tab", action: () => window.open(projectCard.closest("a")?.href, "_blank") },
-        { label: "Copy Link", shortcut: "⌘C", action: () => navigator.clipboard.writeText(window.location.origin + (projectCard.closest("a")?.pathname || "")) },
+        { label: "Open in New Tab", action: () => window.open(href, "_blank") },
+        { label: "Copy Link", shortcut: "⌘C", action: () => { try { navigator.clipboard.writeText(href); } catch {} } },
       ];
     }
 
     if (postCard instanceof HTMLElement) {
       const slug = postCard.dataset.labOpenPost || "";
+      const href = postCard.closest("a")?.href || "";
       return [
         { label: "Read Article", action: () => window.labOS.openPost(slug) },
-        { label: "Open in New Tab", action: () => window.open(postCard.closest("a")?.href, "_blank") },
-        { label: "Copy Link", shortcut: "⌘C", action: () => navigator.clipboard.writeText(window.location.origin + (postCard.closest("a")?.pathname || "")) },
+        { label: "Open in New Tab", action: () => window.open(href, "_blank") },
+        { label: "Copy Link", shortcut: "⌘C", action: () => { try { navigator.clipboard.writeText(href); } catch {} } },
       ];
     }
 
     if (link instanceof HTMLElement) {
-      const app = link.dataset.appLink;
+      const app = link.dataset.appLink || "";
       return [
         { label: `Open ${app}`, action: () => window.labOS.openApp(app as Parameters<typeof window.labOS.openApp>[0]) },
         { label: "Open in New Tab", action: () => window.open((link as HTMLAnchorElement).href, "_blank") },
@@ -58,76 +56,63 @@
     ];
   };
 
-  const render = (items: MenuItem[]) => {
-    const menuList = getMenuList();
-    if (!menuList) return;
-    menuList.innerHTML = "";
+  const renderMenu = (items: MenuItem[]) => {
+    const list = document.querySelector("[data-context-menu-list]");
+    if (!list) return;
+    list.innerHTML = "";
     for (const item of items) {
       if (item.divider) {
-        const div = document.createElement("div");
-        div.className = "context-divider";
-        menuList.append(div);
+        const d = document.createElement("div");
+        d.className = "context-divider";
+        list.append(d);
+        continue;
       }
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "context-item";
-      btn.disabled = !!item.disabled;
-      btn.innerHTML = `<span class="context-label">${item.label}</span>${item.shortcut ? `<span class="context-shortcut">${item.shortcut}</span>` : ""}`;
+      btn.innerHTML = `<span class="ctx-label">${item.label}</span>${item.shortcut ? `<span class="ctx-key">${item.shortcut}</span>` : ""}`;
       btn.addEventListener("click", (e) => {
-        e.preventDefault();
         e.stopPropagation();
-        close();
+        closeMenu();
         item.action();
-      });
-      menuList.append(btn);
+      }, { once: true });
+      list.append(btn);
     }
   };
 
-  const open = (x: number, y: number, target: Element) => {
-    const menu = getMenu();
+  const openMenu = (x: number, y: number, target: Element) => {
+    const menu = document.querySelector("[data-context-menu]");
     if (!menu) return;
-    const items = getItems(target);
-    render(items);
+    renderMenu(getItems(target));
     menu.removeAttribute("hidden");
-    isOpen = true;
-
+    open = true;
+    const el = menu as HTMLElement;
     requestAnimationFrame(() => {
-      const rect = menu.getBoundingClientRect();
-      const maxX = window.innerWidth - rect.width - 8;
-      const maxY = window.innerHeight - rect.height - 8;
-      (menu as HTMLElement).style.left = `${Math.min(x, maxX)}px`;
-      (menu as HTMLElement).style.top = `${Math.min(y, maxY)}px`;
+      const r = menu.getBoundingClientRect();
+      el.style.left = Math.min(x, window.innerWidth - r.width - 8) + "px";
+      el.style.top = Math.min(y, window.innerHeight - r.height - 8) + "px";
     });
   };
 
-  const close = () => {
-    const menu = getMenu();
+  const closeMenu = () => {
+    const menu = document.querySelector("[data-context-menu]");
     if (!menu) return;
     menu.setAttribute("hidden", "");
-    isOpen = false;
+    open = false;
   };
 
-  const handleContext = (e: MouseEvent) => {
-    const target = e.target;
-    if (!(target instanceof Element)) return;
+  document.addEventListener("contextmenu", (e) => {
+    if (!(e.target instanceof Element)) return;
     e.preventDefault();
-    open(e.clientX, e.clientY, target);
-  };
-
-  const initContextMenu = () => {
-    document.removeEventListener("contextmenu", handleContext);
-    document.addEventListener("contextmenu", handleContext);
-  };
-
-  initContextMenu();
-  document.addEventListener("astro:page-load", initContextMenu);
+    openMenu(e.clientX, e.clientY, e.target);
+  }, true);
 
   document.addEventListener("click", (e) => {
-    if (isOpen && !getMenu()?.contains(e.target as Node)) close();
-  });
+    if (open && !(e.target as Element)?.closest("[data-context-menu]")) closeMenu();
+  }, true);
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") close();
+    if (e.key === "Escape" && open) closeMenu();
   });
 </script>
 
@@ -135,19 +120,17 @@
   .context-menu {
     position: fixed;
     z-index: 9999;
-    min-width: 200px;
+    min-width: 190px;
     padding: 4px;
     border: 1px solid var(--border-strong);
     border-radius: var(--radius);
     background: var(--bg-panel);
     backdrop-filter: blur(var(--glass-blur));
     box-shadow: var(--shadow);
-    animation: context-in 0.12s ease;
+    animation: ctx-in 0.1s ease;
   }
 
-  .context-menu[hidden] {
-    display: none;
-  }
+  .context-menu[hidden] { display: none; }
 
   .context-menu-inner {
     display: flex;
@@ -159,15 +142,15 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 24px;
-    padding: 7px 10px;
+    gap: 20px;
+    padding: 6px 10px;
     border: none;
     border-radius: var(--radius-sm);
     background: transparent;
     color: var(--text);
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     cursor: pointer;
-    transition: background 0.1s ease;
+    transition: background 0.08s;
     text-align: left;
     width: 100%;
   }
@@ -177,20 +160,8 @@
     color: var(--accent);
   }
 
-  .context-item:disabled {
-    opacity: 0.4;
-    cursor: default;
-  }
-
-  .context-label {
-    font-weight: 500;
-  }
-
-  .context-shortcut {
-    color: var(--text-muted);
-    font-size: 0.72rem;
-    font-family: var(--font-mono);
-  }
+  .ctx-label { font-weight: 500; }
+  .ctx-key { color: var(--text-muted); font-size: 0.7rem; font-family: var(--font-mono); }
 
   .context-divider {
     height: 1px;
@@ -198,8 +169,8 @@
     background: var(--border);
   }
 
-  @keyframes context-in {
-    from { opacity: 0; transform: scale(0.96) translateY(-4px); }
+  @keyframes ctx-in {
+    from { opacity: 0; transform: scale(0.97) translateY(-3px); }
     to { opacity: 1; transform: scale(1) translateY(0); }
   }
 </style>

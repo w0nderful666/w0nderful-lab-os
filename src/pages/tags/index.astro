@@ -1,0 +1,87 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import AppWindow from "../../components/os/AppWindow.astro";
+import { posts, postTags } from "../../data/posts";
+import { withBase } from "../../data/site";
+
+const tagData = postTags.map((tag) => ({
+  name: tag,
+  count: posts.filter((p) => p.tags.includes(tag)).length,
+})).sort((a, b) => b.count - a.count);
+---
+
+<BaseLayout active="blog" title="Tags">
+  <AppWindow title="Tags.app" subtitle="All article tags" wide>
+    <div class="tags-page">
+      <header class="tags-header">
+        <p class="eyebrow">Browse by Tag</p>
+        <h1>Tags</h1>
+        <p class="tags-count">{tagData.length} tags across {posts.length} articles</p>
+      </header>
+      <div class="tags-grid" data-reveal-stagger>
+        {tagData.map((tag) => (
+          <a href={withBase(`blog/?tag=${tag.name}`)} class="tag-card" data-app-link="blog">
+            <span class="tag-name">{tag.name}</span>
+            <span class="tag-count">{tag.count} {tag.count === 1 ? "article" : "articles"}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </AppWindow>
+</BaseLayout>
+
+<style>
+  .tags-page {
+    padding: 24px;
+  }
+
+  .tags-header {
+    margin-bottom: 28px;
+  }
+
+  .tags-count {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    margin-top: 4px;
+  }
+
+  .tags-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+  }
+
+  .tag-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-soft);
+    color: var(--text);
+    transition: border-color 0.15s, background 0.15s, transform 0.15s;
+  }
+
+  .tag-card:hover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    transform: translateY(-1px);
+  }
+
+  .tag-name {
+    font-weight: 600;
+    font-size: 0.92rem;
+  }
+
+  .tag-count {
+    color: var(--text-muted);
+    font-size: 0.76rem;
+  }
+
+  @media (max-width: 600px) {
+    .tags-grid {
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    }
+  }
+</style>
